@@ -78,4 +78,9 @@ public sealed partial class DashboardView : Page
     {
         await _vm.VerifyAllVaultFilesIntegrityAsync();
     }
+
+    private void OpenFieldManual_Click(object sender, RoutedEventArgs e)
+    {
+        _vm.RequestNavigate("UserGuide");
+    }
 }

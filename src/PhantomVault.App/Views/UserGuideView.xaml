@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="PhantomVault_App.Views.UserGuideView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <ScrollViewer Padding="28" VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="24" MaxWidth="1050" HorizontalAlignment="Left">
+
+            <!-- HEADER -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Spacing="4">
+                    <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <Border Background="{StaticResource ElevatedSurfaceBrush}" BorderBrush="{StaticResource PrimaryAccentBrush}" BorderThickness="1" CornerRadius="8" Width="36" Height="36">
+                            <FontIcon Glyph="&#xE897;" Foreground="{StaticResource PrimaryAccentBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock Text="Tactical Field Manual &amp; User Guide" FontSize="26" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBlock Text="Step-by-step operating procedures, plausible deniability protocols, steganography guidance, and defense controls." 
+                               Foreground="{StaticResource SecondaryTextBrush}" FontSize="13" />
+                </StackPanel>
+
+                <!-- SEARCH BOX -->
+                <TextBox x:Name="SearchGuideBox" Grid.Column="1" Width="280" PlaceholderText="Search field manual (e.g. duress, stego)..."
+                         TextChanged="SearchGuideBox_TextChanged" VerticalAlignment="Center" />
+            </Grid>
+
+            <!-- CATEGORY FILTER BUTTONS -->
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button x:Name="FilterAllButton" Content="All Manuals" Style="{StaticResource PrimaryButtonStyle}" Click="FilterButton_Click" Tag="All" />
+                <Button x:Name="FilterVaultsButton" Content="🔐 Vaults &amp; Access" Style="{StaticResource SecondaryButtonStyle}" Click="FilterButton_Click" Tag="Vaults" />
+                <Button x:Name="FilterDecoyButton" Content="🎭 Plausible Deniability" Style="{StaticResource SecondaryButtonStyle}" Click="FilterButton_Click" Tag="Decoy" />
+                <Button x:Name="FilterStegoButton" Content="📡 Steganography &amp; Audio" Style="{StaticResource SecondaryButtonStyle}" Click="FilterButton_Click" Tag="Stego" />
+                <Button x:Name="FilterShredderButton" Content="☣️ DoD Shredder" Style="{StaticResource SecondaryButtonStyle}" Click="FilterButton_Click" Tag="Shredder" />
+                <Button x:Name="FilterDefenseButton" Content="🚨 Defense &amp; Alarms" Style="{StaticResource SecondaryButtonStyle}" Click="FilterButton_Click" Tag="Defense" />
+                <Button x:Name="FilterHotkeysButton" Content="⌨️ Hotkeys &amp; Audio" Style="{StaticResource SecondaryButtonStyle}" Click="FilterButton_Click" Tag="Hotkeys" />
+            </StackPanel>
+
+            <!-- GUIDES CONTAINER -->
+            <StackPanel x:Name="GuidesPanel" Spacing="18">
+
+                <!-- GUIDE 1: VAULT CREATION & BIOMETRIC UNSEALING -->
+                <Border x:Name="Card_Vaults" Style="{StaticResource SecurityCardStyle}" Tag="Vaults">
+                    <StackPanel Spacing="14">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                <FontIcon Glyph="&#xE72E;" FontSize="18" Foreground="{StaticResource PrimaryAccentBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="1. VAULT INITIALIZATION &amp; ACCESS CONTROL" FontSize="15" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" VerticalAlignment="Center" />
+                                <Border Background="{StaticResource ElevatedBackgroundBrush}" BorderBrush="{StaticResource PrimaryAccentBrush}" BorderThickness="1" CornerRadius="4" Padding="6,2">
+                                    <TextBlock Text="ARGON2ID 64 MiB" FontSize="10" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" />
+                                </Border>
+                                <Border Background="{StaticResource ElevatedBackgroundBrush}" BorderBrush="{StaticResource SuccessBrush}" BorderThickness="1" CornerRadius="4" Padding="6,2">
+                                    <TextBlock Text="WINDOWS HELLO" FontSize="10" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}" />
+                                </Border>
+                            </StackPanel>
+                            <Button Grid.Column="1" Content="Open My Vaults →" Style="{StaticResource SecondaryButtonStyle}" Click="NavToVaults_Click" />
+                        </Grid>
+
+                        <TextBlock Text="PHANTOMVAULT uses multi-vault compartmentalization. Each vault possesses independent master keys, isolated salt parameters, and decoupled credentials to prevent lateral compromise." 
+                                   Foreground="{StaticResource SecondaryTextBrush}" FontSize="12" />
+
+                        <Grid ColumnSpacing="16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="{StaticResource SecondaryBackgroundBrush}" Padding="12" CornerRadius="6">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="STEP 1: CREATION &amp; ENTROPY" FontSize="11" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" />
+                                    <TextBlock Text="Open 'My Vaults' and click '+ New Vault'. Enter a name and strong passphrase. The real-time HUD evaluates entropy based on character sets and length." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1" Background="{StaticResource SecondaryBackgroundBrush}" Padding="12" CornerRadius="6">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="STEP 2: BIOMETRIC ENROLLMENT" FontSize="11" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}" />
+                                    <TextBlock Text="Unseal vaults using Windows Hello (Fingerprint, Facial Recognition, or hardware PIN) for frictionless access backed by TPM hardware." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="2" Background="{StaticResource SecondaryBackgroundBrush}" Padding="12" CornerRadius="6">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="CRITICAL: ZERO RECOVERY" FontSize="11" FontWeight="Bold" Foreground="{StaticResource ErrorBrush}" />
+                                    <TextBlock Text="PHANTOMVAULT maintains zero central telemetry and zero key escrow backdoors. If you forget your master password, your ciphertext is mathematically unrecoverable." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- GUIDE 2: VAULT WORKSPACE & ZERO-DISK DECRYPTION -->
+                <Border x:Name="Card_Workspace" Style="{StaticResource SecurityCardStyle}" Tag="Vaults">
+                    <StackPanel Spacing="14">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                <FontIcon Glyph="&#xE8B7;" FontSize="18" Foreground="{StaticResource PrimaryAccentBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="2. VAULT WORKSPACE &amp; ZERO-DISK-LEAK PREVIEWER" FontSize="15" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" VerticalAlignment="Center" />
+                                <Border Background="{StaticResource ElevatedBackgroundBrush}" BorderBrush="{StaticResource PrimaryAccentBrush}" BorderThickness="1" CornerRadius="4" Padding="6,2">
+                                    <TextBlock Text="AES-256-GCM 64 KiB" FontSize="10" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" />
+                                </Border>
+                                <Border Background="{StaticResource ElevatedBackgroundBrush}" BorderBrush="{StaticResource SuccessBrush}" BorderThickness="1" CornerRadius="4" Padding="6,2">
+                                    <TextBlock Text="ZERO DISK WRITES" FontSize="10" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}" />
+                                </Border>
+                            </StackPanel>
+                            <Button Grid.Column="1" Content="Open Vault Workspace →" Style="{StaticResource SecondaryButtonStyle}" Click="NavToWorkspace_Click" />
+                        </Grid>
+
+                        <TextBlock Text="The Vault Workspace is your focused operational file manager. Files are encrypted in 64 KiB independently authenticated chunks with chunk-index binding and unique nonces." 
+                                   Foreground="{StaticResource SecondaryTextBrush}" FontSize="12" />
+
+                        <Grid ColumnSpacing="16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="{StaticResource SecondaryBackgroundBrush}" Padding="12" CornerRadius="6">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="DRAG &amp; DROP INGESTION" FontSize="11" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" />
+                                    <TextBlock Text="Drag any files directly onto the vault drop target area to automatically encrypt and store them with zero temp files." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1" Background="{StaticResource SecondaryBackgroundBrush}" Padding="12" CornerRadius="6">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="GRID / LIST &amp; MULTI-SORT" FontSize="11" FontWeight="Bold" Foreground="{StaticResource SecondaryAccentBrush}" />
+                                    <TextBlock Text="Toggle between cyber security card grid and dense tabular list views. Sort entries by Name, Date Modified, or File Size." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="2" Background="{StaticResource SecondaryBackgroundBrush}" Padding="12" CornerRadius="6">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="ZERO-DISK PREVIEWER" FontSize="11" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}" />
+                                    <TextBlock Text="Double-click or click 'Preview' to stream decrypted buffers straight into RAM (Images, Code/Text editor, or 16-byte raw Hex). Memory is zeroized on close." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- GUIDE 3: PLAUSIBLE DENIABILITY & DECOY ENCLAVE -->
+                <Border x:Name="Card_Decoy" Style="{StaticResource SecurityCardStyle}" Tag="Decoy">
+                    <StackPanel Spacing="14">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                <FontIcon Glyph="&#xE8B2;" FontSize="18" Foreground="{StaticResource WarningBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="3. PLAUSIBLE DENIABILITY &amp; DECOY ENCLAVE (COERCION DEFENSE)" FontSize="15" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" VerticalAlignment="Center" />
+                                <Border Background="{StaticResource ElevatedBackgroundBrush}" BorderBrush="{StaticResource WarningBrush}" BorderThickness="1" CornerRadius="4" Padding="6,2">
+                                    <TextBlock Text="ANTI-COERCION" FontSize="10" FontWeight="Bold" Foreground="{StaticResource WarningBrush}" />
+                                </Border>
+                                <Border Background="{StaticResource ElevatedBackgroundBrush}" BorderBrush="{StaticResource ErrorBrush}" BorderThickness="1" CornerRadius="4" Padding="6,2">
+                                    <TextBlock Text="DURESS UNSEAL" FontSize="10" FontWeight="Bold" Foreground="{StaticResource ErrorBrush}" />
+                                </Border>
+                            </StackPanel>
+                            <Button Grid.Column="1" Content="Configure in Vault →" Style="{StaticResource SecondaryButtonStyle}" Click="NavToWorkspace_Click" />
+                        </Grid>
+
+                        <TextBlock Text="Plausible Deniability allows you to reveal a functional, populated vault under physical coercion or duress without exposing your authentic confidential data or master keys." 
+                                   Foreground="{StaticResource SecondaryTextBrush}" FontSize="12" />
+
+                        <Grid ColumnSpacing="16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="{StaticResource SecondaryBackgroundBrush}" Padding="12" CornerRadius="6">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="1. CONFIGURE DURESS PASSWORD" FontSize="11" FontWeight="Bold" Foreground="{StaticResource WarningBrush}" />
+                                    <TextBlock Text="In Vault Workspace, click 'Plausible Deniability...'. Set a secondary password that you can disclose if forced under coercion." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1" Background="{StaticResource SecondaryBackgroundBrush}" Padding="12" CornerRadius="6">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="2. SEAMLESS DECOY UNSEALING" FontSize="11" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" />
+                                    <TextBlock Text="When unlocking with the duress password, the authentic vault stays cryptographically sealed. An isolated decoy vault is seamlessly unsealed." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="2" Background="{StaticResource SecondaryBackgroundBrush}" Padding="12" CornerRadius="6">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="3. REALISTIC DECOY PAYLOADS" FontSize="11" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}" />
+                                    <TextBlock Text="Decoy files like Tax Filing Summaries, Vacation Itineraries, and Household Expense Ledgers populate the view, satisfying the adversary." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- GUIDE 4: STEGANOGRAPHY STUDIO -->
+                <Border x:Name="Card_Stego" Style="{StaticResource SecurityCardStyle}" Tag="Stego">
+                    <StackPanel Spacing="14">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                <FontIcon Glyph="&#xEB9F;" FontSize="18" Foreground="{StaticResource SecondaryAccentBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="4. COVERT STEGANOGRAPHY STUDIO (PNG &amp; WAV)" FontSize="15" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" VerticalAlignment="Center" />
+                                <Border Background="{StaticResource ElevatedBackgroundBrush}" BorderBrush="{StaticResource SecondaryAccentBrush}" BorderThickness="1" CornerRadius="4" Padding="6,2">
+                                    <TextBlock Text="PNG SCANLINES" FontSize="10" FontWeight="Bold" Foreground="{StaticResource SecondaryAccentBrush}" />
+                                </Border>
+                                <Border Background="{StaticResource ElevatedBackgroundBrush}" BorderBrush="{StaticResource PrimaryAccentBrush}" BorderThickness="1" CornerRadius="4" Padding="6,2">
+                                    <TextBlock Text="16-BIT PCM WAV" FontSize="10" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" />
+                                </Border>
+                            </StackPanel>
+                            <Button Grid.Column="1" Content="Open Stego Studio →" Style="{StaticResource SecondaryButtonStyle}" Click="NavToStego_Click" />
+                        </Grid>
+
+                        <TextBlock Text="Conceal encrypted payloads inside ordinary carrier media without visual artifacts or acoustic distortion. An adversary inspecting carrier files cannot distinguish embedded bits from ambient noise." 
+                                   Foreground="{StaticResource SecondaryTextBrush}" FontSize="12" />
+
+                        <Grid ColumnSpacing="16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="{StaticResource SecondaryBackgroundBrush}" Padding="12" CornerRadius="6">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="PNG IMAGE CONCEALMENT" FontSize="11" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" />
+                                    <TextBlock Text="Embeds AES-256-GCM ciphertext into LSB scanline channels. Live Capacity HUD checks carrier image dimensions and byte overhead." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1" Background="{StaticResource SecondaryBackgroundBrush}" Padding="12" CornerRadius="6">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="WAV AUDIO &amp; ACOUSTIC AUDITOR" FontSize="11" FontWeight="Bold" Foreground="{StaticResource SecondaryAccentBrush}" />
+                                    <TextBlock Text="Embeds into 16-bit PCM audio samples. Listen to pristine carrier audio and audition concealed audio directly in-app to verify 0.0000% distortion." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="2" Background="{StaticResource SecondaryBackgroundBrush}" Padding="12" CornerRadius="6">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="EXTRACTION STUDIO" FontSize="11" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}" />
+                                    <TextBlock Text="Switch to the 'Extract Hidden Payload' studio. Select any carrier file, enter the extraction password, and retrieve the original file." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- GUIDE 5: DOD 5220.22-M SHREDDER -->
+                <Border x:Name="Card_Shredder" Style="{StaticResource SecurityCardStyle}" Tag="Shredder">
+                    <StackPanel Spacing="14">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                <FontIcon Glyph="&#xE74D;" FontSize="18" Foreground="{StaticResource ErrorBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="5. DOD 5220.22-M MILITARY-GRADE FILE SHREDDER" FontSize="15" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" VerticalAlignment="Center" />
+                                <Border Background="{StaticResource ElevatedBackgroundBrush}" BorderBrush="{StaticResource ErrorBrush}" BorderThickness="1" CornerRadius="4" Padding="6,2">
+                                    <TextBlock Text="3-PASS SANITIZE" FontSize="10" FontWeight="Bold" Foreground="{StaticResource ErrorBrush}" />
+                                </Border>
+                                <Border Background="{StaticResource ElevatedBackgroundBrush}" BorderBrush="{StaticResource PrimaryAccentBrush}" BorderThickness="1" CornerRadius="4" Padding="6,2">
+                                    <TextBlock Text="MFT OBFUSCATION" FontSize="10" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" />
+                                </Border>
+                            </StackPanel>
+                            <Button Grid.Column="1" Content="Shred External File →" Style="{StaticResource DestructiveButtonStyle}" Click="NavToShredder_Click" />
+                        </Grid>
+
+                        <TextBlock Text="Permanently sanitize sensitive files to prevent forensic undelete or file carving tools from recovering data sectors." 
+                                   Foreground="{StaticResource SecondaryTextBrush}" FontSize="12" />
+
+                        <Grid ColumnSpacing="16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="{StaticResource SecondaryBackgroundBrush}" Padding="12" CornerRadius="6">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="3-PASS CRYPTOGRAPHIC OVERWRITE" FontSize="11" FontWeight="Bold" Foreground="{StaticResource ErrorBrush}" />
+                                    <TextBlock Text="Pass 1 writes pure 0x00 zeros. Pass 2 writes 0xFF ones. Pass 3 writes cryptographically secure pseudorandom noise (CSPRNG)." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1" Background="{StaticResource SecondaryBackgroundBrush}" Padding="12" CornerRadius="6">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="METADATA &amp; TIMESTAMP WIPING" FontSize="11" FontWeight="Bold" Foreground="{StaticResource WarningBrush}" />
+                                    <TextBlock Text="Truncates file to 0 bytes, then scrambles Created, Modified, and Accessed timestamps to random historical dates." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="2" Background="{StaticResource SecondaryBackgroundBrush}" Padding="12" CornerRadius="6">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="MFT DIRECTORY RENAMING" FontSize="11" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" />
+                                    <TextBlock Text="Renames filename to a random GUID in the Windows Master File Table (MFT) before unlinking to destroy original file name records." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- GUIDE 6: DEFENSE CONTROLS & ALARMS -->
+                <Border x:Name="Card_Defense" Style="{StaticResource SecurityCardStyle}" Tag="Defense">
+                    <StackPanel Spacing="14">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                <FontIcon Glyph="&#xE7BA;" FontSize="18" Foreground="{StaticResource WarningBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="6. DEFENSE CONTROLS, WIN+L, &amp; EMERGENCY ALARMS" FontSize="15" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" VerticalAlignment="Center" />
+                                <Border Background="{StaticResource ElevatedBackgroundBrush}" BorderBrush="{StaticResource ErrorBrush}" BorderThickness="1" CornerRadius="4" Padding="6,2">
+                                    <TextBlock Text="DEAD-MAN SWITCH" FontSize="10" FontWeight="Bold" Foreground="{StaticResource ErrorBrush}" />
+                                </Border>
+                                <Border Background="{StaticResource ElevatedBackgroundBrush}" BorderBrush="{StaticResource PrimaryAccentBrush}" BorderThickness="1" CornerRadius="4" Padding="6,2">
+                                    <TextBlock Text="WIN + L HOOK" FontSize="10" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" />
+                                </Border>
+                            </StackPanel>
+                            <Button Grid.Column="1" Content="Emergency Access →" Style="{StaticResource SecondaryButtonStyle}" Click="NavToEmergency_Click" />
+                        </Grid>
+
+                        <TextBlock Text="Defensive session monitors protect open vaults from shoulder surfers, unattended workstations, and unauthorized access." 
+                                   Foreground="{StaticResource SecondaryTextBrush}" FontSize="12" />
+
+                        <Grid ColumnSpacing="16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="{StaticResource SecondaryBackgroundBrush}" Padding="12" CornerRadius="6">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="WIN + L WORKSTATION LOCK" FontSize="11" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" />
+                                    <TextBlock Text="Locking your Windows PC immediately triggers vault zeroization and seals all sessions before screen lock completes." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1" Background="{StaticResource SecondaryBackgroundBrush}" Padding="12" CornerRadius="6">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="INACTIVITY TIMEOUT" FontSize="11" FontWeight="Bold" Foreground="{StaticResource WarningBrush}" />
+                                    <TextBlock Text="Automatically seals all vaults after a designated duration of idle time (configurable in Emergency Access view)." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="2" Background="{StaticResource SecondaryBackgroundBrush}" Padding="12" CornerRadius="6">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="DEAD-MAN'S SWITCH" FontSize="11" FontWeight="Bold" Foreground="{StaticResource ErrorBrush}" />
+                                    <TextBlock Text="Displays an urgent top-banner countdown with an acoustic alert siren. If not dismissed, vaults are emergency locked." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- GUIDE 7: HOTKEYS & CYBER AUDIO FEEDBACK -->
+                <Border x:Name="Card_Hotkeys" Style="{StaticResource SecurityCardStyle}" Tag="Hotkeys">
+                    <StackPanel Spacing="14">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                <FontIcon Glyph="&#xE767;" FontSize="18" Foreground="{StaticResource PrimaryAccentBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="7. TACTICAL CYBER SOUND EFFECTS &amp; SHORTCUTS" FontSize="15" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" VerticalAlignment="Center" />
+                                <Border Background="{StaticResource ElevatedBackgroundBrush}" BorderBrush="{StaticResource PrimaryAccentBrush}" BorderThickness="1" CornerRadius="4" Padding="6,2">
+                                    <TextBlock Text="16-BIT PCM SYNTHESIS" FontSize="10" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" />
+                                </Border>
+                            </StackPanel>
+                            <Button Grid.Column="1" Content="Open Settings →" Style="{StaticResource SecondaryButtonStyle}" Click="NavToSettings_Click" />
+                        </Grid>
+
+                        <TextBlock Text="Every critical cryptographic event produces distinct synthesized acoustic confirmation without reading or writing audio files to disk." 
+                                   Foreground="{StaticResource SecondaryTextBrush}" FontSize="12" />
+
+                        <Grid ColumnSpacing="16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="{StaticResource SecondaryBackgroundBrush}" Padding="12" CornerRadius="6">
+                                <StackPanel Spacing="6">
+                                    <TextBlock Text="SOUND EFFECTS REFERENCE" FontSize="11" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" />
+                                    <TextBlock Text="🔊 Unlock Chime: Triple harmonic C5 -> E5 -> G5 ascending chime." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                    <TextBlock Text="🔒 Lock Arming: Low electromagnetic latch &amp; damping pulse." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                    <TextBlock Text="☣️ DoD Shred: Downward frequency sweep with bit-crushed noise." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                    <TextBlock Text="📡 Stego Chirp: High-frequency 1400 Hz -> 1800 Hz modulated pulse." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                    <TextBlock Text="🚨 Lockdown Alarm: Alternating 880 Hz / 1175 Hz dual-frequency siren." FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1" Background="{StaticResource SecondaryBackgroundBrush}" Padding="12" CornerRadius="6">
+                                <StackPanel Spacing="6">
+                                    <TextBlock Text="TACTICAL SHORTCUTS &amp; GESTURES" FontSize="11" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}" />
+                                    <TextBlock Text="• Win + L: Instant Windows Lock + Full Vault Session Seal" FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                    <TextBlock Text="• Drag &amp; Drop: Drop files anywhere into the illuminated workspace" FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                    <TextBlock Text="• Double-Click: Open in-memory zero-disk hex/code previewer" FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                    <TextBlock Text="• Red Header Button: Global instantaneous EMERGENCY LOCK" FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                    <TextBlock Text="• Toggle Sound: Configure in Settings -> Tactical Cyber Sound" FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

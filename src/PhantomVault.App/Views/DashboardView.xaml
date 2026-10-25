@@ -12,11 +12,23 @@
         <StackPanel Spacing="24" MaxWidth="1180" HorizontalAlignment="Left">
 
             <!-- PAGE HEADER -->
-            <StackPanel Spacing="4">
-                <TextBlock Text="Dashboard" FontSize="26" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" />
-                <TextBlock Text="Your privacy workspace. Trust Nothing. Reveal Nothing." 
-                           Foreground="{StaticResource SecondaryTextBrush}" FontSize="13" />
-            </StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Dashboard" FontSize="26" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" />
+                    <TextBlock Text="Your privacy workspace. Trust Nothing. Reveal Nothing." 
+                               Foreground="{StaticResource SecondaryTextBrush}" FontSize="13" />
+                </StackPanel>
+                <Button Grid.Column="1" Style="{StaticResource SecondaryButtonStyle}" Click="OpenFieldManual_Click" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE897;" FontSize="14" Foreground="{StaticResource PrimaryAccentBrush}" />
+                        <TextBlock Text="Tactical Field Manual &amp; User Guide" FontWeight="SemiBold" FontSize="12" />
+                    </StackPanel>
+                </Button>
+            </Grid>
 
             <!-- SECTION A: VAULT OVERVIEW METRICS -->
             <Grid ColumnSpacing="16">

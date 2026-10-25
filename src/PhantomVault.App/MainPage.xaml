@@ -89,6 +89,7 @@
                 <NavigationViewItem Content="Security Center" Tag="Security" Icon="ProtectedDocument" />
                 <NavigationViewItem Content="Emergency Access" Tag="Emergency" Icon="Permissions" />
                 <NavigationViewItem Content="Activity Log" Tag="Logs" Icon="List" />
+                <NavigationViewItem Content="How to Use" Tag="UserGuide" Icon="Help" />
                 <NavigationViewItem Content="Settings" Tag="Settings" Icon="Setting" />
             </NavigationView.MenuItems>
 

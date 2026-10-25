@@ -100,7 +100,8 @@ Borders & Dividers    : #252C38 (Precision 1px Outlines)
 7. **Security Center (`SecurityCenterView`)**: Live audit dashboard detailing algorithmic specifications (AES-256-GCM, Argon2id, 64 KiB framing), memory zeroization, storage data integrity audits, and instant emergency lockdown triggers.
 8. **Emergency Access (`EmergencyAccessView`)**: Configurable session defense controls, inactivity timeouts, workstation lock listener (Win + L), and dead-man's switch countdown with test mode.
 9. **Activity Log (`ActivityLogView`)**: Local audit trail with category filtering (Vault, File, Backup, Security, Errors), live search, and privacy-preserving log clearing.
-10. **Settings (`SettingsView`)**: General directories, zero-telemetry declarations, backup reminders, and technical security limitations disclosure.
+10. **Tactical Field Manual & User Guide (`UserGuideView`)**: In-app comprehensive interactive guide covering vault initialization, biometric unsealing, plausible deniability protocols, covert steganography, DoD file shredder, emergency lockdown policies, live keyword search, category filter chips, and direct navigation jumps.
+11. **Settings (`SettingsView`)**: General directories, zero-telemetry declarations, tactical cyber sound effects toggle & audition console, backup reminders, and technical security limitations disclosure.
 
 ---
 

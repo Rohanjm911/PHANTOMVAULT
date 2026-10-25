@@ -147,6 +147,7 @@ public sealed partial class MainPage : Page
             "Security" => typeof(SecurityCenterView),
             "Emergency" => typeof(EmergencyAccessView),
             "Logs" => typeof(ActivityLogView),
+            "UserGuide" => typeof(UserGuideView),
             "Settings" => typeof(SettingsView),
             _ => typeof(DashboardView)
         };
