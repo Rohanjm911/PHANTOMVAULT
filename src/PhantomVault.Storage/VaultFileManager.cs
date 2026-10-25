@@ -176,6 +176,44 @@ public sealed class VaultFileManager : IVaultFileManager
         }
     }
 
+    public async Task<byte[]> GetDecryptedFileBytesAsync(
+        Guid vaultId, 
+        Guid fileEntryId, 
+        IProgress<double>? progress = null, 
+        CancellationToken ct = default)
+    {
+        byte[]? vaultKey = _vaultRepo.GetVaultKey(vaultId);
+        if (vaultKey == null)
+            throw new VaultLockedException();
+
+        var vaults = await _vaultRepo.GetVaultsAsync().ConfigureAwait(false);
+        var vault = Array.Find(vaults.ToArray(), v => v.Id == vaultId) 
+            ?? throw new PhantomVaultException("Vault descriptor not found.");
+
+        var metaRepo = new MetadataRepository(vault.VaultPath, _crypto);
+        var entry = await metaRepo.GetEntryByIdAsync(fileEntryId, vaultKey).ConfigureAwait(false)
+            ?? throw new PhantomVaultException("File entry not found in vault catalog.");
+
+        string payloadPath = Path.Combine(vault.VaultPath, "data", $"{fileEntryId}.pvc");
+        if (!File.Exists(payloadPath))
+            throw new VaultCorruptedException($"Encrypted payload missing on disk: {payloadPath}");
+
+        using var memoryStream = new MemoryStream((int)Math.Min(entry.PlaintextSizeBytes, 100 * 1024 * 1024));
+        using (var encStream = new FileStream(payloadPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+        using (var hashingWrite = new HashingWriteStream(memoryStream))
+        {
+            await _crypto.DecryptStreamChunkedAsync(encStream, hashingWrite, vaultKey, fileEntryId, progress, ct).ConfigureAwait(false);
+            string computedHashHex = Convert.ToHexString(hashingWrite.GetHash());
+
+            if (!computedHashHex.Equals(entry.Sha256Hash, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new CryptographicIntegrityException("Post-decryption SHA-256 verification failed. File integrity compromised.");
+            }
+        }
+
+        return memoryStream.ToArray();
+    }
+
     public async Task DeleteEntryAsync(Guid vaultId, Guid entryId)
     {
         byte[]? vaultKey = _vaultRepo.GetVaultKey(vaultId);

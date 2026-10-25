@@ -9,7 +9,7 @@
     Title="PHANTOMVAULT — Trust Nothing. Reveal Nothing."
     mc:Ignorable="d">
 
-    <Grid Background="{StaticResource PrimaryBackgroundBrush}">
-        <Frame x:Name="RootFrame" />
+    <Grid Background="Transparent">
+        <Frame x:Name="RootFrame" Background="Transparent" />
     </Grid>
 </Window>

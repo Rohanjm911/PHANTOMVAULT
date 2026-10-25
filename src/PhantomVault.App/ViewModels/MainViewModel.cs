@@ -24,6 +24,8 @@ public partial class MainViewModel : ObservableObject
     private readonly IActivityLogService _logService;
     private readonly ISecurityPolicyService _policyService;
     private readonly IPasswordPolicyValidator _passwordValidator;
+    private readonly ISecureShredderService _shredderService;
+    private readonly IWindowsHelloService _windowsHelloService;
 
     public MainViewModel(
         IVaultRepository vaultRepo,
@@ -32,7 +34,9 @@ public partial class MainViewModel : ObservableObject
         IBackupService backupService,
         IActivityLogService logService,
         ISecurityPolicyService policyService,
-        IPasswordPolicyValidator passwordValidator)
+        IPasswordPolicyValidator passwordValidator,
+        ISecureShredderService shredderService,
+        IWindowsHelloService windowsHelloService)
     {
         _vaultRepo = vaultRepo;
         _fileManager = fileManager;
@@ -41,6 +45,8 @@ public partial class MainViewModel : ObservableObject
         _logService = logService;
         _policyService = policyService;
         _passwordValidator = passwordValidator;
+        _shredderService = shredderService;
+        _windowsHelloService = windowsHelloService;
 
         _policyService.DeadMansSwitchCountdownTick += seconds =>
         {
@@ -53,6 +59,8 @@ public partial class MainViewModel : ObservableObject
             _ = LockAllVaultsAsync();
             ShowStatus("Emergency lock policy triggered. All vaults locked.", InfoBarSeverity.Warning);
         };
+
+        _ = CheckWindowsHelloSupportAsync();
     }
 
     [ObservableProperty]
@@ -382,8 +390,29 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
+    [ObservableProperty]
+    private bool _isWindowsHelloAvailable;
+
+    [ObservableProperty]
+    private string _currentSortOrder = "DateDesc";
+
+    public async Task CheckWindowsHelloSupportAsync()
+    {
+        IsWindowsHelloAvailable = await _windowsHelloService.IsAvailableAsync();
+    }
+
+    public async Task<bool> VerifyWindowsHelloConsentAsync(string prompt = "Authenticate to confirm sensitive action in PHANTOMVAULT")
+    {
+        return await _windowsHelloService.VerifyUserAsync(prompt);
+    }
+
     [RelayCommand]
     public async Task ImportFileAsync(string filePath)
+    {
+        await ImportFileWithShredOptionAsync(filePath, false);
+    }
+
+    public async Task ImportFileWithShredOptionAsync(string filePath, bool shredOriginal)
     {
         if (SelectedVault == null || !IsUnlocked) return;
 
@@ -403,9 +432,20 @@ public partial class MainViewModel : ObservableObject
             SelectedVault.TotalPlaintextBytes += entry.PlaintextSizeBytes;
 
             await _logService.LogEventAsync(ActivityEventType.FileImported, ActivitySeverity.Info, SelectedVault.Name, $"Encrypted file imported: {entry.Name}");
-            await RefreshActivityLogsAsync();
 
-            ShowStatus($"File '{entry.Name}' encrypted and stored in vault.", InfoBarSeverity.Success);
+            if (shredOriginal && File.Exists(filePath))
+            {
+                BusyStatusText = $"Securely shredding plaintext original (DoD 5220.22-M)...";
+                await _shredderService.ShredFileAsync(filePath, 3, progress);
+                await _logService.LogEventAsync(ActivityEventType.FilePurged, ActivitySeverity.Warning, SelectedVault.Name, $"Plaintext original securely destroyed: {Path.GetFileName(filePath)}");
+                ShowStatus($"Encrypted '{entry.Name}' & securely shredded original from disk.", InfoBarSeverity.Success);
+            }
+            else
+            {
+                ShowStatus($"File '{entry.Name}' encrypted and stored in vault.", InfoBarSeverity.Success);
+            }
+
+            await RefreshActivityLogsAsync();
         }
         catch (Exception ex)
         {
@@ -414,6 +454,96 @@ public partial class MainViewModel : ObservableObject
         finally
         {
             IsBusy = false;
+        }
+    }
+
+    public async Task<byte[]?> GetDecryptedBytesAsync(Guid fileEntryId)
+    {
+        if (SelectedVault == null || !IsUnlocked) return null;
+
+        try
+        {
+            IsBusy = true;
+            BusyStatusText = "Decrypting file directly to secure memory buffer...";
+            OperationProgress = 0;
+            _policyService.RegisterUserActivity();
+
+            var progress = new Progress<double>(p => OperationProgress = p);
+            return await _fileManager.GetDecryptedFileBytesAsync(SelectedVault.Id, fileEntryId, progress);
+        }
+        catch (Exception ex)
+        {
+            ShowStatus($"In-memory preview failed: {ex.Message}", InfoBarSeverity.Error);
+            return null;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    public async Task ShredExternalFileAsync(string filePath)
+    {
+        if (!File.Exists(filePath)) return;
+
+        try
+        {
+            IsBusy = true;
+            string fileName = Path.GetFileName(filePath);
+            BusyStatusText = $"Shredding '{fileName}' with 3-pass DoD 5220.22-M overwrite...";
+            OperationProgress = 0;
+            _policyService.RegisterUserActivity();
+
+            var progress = new Progress<double>(p => OperationProgress = p);
+            await _shredderService.ShredFileAsync(filePath, 3, progress);
+
+            await _logService.LogEventAsync(ActivityEventType.FilePurged, ActivitySeverity.Warning, "SYSTEM", $"External file securely shredded: {fileName}");
+            await RefreshActivityLogsAsync();
+
+            ShowStatus($"File '{fileName}' was permanently shredded from disk.", InfoBarSeverity.Success);
+        }
+        catch (Exception ex)
+        {
+            ShowStatus($"Shredding failed: {ex.Message}", InfoBarSeverity.Error);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    public void SortEntries(string sortMode)
+    {
+        CurrentSortOrder = sortMode;
+        if (Entries.Count <= 1) return;
+
+        var list = Entries.ToList();
+        switch (sortMode)
+        {
+            case "NameAsc":
+                list = list.OrderBy(e => e.Name).ToList();
+                break;
+            case "NameDesc":
+                list = list.OrderByDescending(e => e.Name).ToList();
+                break;
+            case "SizeDesc":
+                list = list.OrderByDescending(e => e.PlaintextSizeBytes).ToList();
+                break;
+            case "SizeAsc":
+                list = list.OrderBy(e => e.PlaintextSizeBytes).ToList();
+                break;
+            case "DateDesc":
+                list = list.OrderByDescending(e => e.CreatedAtUtc).ToList();
+                break;
+            case "DateAsc":
+                list = list.OrderBy(e => e.CreatedAtUtc).ToList();
+                break;
+        }
+
+        Entries.Clear();
+        foreach (var item in list)
+        {
+            Entries.Add(item);
         }
     }
 
@@ -767,7 +897,7 @@ public partial class MainViewModel : ObservableObject
             {
                 "All" => true,
                 "Vault" => log.EventType is ActivityEventType.VaultCreated or ActivityEventType.VaultUnlocked or ActivityEventType.VaultLocked or ActivityEventType.PasswordChanged,
-                "File" => log.EventType is ActivityEventType.FileImported or ActivityEventType.FileExported or ActivityEventType.FileDeleted or ActivityEventType.FileRenamed,
+                "File" => log.EventType is ActivityEventType.FileImported or ActivityEventType.FileExported or ActivityEventType.FileDeleted or ActivityEventType.FileRenamed or ActivityEventType.FilePurged,
                 "Backup" => log.EventType is ActivityEventType.BackupCreated or ActivityEventType.BackupRestored,
                 "Security" => log.EventType is ActivityEventType.IntegrityCheckPassed or ActivityEventType.IntegrityCheckFailed or ActivityEventType.SecuritySettingsChanged or ActivityEventType.EmergencyLockTriggered,
                 "Stego" => log.EventType is ActivityEventType.StegoPayloadEmbedded or ActivityEventType.StegoPayloadExtracted,

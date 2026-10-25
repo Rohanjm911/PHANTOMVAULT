@@ -94,6 +94,7 @@ public interface IVaultFileManager
 {
     Task<VaultEntry> ImportFileAsync(Guid vaultId, string sourceFilePath, Guid? parentFolderId = null, IProgress<double>? progress = null, CancellationToken ct = default);
     Task ExportFileAsync(Guid vaultId, Guid fileEntryId, string destinationFilePath, IProgress<double>? progress = null, CancellationToken ct = default);
+    Task<byte[]> GetDecryptedFileBytesAsync(Guid vaultId, Guid fileEntryId, IProgress<double>? progress = null, CancellationToken ct = default);
     Task DeleteEntryAsync(Guid vaultId, Guid entryId);
     Task RenameEntryAsync(Guid vaultId, Guid entryId, string newName);
     Task<IReadOnlyList<VaultEntry>> GetEntriesAsync(Guid vaultId, Guid? parentFolderId = null);
@@ -149,3 +150,21 @@ public interface IPasswordPolicyValidator
 {
     PasswordStrengthResult EvaluatePassword(string password);
 }
+
+/// <summary>
+/// Securely overwrites and destroys plaintext files on disk according to DoD 5220.22-M sanitization standards.
+/// </summary>
+public interface ISecureShredderService
+{
+    Task ShredFileAsync(string filePath, int passes = 3, IProgress<double>? progress = null, CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// Hardware-backed biometric / PIN authentication via Windows Hello / UserConsentVerifier.
+/// </summary>
+public interface IWindowsHelloService
+{
+    Task<bool> IsAvailableAsync();
+    Task<bool> VerifyUserAsync(string promptMessage);
+}
+

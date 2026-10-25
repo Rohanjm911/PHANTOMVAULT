@@ -63,6 +63,7 @@ public enum ActivityEventType
     FileExported,
     FileDeleted,
     FileRenamed,
+    FilePurged,
     PasswordChanged,
     BackupCreated,
     BackupRestored,

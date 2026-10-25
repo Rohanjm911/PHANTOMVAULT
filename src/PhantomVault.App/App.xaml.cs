@@ -56,6 +56,10 @@ public partial class App : Application
         services.AddSingleton<IBackupService, BackupService>();
         services.AddSingleton<IActivityLogService, ActivityLogService>();
 
+        // Advanced Security Defenses & Authentication
+        services.AddSingleton<ISecureShredderService, PhantomVault.Security.Shredding.FileShredderService>();
+        services.AddSingleton<IWindowsHelloService, Services.WindowsHelloService>();
+
         // ViewModels
         services.AddSingleton<ViewModels.MainViewModel>();
 

@@ -56,6 +56,11 @@ PHANTOMVAULT is built using enterprise-grade engineering technologies with stric
   - Configurable inactivity auto-lock.
   - Dead-Man's switch countdown with test mode and immediate zeroization.
 - **Memory Zeroization**: Plaintext master keys, derived keys, and unencrypted file buffers are scrubbed from memory immediately after use via `CryptographicOperations.ZeroMemory()`.
+- **DoD 5220.22-M Secure File Shredder**: 3-pass cryptographic sanitization overwrite (zeros, ones, CSPRNG pseudorandom noise), file truncation, timestamp scrambling, and MFT directory renaming with random GUIDs before deletion.
+- **Windows Hello & Hardware Token Biometrics**: Hardware-backed biometric (fingerprint/facial recognition) and PIN identity verification via Windows `UserConsentVerifier` to unseal vaults.
+- **Zero-Disk-Leak In-App Previewer**: In-memory decryption streaming directly into RAM for instant image rendering, code/text editing, and 16-byte forensic hexadecimal inspection with zero temporary file writes to disk and immediate memory zeroization on close.
+- **Dual-Mode Vault Explorer & Sorting**: Seamless switching between cyber security card grid and dense tabular list views with multi-criterion sorting (Date, Name, Size).
+- **Windows 11 Mica Alt Materialization**: Dynamic OS backdrop (`MicaBackdrop` with `MicaKind.BaseAlt`) providing deep obsidian desktop translucency.
 - **Encrypted Backup & Recovery**: Cryptographically verified `.pvbackup` packages with version integrity enforcement.
 - **Sanitized Audit Trail**: Local activity history strictly scrubbed of passwords, keys, and confidential path metadata.
 

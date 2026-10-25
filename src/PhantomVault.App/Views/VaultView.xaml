@@ -64,6 +64,9 @@
                         
                         <Button Content="Unlock Vault" Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Stretch" Click="UnlockButton_Click" />
 
+                        <!-- WINDOWS HELLO BIOMETRIC UNLOCK BUTTON -->
+                        <Button x:Name="WindowsHelloUnlockButton" Content="Unlock with Windows Hello (PIN/Biometric)" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Stretch" Visibility="Collapsed" Click="WindowsHelloUnlockButton_Click" />
+
                         <TextBlock x:Name="UnlockErrorText" Foreground="{StaticResource ErrorBrush}" FontSize="12" HorizontalAlignment="Center" Visibility="Collapsed" />
                     </StackPanel>
                 </Border>
@@ -119,7 +122,7 @@
                     </Border>
                 </Grid>
 
-                <!-- TOOLBAR -->
+                <!-- TOOLBAR WITH VIEW TOGGLES & SHREDDER -->
                 <Grid Grid.Row="1" Margin="0,0,0,14">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -127,31 +130,62 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                        <Button Content="Import File..." Style="{StaticResource PrimaryButtonStyle}" Click="ImportButton_Click" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <!-- IMPORT SPLIT BUTTON -->
+                        <DropDownButton Content="Import Files..." Style="{StaticResource PrimaryButtonStyle}">
+                            <DropDownButton.Flyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Text="Import Files (Keep Plaintext Original)" Click="ImportStandard_Click" />
+                                    <MenuFlyoutItem Text="Import &amp; Shred Original (DoD 5220.22-M)" Click="ImportAndShred_Click" />
+                                </MenuFlyout>
+                            </DropDownButton.Flyout>
+                        </DropDownButton>
+
+                        <Button Content="Shred External File" Style="{StaticResource DestructiveButtonStyle}" Click="StandaloneShredderButton_Click" />
                         <Button Content="Lock Vault" Style="{StaticResource SecondaryButtonStyle}" Click="LockButton_Click" />
                     </StackPanel>
 
-                    <TextBox x:Name="SearchBox" Grid.Column="1" PlaceholderText="Search stored files by name..." Margin="16,0,16,0" TextChanged="SearchBox_TextChanged" />
+                    <TextBox x:Name="SearchBox" Grid.Column="1" PlaceholderText="Search stored files by name..." Margin="12,0,12,0" TextChanged="SearchBox_TextChanged" />
 
-                    <Button Grid.Column="2" Content="Verify All Integrities" Style="{StaticResource SecondaryButtonStyle}" Click="VerifyAllButton_Click" />
+                    <!-- VIEW MODE TOGGLE & SORTING -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <!-- SORT COMBOBOX -->
+                        <ComboBox x:Name="SortComboBox" Width="145" SelectionChanged="SortComboBox_SelectionChanged">
+                            <ComboBoxItem Content="Newest First" Tag="DateDesc" IsSelected="True" />
+                            <ComboBoxItem Content="Oldest First" Tag="DateAsc" />
+                            <ComboBoxItem Content="Name (A-Z)" Tag="NameAsc" />
+                            <ComboBoxItem Content="Name (Z-A)" Tag="NameDesc" />
+                            <ComboBoxItem Content="Size (Largest)" Tag="SizeDesc" />
+                            <ComboBoxItem Content="Size (Smallest)" Tag="SizeAsc" />
+                        </ComboBox>
+
+                        <!-- LIST / GRID TOGGLE BUTTONS -->
+                        <Button x:Name="ViewListButton" Style="{StaticResource PrimaryButtonStyle}" Padding="8,6" Click="ViewListButton_Click" ToolTipService.ToolTip="Table View">
+                            <FontIcon Glyph="&#xE8EC;" FontSize="14" />
+                        </Button>
+                        <Button x:Name="ViewGridButton" Style="{StaticResource SecondaryButtonStyle}" Padding="8,6" Click="ViewGridButton_Click" ToolTipService.ToolTip="Card Grid View">
+                            <FontIcon Glyph="&#xF0E2;" FontSize="14" />
+                        </Button>
+
+                        <Button Content="Verify All" Style="{StaticResource SecondaryButtonStyle}" Click="VerifyAllButton_Click" />
+                    </StackPanel>
                 </Grid>
 
-                <!-- FILES LIST & EMPTY STATE WITH DRAG-AND-DROP -->
+                <!-- FILES CONTAINER WITH DRAG-AND-DROP -->
                 <Grid Grid.Row="2" x:Name="FilesContainerGrid" AllowDrop="True" 
                       DragOver="FilesArea_DragOver" DragLeave="FilesArea_DragLeave" Drop="FilesArea_Drop">
                     
-                    <!-- LIST VIEW -->
+                    <!-- 1. TABLE LIST VIEW -->
                     <Border x:Name="FilesListBorder" Style="{StaticResource SecurityCardStyle}" Padding="0" Visibility="Visible">
                         <ListView x:Name="FilesListView" SelectionMode="Single">
                             <ListView.Header>
                                 <Grid Padding="16,10" Background="{StaticResource SecondaryBackgroundBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="3.5*" />
-                                        <ColumnDefinition Width="1.5*" />
                                         <ColumnDefinition Width="3*" />
-                                        <ColumnDefinition Width="2*" />
+                                        <ColumnDefinition Width="1.5*" />
                                         <ColumnDefinition Width="2.5*" />
+                                        <ColumnDefinition Width="2*" />
+                                        <ColumnDefinition Width="3*" />
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Grid.Column="0" Text="Name" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
                                     <TextBlock Grid.Column="1" Text="Size" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
@@ -165,11 +199,11 @@
                                 <DataTemplate x:DataType="models:VaultEntry">
                                     <Grid Padding="16,10">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="3.5*" />
-                                            <ColumnDefinition Width="1.5*" />
                                             <ColumnDefinition Width="3*" />
-                                            <ColumnDefinition Width="2*" />
+                                            <ColumnDefinition Width="1.5*" />
                                             <ColumnDefinition Width="2.5*" />
+                                            <ColumnDefinition Width="2*" />
+                                            <ColumnDefinition Width="3*" />
                                         </Grid.ColumnDefinitions>
 
                                         <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
@@ -181,15 +215,64 @@
                                         <TextBlock Grid.Column="2" Text="{x:Bind Sha256Hash}" FontSize="11" FontFamily="{StaticResource MonospaceFontFamily}" Foreground="{StaticResource MutedTextBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
                                         <TextBlock Grid.Column="3" Text="{x:Bind CreatedAtUtc}" Foreground="{StaticResource MutedTextBrush}" VerticalAlignment="Center" />
 
-                                        <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                            <Button Content="Export" Style="{StaticResource SecondaryButtonStyle}" Padding="10,4" FontSize="11" Click="ExportEntryButton_Click" Tag="{x:Bind}" />
-                                            <Button Content="Rename" Style="{StaticResource SecondaryButtonStyle}" Padding="10,4" FontSize="11" Click="RenameEntryButton_Click" Tag="{x:Bind}" />
-                                            <Button Content="Delete" Style="{StaticResource DestructiveButtonStyle}" Padding="10,4" FontSize="11" Click="DeleteEntryButton_Click" Tag="{x:Bind}" />
+                                        <!-- ACTION BUTTONS: PREVIEW, EXPORT, RENAME, DELETE -->
+                                        <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="6" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                            <Button Content="Preview" Style="{StaticResource SecondaryButtonStyle}" Padding="8,4" FontSize="11" Click="PreviewEntryButton_Click" />
+                                            <Button Content="Export" Style="{StaticResource SecondaryButtonStyle}" Padding="8,4" FontSize="11" Click="ExportEntryButton_Click" />
+                                            <Button Content="Rename" Style="{StaticResource SecondaryButtonStyle}" Padding="8,4" FontSize="11" Click="RenameEntryButton_Click" />
+                                            <Button Content="Delete" Style="{StaticResource DestructiveButtonStyle}" Padding="8,4" FontSize="11" Click="DeleteEntryButton_Click" />
                                         </StackPanel>
                                     </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
+                    </Border>
+
+                    <!-- 2. CARD GRID VIEW -->
+                    <Border x:Name="FilesGridBorder" Style="{StaticResource SecurityCardStyle}" Padding="16" Visibility="Collapsed">
+                        <GridView x:Name="FilesGridView" SelectionMode="Single">
+                            <GridView.ItemTemplate>
+                                <DataTemplate x:DataType="models:VaultEntry">
+                                    <Border Background="{StaticResource SecondaryBackgroundBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="14" Width="240" Height="170" Margin="6">
+                                        <Grid RowSpacing="6">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+
+                                            <!-- Header: Icon & Size Badge -->
+                                            <Grid Grid.Row="0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <Border Background="{StaticResource PrimaryBackgroundBrush}" CornerRadius="6" Width="32" Height="32" HorizontalAlignment="Left">
+                                                    <FontIcon Glyph="&#xE8A5;" FontSize="16" Foreground="{StaticResource PrimaryAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                </Border>
+                                                <Border Grid.Column="1" Background="{StaticResource ElevatedBackgroundBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="4" Padding="6,2">
+                                                    <TextBlock Text="{x:Bind PlaintextSizeBytes}" FontSize="10" FontFamily="{StaticResource MonospaceFontFamily}" Foreground="{StaticResource SecondaryTextBrush}" />
+                                                </Border>
+                                            </Grid>
+
+                                            <!-- Body: Name & SHA-256 -->
+                                            <StackPanel Grid.Row="1" Spacing="2" VerticalAlignment="Center">
+                                                <TextBlock Text="{x:Bind Name}" FontWeight="Bold" FontSize="13" Foreground="{StaticResource PrimaryTextBrush}" TextTrimming="CharacterEllipsis" MaxLines="2" />
+                                                <TextBlock Text="{x:Bind Sha256Hash}" FontSize="10" FontFamily="{StaticResource MonospaceFontFamily}" Foreground="{StaticResource MutedTextBrush}" TextTrimming="CharacterEllipsis" />
+                                            </StackPanel>
+
+                                            <!-- Footer Actions -->
+                                            <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="6" HorizontalAlignment="Right">
+                                                <Button Content="Preview" Style="{StaticResource SecondaryButtonStyle}" Padding="8,4" FontSize="10" Click="PreviewEntryButton_Click" />
+                                                <Button Content="Export" Style="{StaticResource SecondaryButtonStyle}" Padding="8,4" FontSize="10" Click="ExportEntryButton_Click" />
+                                                <Button Content="Rename" Style="{StaticResource SecondaryButtonStyle}" Padding="8,4" FontSize="10" Click="RenameEntryButton_Click" />
+                                                <Button Content="Delete" Style="{StaticResource DestructiveButtonStyle}" Padding="8,4" FontSize="10" Click="DeleteEntryButton_Click" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </GridView.ItemTemplate>
+                        </GridView>
                     </Border>
 
                     <!-- EMPTY VAULT STATE (WITH DRAG & DROP HINT) -->
