@@ -40,7 +40,6 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <!-- Metric 1: Total Vaults -->
                 <Border Grid.Column="0" Style="{StaticResource SecurityCardStyle}">
                     <StackPanel Spacing="6">
                         <StackPanel Orientation="Horizontal" Spacing="6">
@@ -52,7 +51,6 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Metric 2: Locked Vaults -->
                 <Border Grid.Column="1" Style="{StaticResource SecurityCardStyle}">
                     <StackPanel Spacing="6">
                         <StackPanel Orientation="Horizontal" Spacing="6">
@@ -64,7 +62,6 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Metric 3: Unlocked Vaults -->
                 <Border Grid.Column="2" Style="{StaticResource SecurityCardStyle}">
                     <StackPanel Spacing="6">
                         <StackPanel Orientation="Horizontal" Spacing="6">
@@ -76,7 +73,6 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Metric 4: Encrypted Storage -->
                 <Border Grid.Column="3" Style="{StaticResource SecurityCardStyle}">
                     <StackPanel Spacing="6">
                         <StackPanel Orientation="Horizontal" Spacing="6">
@@ -88,7 +84,6 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Metric 5: Last Backup -->
                 <Border Grid.Column="4" Style="{StaticResource SecurityCardStyle}">
                     <StackPanel Spacing="6">
                         <StackPanel Orientation="Horizontal" Spacing="6">
@@ -173,7 +168,6 @@
                             <TextBlock Text="SECURITY POSTURE" FontSize="14" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" />
                         </StackPanel>
 
-                        <!-- Status Item 1: Encryption -->
                         <Grid Padding="12" Background="{StaticResource SecondaryBackgroundBrush}" CornerRadius="6">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -188,7 +182,6 @@
                             </Border>
                         </Grid>
 
-                        <!-- Status Item 2: Automatic-Lock -->
                         <Grid Padding="12" Background="{StaticResource SecondaryBackgroundBrush}" CornerRadius="6">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -203,7 +196,6 @@
                             </Border>
                         </Grid>
 
-                        <!-- Status Item 3: Local Recovery & Backups -->
                         <Grid Padding="12" Background="{StaticResource SecondaryBackgroundBrush}" CornerRadius="6">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -218,7 +210,6 @@
                             </Border>
                         </Grid>
 
-                        <!-- Status Item 4: Integrity Verification -->
                         <Grid Padding="12" Background="{StaticResource SecondaryBackgroundBrush}" CornerRadius="6">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />

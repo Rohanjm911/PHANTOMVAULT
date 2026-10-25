@@ -28,7 +28,6 @@
                 <ScrollViewer Padding="0,16,0,0">
                     <StackPanel Spacing="16" MaxWidth="840" HorizontalAlignment="Left">
 
-                        <!-- STEP 1: SELECT CARRIER (DRAG & DROP READY) -->
                         <Border x:Name="CarrierCardBorder" Style="{StaticResource SecurityCardStyle}" 
                                 AllowDrop="True" DragOver="CarrierDrop_DragOver" DragLeave="CarrierDrop_DragLeave" Drop="CarrierDrop_Drop">
                             <StackPanel Spacing="12">
@@ -55,7 +54,6 @@
                                     <Button Grid.Column="1" Content="Browse Carrier..." Style="{StaticResource SecondaryButtonStyle}" Click="BrowseCarrierButton_Click" />
                                 </Grid>
 
-                                <!-- CARRIER PREVIEW & METRICS REPORT -->
                                 <Grid x:Name="CapacityReportGrid" Visibility="Collapsed" Background="{StaticResource SecondaryBackgroundBrush}" Padding="16" CornerRadius="8" ColumnSpacing="16">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />

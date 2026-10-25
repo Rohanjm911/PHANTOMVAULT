@@ -27,11 +27,7 @@ public partial class App : Application
         InitializeComponent();
         UnhandledException += (sender, e) =>
         {
-            System.IO.File.WriteAllText("crash.log", $"{e.Message}\n{e.Exception}");
-        };
-        AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
-        {
-            System.IO.File.WriteAllText("domain_crash.log", $"{e.ExceptionObject}");
+            System.Diagnostics.Debug.WriteLine($"[UNHANDLED ERROR] {e.Message} - {e.Exception}");
         };
         Services = ConfigureServices();
     }

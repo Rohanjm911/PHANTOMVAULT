@@ -34,13 +34,10 @@ public sealed partial class MainPage : Page
         {
             await _vm.InitializeAsync();
 
-            // Default navigation to DashboardView
             NavView.SelectedItem = NavView.MenuItems[0];
             ContentFrame.Navigate(typeof(DashboardView));
-
             UpdateStatusBadge();
 
-            // If no vaults exist, prompt First-Run Setup Wizard
             if (_vm.Vaults.Count == 0 && this.XamlRoot != null)
             {
                 await ShowFirstRunWizardAsync();
@@ -48,7 +45,7 @@ public sealed partial class MainPage : Page
         }
         catch (Exception ex)
         {
-            System.IO.File.WriteAllText("mainpage_crash.log", ex.ToString());
+            System.Diagnostics.Debug.WriteLine($"[MAINPAGE INIT ERROR] {ex}");
         }
     }
 

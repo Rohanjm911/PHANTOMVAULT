@@ -89,7 +89,6 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <!-- Card 1: Files -->
                     <Border Grid.Column="0" Style="{StaticResource SecurityCardStyle}">
                         <StackPanel Spacing="4">
                             <TextBlock Text="STORED FILES" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
@@ -97,7 +96,6 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- Card 2: Ciphertext Size -->
                     <Border Grid.Column="1" Style="{StaticResource SecurityCardStyle}">
                         <StackPanel Spacing="4">
                             <TextBlock Text="ENCRYPTED ON DISK" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
@@ -105,7 +103,6 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- Card 3: Cryptographic Spec -->
                     <Border Grid.Column="2" Style="{StaticResource SecurityCardStyle}">
                         <StackPanel Spacing="4">
                             <TextBlock Text="CIPHER PRIMITIVE" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
@@ -113,7 +110,6 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- Card 4: KDF -->
                     <Border Grid.Column="3" Style="{StaticResource SecurityCardStyle}">
                         <StackPanel Spacing="4">
                             <TextBlock Text="DERIVATION KDF" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
