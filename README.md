@@ -107,6 +107,9 @@ Borders & Dividers    : #252C38 (Precision 1px Outlines)
 
 ## 🚀 Quick Start (Running & Building)
 
+> [!NOTE]
+> For a full breakdown of all required NuGet packages with their **real-life logos**, security justifications, and comprehensive execution instructions, see [PACKAGES-AND-HOW-TO-RUN.md](file:///d:/projects%20and%20certificates/projects/apps/PHANTOMVAULT/PACKAGES-AND-HOW-TO-RUN.md).
+
 ### Option 1: Direct Standalone Launch (Root Folder)
 The app is pre-built as a self-contained release in the root directory. You can run it immediately without compiling:
 
