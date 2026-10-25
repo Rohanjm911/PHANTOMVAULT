@@ -9,6 +9,11 @@
 
     <ScrollViewer Padding="28" VerticalScrollBarVisibility="Auto">
         <StackPanel Spacing="24" MaxWidth="820" HorizontalAlignment="Left">
+            <StackPanel.ChildrenTransitions>
+                <TransitionCollection>
+                    <EntranceThemeTransition FromVerticalOffset="20" IsStaggeringEnabled="True" />
+                </TransitionCollection>
+            </StackPanel.ChildrenTransitions>
 
             <!-- HEADER -->
             <StackPanel Spacing="4">
@@ -116,9 +121,14 @@
                         <TextBlock Text="ABOUT PHANTOMVAULT" FontSize="13" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" />
                     </StackPanel>
 
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="PHANTOMVAULT v1.0.0 LTS" FontWeight="Bold" FontSize="16" Foreground="{StaticResource PrimaryTextBrush}" />
-                        <TextBlock Text="Trust Nothing. Reveal Nothing." FontStyle="Italic" Foreground="{StaticResource PrimaryAccentBrush}" FontSize="12" />
+                    <StackPanel Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
+                        <Border Background="{StaticResource SecondaryBackgroundBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="10" Width="48" Height="48" Padding="3">
+                            <Image Source="ms-appx:///Assets/Square44x44Logo.scale-200.png" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <StackPanel Spacing="4" VerticalAlignment="Center">
+                            <TextBlock Text="PHANTOMVAULT v1.0.0 LTS" FontWeight="Bold" FontSize="16" Foreground="{StaticResource PrimaryTextBrush}" />
+                            <TextBlock Text="Trust Nothing. Reveal Nothing." FontStyle="Italic" Foreground="{StaticResource PrimaryAccentBrush}" FontSize="12" />
+                        </StackPanel>
                     </StackPanel>
 
                     <Grid RowSpacing="6" ColumnSpacing="12">

@@ -25,14 +25,15 @@ public sealed partial class VaultView : Page
 
     public VaultView()
     {
-        InitializeComponent();
         _vm = App.Services.GetRequiredService<MainViewModel>();
         DataContext = _vm;
+        InitializeComponent();
         Loaded += VaultView_Loaded;
     }
 
     private void VaultView_Loaded(object sender, RoutedEventArgs e)
     {
+        if (_vm == null) return;
         VaultsComboBox.ItemsSource = _vm.Vaults;
         if (_vm.SelectedVault != null)
         {
@@ -46,10 +47,14 @@ public sealed partial class VaultView : Page
 
     private void VaultsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        if (_vm == null || VaultsComboBox == null) return;
         if (VaultsComboBox.SelectedItem is VaultDescriptor vault)
         {
             _vm.SelectedVault = vault;
-            BreadcrumbVaultNameText.Text = vault.Name;
+            if (BreadcrumbVaultNameText != null)
+            {
+                BreadcrumbVaultNameText.Text = vault.Name;
+            }
             UpdateLockDisplay(_vm.IsUnlocked);
         }
     }
@@ -75,12 +80,18 @@ public sealed partial class VaultView : Page
 
     private async void UnlockButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_vm.SelectedVault == null) return;
+        if (_vm.SelectedVault == null)
+        {
+            UnlockErrorText.Text = "No vault selected. Create or select a vault first.";
+            UnlockErrorText.Visibility = Visibility.Visible;
+            return;
+        }
         string password = UnlockPasswordBox.Password;
         if (string.IsNullOrEmpty(password))
         {
             UnlockErrorText.Text = "Please enter your master password.";
             UnlockErrorText.Visibility = Visibility.Visible;
+            ShakeStoryboard.Begin();
             return;
         }
 
@@ -95,6 +106,7 @@ public sealed partial class VaultView : Page
         {
             UnlockErrorText.Text = $"Unlock failed: {ex.Message}";
             UnlockErrorText.Visibility = Visibility.Visible;
+            ShakeStoryboard.Begin();
         }
     }
 
@@ -111,6 +123,7 @@ public sealed partial class VaultView : Page
         else
         {
             _vm.ShowStatus("Windows Hello verification cancelled or failed.", InfoBarSeverity.Warning);
+            ShakeStoryboard.Begin();
         }
     }
 
@@ -396,19 +409,23 @@ public sealed partial class VaultView : Page
 
     private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
     {
+        if (_vm == null || SearchBox == null) return;
         _vm.SearchQuery = SearchBox.Text;
         _ = _vm.LoadEntriesAsync().ContinueWith(_ =>
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                UpdateLockDisplay(_vm.IsUnlocked);
+                if (_vm != null)
+                {
+                    UpdateLockDisplay(_vm.IsUnlocked);
+                }
             });
         });
     }
 
     private void NewVaultButton_Click(object sender, RoutedEventArgs e)
     {
-        _vm.RequestNavigate("Vaults");
+        _vm?.RequestNavigate("Vaults");
     }
 
     private void ViewListButton_Click(object sender, RoutedEventArgs e)
@@ -416,7 +433,7 @@ public sealed partial class VaultView : Page
         _isGridView = false;
         ViewListButton.Style = (Style)Application.Current.Resources["PrimaryButtonStyle"];
         ViewGridButton.Style = (Style)Application.Current.Resources["SecondaryButtonStyle"];
-        UpdateLockDisplay(_vm.IsUnlocked);
+        if (_vm != null) UpdateLockDisplay(_vm.IsUnlocked);
     }
 
     private void ViewGridButton_Click(object sender, RoutedEventArgs e)
@@ -424,11 +441,12 @@ public sealed partial class VaultView : Page
         _isGridView = true;
         ViewListButton.Style = (Style)Application.Current.Resources["SecondaryButtonStyle"];
         ViewGridButton.Style = (Style)Application.Current.Resources["PrimaryButtonStyle"];
-        UpdateLockDisplay(_vm.IsUnlocked);
+        if (_vm != null) UpdateLockDisplay(_vm.IsUnlocked);
     }
 
     private void SortComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        if (_vm == null || SortComboBox == null) return;
         if (SortComboBox.SelectedItem is ComboBoxItem item && item.Tag is string sortTag)
         {
             _vm.SortEntries(sortTag);

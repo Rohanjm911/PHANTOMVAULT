@@ -7,6 +7,43 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
+    <Page.Resources>
+        <!-- BREATHING PULSE FOR ACTIVE UNLOCKED VAULT STATUS -->
+        <Storyboard x:Name="VaultUnlockedPulseStoryboard" RepeatBehavior="Forever" AutoReverse="True">
+            <DoubleAnimation Storyboard.TargetName="VaultStatusPill" Storyboard.TargetProperty="Opacity" From="1.0" To="0.55" Duration="0:0:1.6">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseInOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+
+        <!-- DEAD-MAN'S SWITCH SLIDE IN/OUT STORYBOARDS -->
+        <Storyboard x:Name="DeadMansSlideInStoryboard">
+            <DoubleAnimation Storyboard.TargetName="DeadMansBanner" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.25" />
+            <DoubleAnimation Storyboard.TargetName="DeadMansTransform" Storyboard.TargetProperty="Y" From="-24" To="0" Duration="0:0:0.25">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+        <Storyboard x:Name="DeadMansSlideOutStoryboard">
+            <DoubleAnimation Storyboard.TargetName="DeadMansBanner" Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:0.2" />
+            <DoubleAnimation Storyboard.TargetName="DeadMansTransform" Storyboard.TargetProperty="Y" From="0" To="-24" Duration="0:0:0.2">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseIn" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+
+        <!-- BUSY OVERLAY FADE STORYBOARDS -->
+        <Storyboard x:Name="BusyFadeInStoryboard">
+            <DoubleAnimation Storyboard.TargetName="BusyOverlay" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.2" />
+        </Storyboard>
+        <Storyboard x:Name="BusyFadeOutStoryboard">
+            <DoubleAnimation Storyboard.TargetName="BusyOverlay" Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:0.2" />
+        </Storyboard>
+    </Page.Resources>
+
     <Grid Background="{StaticResource PrimaryBackgroundBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -25,8 +62,8 @@
 
                 <!-- BRAND LOGO & TAGLINE -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                    <Border Background="{StaticResource ElevatedSurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Width="36" Height="36">
-                        <FontIcon Glyph="&#xE72E;" Foreground="{StaticResource PrimaryAccentBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <Border Background="{StaticResource ElevatedSurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Width="38" Height="38" Padding="3">
+                        <Image Source="ms-appx:///Assets/Square44x44Logo.targetsize-48_altform-lightunplated.png" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <StackPanel Spacing="0" VerticalAlignment="Center">
                         <TextBlock Text="PHANTOMVAULT" FontSize="16" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" />
@@ -42,7 +79,7 @@
 
                 <!-- GLOBAL STATUS BADGE & EMERGENCY LOCK -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                    <!-- VAULT STATUS PILL -->
+                    <!-- VAULT STATUS PILL WITH BREATHING PULSE -->
                     <Border x:Name="VaultStatusPill" Background="{StaticResource ElevatedSurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="12,4" VerticalAlignment="Center">
                         <TextBlock x:Name="VaultStatusText" Text="LOCKED" FontSize="11" FontWeight="Bold" Foreground="{StaticResource MutedTextBrush}" />
                     </Border>
@@ -55,18 +92,21 @@
 
         <!-- NOTIFICATIONS & DEAD-MAN'S SWITCH WARNING BANNER -->
         <StackPanel Grid.Row="1">
-            <!-- DEAD-MAN'S SWITCH COUNTDOWN BANNER -->
-            <Border x:Name="DeadMansBanner" Background="{StaticResource ErrorBrush}" Padding="16,10" Visibility="Collapsed">
+            <!-- DEAD-MAN'S SWITCH COUNTDOWN BANNER (SLIDE ANIMATED) -->
+            <Border x:Name="DeadMansBanner" Background="{StaticResource ErrorBrush}" Padding="16,10" Visibility="Collapsed" Opacity="0">
+                <Border.RenderTransform>
+                    <TranslateTransform x:Name="DeadMansTransform" Y="-24" />
+                </Border.RenderTransform>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                        <FontIcon Glyph="&#xE7BA;" Foreground="#0B0D12" FontSize="18" />
-                        <TextBlock x:Name="DeadMansCountdownText" Text="INACTIVITY WARNING: All vaults locking in 30 seconds!" FontWeight="Bold" Foreground="#0B0D12" />
+                        <FontIcon Glyph="&#xE7BA;" Foreground="#08090C" FontSize="18" />
+                        <TextBlock x:Name="DeadMansCountdownText" Text="INACTIVITY WARNING: All vaults locking in 30 seconds!" FontWeight="Bold" Foreground="#08090C" />
                     </StackPanel>
-                    <Button Grid.Column="1" Content="Dismiss / Still Active" Background="#0B0D12" Foreground="{StaticResource PrimaryTextBrush}" FontWeight="Bold" Click="DismissDeadMans_Click" />
+                    <Button Grid.Column="1" Content="Dismiss / Still Active" Background="#08090C" Foreground="{StaticResource PrimaryTextBrush}" FontWeight="Bold" CornerRadius="6" Click="DismissDeadMans_Click" />
                 </Grid>
             </Border>
 
@@ -106,11 +146,22 @@
                 </Border>
             </NavigationView.PaneFooter>
 
-            <Frame x:Name="ContentFrame" Background="{StaticResource PrimaryBackgroundBrush}" />
+            <!-- CONTENT FRAME WITH FLUID SLIDE-UP NAVIGATION TRANSITIONS -->
+            <Frame x:Name="ContentFrame" Background="{StaticResource PrimaryBackgroundBrush}">
+                <Frame.ContentTransitions>
+                    <TransitionCollection>
+                        <NavigationThemeTransition>
+                            <NavigationThemeTransition.DefaultNavigationTransitionInfo>
+                                <SlideNavigationTransitionInfo Effect="FromBottom" />
+                            </NavigationThemeTransition.DefaultNavigationTransitionInfo>
+                        </NavigationThemeTransition>
+                    </TransitionCollection>
+                </Frame.ContentTransitions>
+            </Frame>
         </NavigationView>
 
-        <!-- BUSY PROGRESS OVERLAY -->
-        <Grid x:Name="BusyOverlay" Grid.Row="0" Grid.RowSpan="3" Background="#D80B0D12" Visibility="Collapsed">
+        <!-- BUSY PROGRESS OVERLAY (FADE ANIMATED) -->
+        <Grid x:Name="BusyOverlay" Grid.Row="0" Grid.RowSpan="3" Background="#D808090C" Visibility="Collapsed" Opacity="0">
             <Border Style="{StaticResource SecurityCardStyle}" Padding="32" HorizontalAlignment="Center" VerticalAlignment="Center" Width="400">
                 <StackPanel Spacing="16" HorizontalAlignment="Center">
                     <ProgressRing IsActive="True" Width="44" Height="44" Foreground="{StaticResource PrimaryAccentBrush}" HorizontalAlignment="Center" />

@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using PhantomVault.Core.Enums;
+using PhantomVault.Core.Interfaces;
 using PhantomVault.Core.Models;
 using PhantomVault_App.Helpers;
 using PhantomVault_App.ViewModels;
@@ -13,14 +14,19 @@ namespace PhantomVault_App.Views;
 public sealed partial class VaultsView : Page
 {
     private readonly MainViewModel _vm;
+    private readonly IVaultRepository _vaultRepo;
 
     public VaultsView()
     {
-        InitializeComponent();
         _vm = App.Services.GetRequiredService<MainViewModel>();
+        _vaultRepo = App.Services.GetRequiredService<IVaultRepository>();
+        InitializeComponent();
         _vm.PropertyChanged += Vm_PropertyChanged;
         Loaded += VaultsView_Loaded;
     }
+
+    public static Visibility GetUnlockVisibility(VaultState state) => state == VaultState.Unlocked ? Visibility.Collapsed : Visibility.Visible;
+    public static Visibility GetLockVisibility(VaultState state) => state == VaultState.Unlocked ? Visibility.Visible : Visibility.Collapsed;
 
     private void VaultsView_Loaded(object sender, RoutedEventArgs e)
     {
@@ -29,7 +35,7 @@ public sealed partial class VaultsView : Page
 
     private void Vm_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(_vm.Vaults) || e.PropertyName == nameof(_vm.SelectedVault))
+        if (e.PropertyName == nameof(_vm.Vaults) || e.PropertyName == nameof(_vm.SelectedVault) || e.PropertyName == nameof(_vm.IsUnlocked))
         {
             DispatcherQueue.TryEnqueue(UpdateUI);
         }
@@ -37,6 +43,12 @@ public sealed partial class VaultsView : Page
 
     private void UpdateUI()
     {
+        foreach (var v in _vm.Vaults)
+        {
+            v.State = _vaultRepo.IsVaultUnlocked(v.Id) ? VaultState.Unlocked : VaultState.Locked;
+        }
+
+        VaultsItemsControl.ItemsSource = null;
         VaultsItemsControl.ItemsSource = _vm.Vaults;
         EmptyVaultsBorder.Visibility = _vm.Vaults.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
     }
@@ -156,13 +168,6 @@ public sealed partial class VaultsView : Page
         {
             _vm.SelectedVault = descriptor;
 
-            if (_vm.IsUnlocked)
-            {
-                await _vm.LockCurrentVaultAsync();
-                UpdateUI();
-                return;
-            }
-
             // Prompt for password
             var passBox = new PasswordBox 
             { 
@@ -199,8 +204,23 @@ public sealed partial class VaultsView : Page
             if (res == ContentDialogResult.Primary && !string.IsNullOrEmpty(passBox.Password))
             {
                 await _vm.UnlockCurrentVaultAsync(passBox.Password);
+                if (_vaultRepo.IsVaultUnlocked(descriptor.Id))
+                {
+                    descriptor.State = VaultState.Unlocked;
+                }
                 UpdateUI();
             }
+        }
+    }
+
+    private async void LockVaultCard_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is VaultDescriptor descriptor)
+        {
+            _vm.SelectedVault = descriptor;
+            await _vm.LockCurrentVaultAsync();
+            descriptor.State = VaultState.Locked;
+            UpdateUI();
         }
     }
 

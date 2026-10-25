@@ -9,6 +9,11 @@
 
     <ScrollViewer Padding="28" VerticalScrollBarVisibility="Auto">
         <StackPanel Spacing="24" MaxWidth="1050" HorizontalAlignment="Left">
+            <StackPanel.ChildrenTransitions>
+                <TransitionCollection>
+                    <EntranceThemeTransition FromVerticalOffset="20" IsStaggeringEnabled="True" />
+                </TransitionCollection>
+            </StackPanel.ChildrenTransitions>
 
             <!-- HEADER -->
             <Grid>

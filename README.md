@@ -2,7 +2,11 @@
 
 <div align="center">
 
-> **Trust Nothing. Reveal Nothing.**
+<p align="center">
+  <img src="assets/logo.png" alt="PHANTOMVAULT Official Logo" width="220" style="border-radius: 18px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);" />
+</p>
+
+### *Trust Nothing. Reveal Nothing.*
 
 **A high-security, privacy-first native Windows desktop application for authenticated local file encryption, covert steganography, multi-vault isolation, and automated emergency lock policies.**
 
@@ -37,7 +41,7 @@ PHANTOMVAULT is built using enterprise-grade engineering technologies with stric
 | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/sqlite/sqlite-original.svg" width="44" height="44" alt="SQLite" /> | **SQLite 3** | `3.45+` | Local encrypted metadata indexing, transactional registry journaling, atomic rollback, and isolated per-vault catalog storage. |
 | <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/shield-halved.svg" width="44" height="44" alt="AES-256-GCM" /> | **AES-256-GCM** | `NIST SP 800-38D` | Authenticated symmetric encryption with 64 KiB independently verified chunks, 128-bit authentication tags, and unique nonces per chunk. |
 | <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/lock.svg" width="44" height="44" alt="Argon2id" /> | **Argon2id KDF** | `RFC 9106` | Memory-hard password key derivation (64 MiB RAM, 4 iterations, 4 parallelism lanes) to resist GPU/ASIC brute-force attacks. |
-| <img src="https://raw.githubusercontent.com/devicons/devicon@latest/icons/unifiedmodelinglanguage/unifiedmodelinglanguage-original.svg" width="44" height="44" alt="Steganography" /> | **PNG & WAV Steganography** | `LSB v2.0` | 6-step covert carrier engine embedding encrypted payloads into PNG RGBA scanlines and WAV 16-bit PCM audio samples with zero perceptual distortion. |
+| <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/eye-slash.svg" width="44" height="44" alt="Steganography" /> | **PNG & WAV Steganography** | `LSB v2.0` | 6-step covert carrier engine embedding encrypted payloads into PNG RGBA scanlines and WAV 16-bit PCM audio samples with zero perceptual distortion. |
 | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/visualstudio/visualstudio-original.svg" width="44" height="44" alt="Visual Studio" /> | **Visual Studio / MSBuild** | `2022 / v17` | Multi-target compilation, unpackaged desktop tooling, and Windows App SDK build management. |
 | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg" width="44" height="44" alt="Git" /> | **Git & GitHub** | `2.40+` | Modular version control with isolated feature branches, reproducible build manifests, and strict commit provenance. |
 | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/markdown/markdown-original.svg" width="44" height="44" alt="Documentation" /> | **Markdown & Threat Specs** | `GFM` | In-depth threat models, cryptographic bounds, STRIDE analysis, and formal verification specifications. |
@@ -73,21 +77,21 @@ PHANTOMVAULT is built using enterprise-grade engineering technologies with stric
 
 PHANTOMVAULT delivers a minimalist, technical, high-contrast dark desktop interface inspired by advanced cybersecurity tooling. It avoids generic colors, frivolous animations, and bright distractions in favor of precision and technical credibility.
 
-### Official Cyber Dark Tokens
+### Official Minimalist Obsidian Tokens
 ```
-Primary Background    : #0B0D12 (Deep Obsidian)
-Secondary Background  : #11151D (Dark Surface)
-Sidebar / Navigation  : #0E1118 (Enclave Slate)
-Elevated Surface      : #171C26 (Card Container)
-Primary Accent        : #39D0C8 (Cyber Teal)
-Secondary Accent      : #7C83FF (Periwinkle Indigo)
-Primary Text          : #F3F5F9 (Pure Contrast)
-Secondary Text        : #A1A9B8 (Subdued Slate)
-Muted Text            : #697386 (Technical Labels)
-Success / Valid       : #36C98F (Emerald Shield)
-Warning               : #F2B84B (Amber Notice)
-Error / Lockdown      : #F06A75 (Crimson Alert)
-Borders & Dividers    : #252C38 (Precision 1px Outlines)
+Primary Background    : #08090C (Deep Obsidian Black)
+Secondary Background  : #0E1117 (Dark Obsidian Surface)
+Sidebar / Navigation  : #0B0D13 (Enclave Obsidian Slate)
+Elevated Surface      : #131722 (Card Container)
+Primary Accent        : #4ED9C8 (Pastel Mint / Soft Cyan)
+Secondary Accent      : #A5B4FC (Pastel Lavender / Periwinkle)
+Primary Text          : #F8FAFC (High Legibility Crisp White)
+Secondary Text        : #94A3B8 (Subdued Slate)
+Muted Text            : #64748B (Technical Labels)
+Success / Valid       : #34D399 (Pastel Emerald)
+Warning               : #FBBF24 (Pastel Amber)
+Error / Lockdown      : #F87171 (Pastel Rose / Crimson Alert)
+Borders & Dividers    : #1E2433 (Precision 1px Hairline Outlines)
 ```
 
 ### Primary Workspace Views
@@ -108,13 +112,14 @@ Borders & Dividers    : #252C38 (Precision 1px Outlines)
 ## 🚀 Quick Start (Running & Building)
 
 > [!NOTE]
-> For a full breakdown of all required NuGet packages with their **real-life logos**, security justifications, and comprehensive execution instructions, see [PACKAGES-AND-HOW-TO-RUN.md](file:///d:/projects%20and%20certificates/projects/apps/PHANTOMVAULT/PACKAGES-AND-HOW-TO-RUN.md).
+> - For a complete breakdown of all required NuGet packages with their **real-life logos** and security rationales, see [REQUIRED-PACKAGES.md](file:///d:/projects%20and%20certificates/projects/apps/PHANTOMVAULT/REQUIRED-PACKAGES.md).
+> - For a dedicated step-by-step execution walkthrough, FAQ, and build guide, see [HOW-TO-RUN.md](file:///d:/projects%20and%20certificates/projects/apps/PHANTOMVAULT/HOW-TO-RUN.md).
 
 ### Option 1: Direct Standalone Launch (Root Folder)
 The app is pre-built as a self-contained release in the root directory. You can run it immediately without compiling:
 
 1. **Native Launcher**: Double-click [`PhantomVault.exe`](file:///d:/projects%20and%20certificates/projects/apps/PHANTOMVAULT/PhantomVault.exe) in the root folder.
-2. **Desktop Shortcut**: Double-click [`PhantomVault.lnk`](file:///d:/projects%20and%20certificates/projects/apps/PHANTOMVAULT/PhantomVault.lnk).
+2. **Windows Direct Shortcut**: Double-click [`PHANTOMVAULT.lnk`](file:///d:/projects%20and%20certificates/projects/apps/PHANTOMVAULT/PHANTOMVAULT.lnk).
 3. **Batch Launcher**: Double-click [`Launch-PHANTOMVAULT.bat`](file:///d:/projects%20and%20certificates/projects/apps/PHANTOMVAULT/Launch-PHANTOMVAULT.bat).
 4. **Direct Binaries**: Run [`publish/PhantomVault.App.exe`](file:///d:/projects%20and%20certificates/projects/apps/PHANTOMVAULT/publish/PhantomVault.App.exe).
 

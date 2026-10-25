@@ -11,29 +11,34 @@
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
             </ResourceDictionary.MergedDictionaries>
 
-            <!-- PHANTOMVAULT OFFICIAL DESIGN TOKENS -->
+            <!-- MINIMALIST OBSIDIAN DESIGN TOKENS -->
             <!-- Backgrounds and Surfaces -->
-            <SolidColorBrush x:Key="PrimaryBackgroundBrush" Color="#0B0D12" />
-            <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="#11151D" />
-            <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="#0E1118" />
-            <SolidColorBrush x:Key="ElevatedSurfaceBrush" Color="#171C26" />
+            <SolidColorBrush x:Key="PrimaryBackgroundBrush" Color="#08090C" />
+            <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="#0E1117" />
+            <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="#0B0D13" />
+            <SolidColorBrush x:Key="ElevatedSurfaceBrush" Color="#131722" />
+            <SolidColorBrush x:Key="ElevatedSurfaceHoverBrush" Color="#1A202F" />
+            <SolidColorBrush x:Key="ElevatedBackgroundBrush" Color="#131722" />
             
-            <!-- Accents -->
-            <SolidColorBrush x:Key="PrimaryAccentBrush" Color="#39D0C8" />
-            <SolidColorBrush x:Key="SecondaryAccentBrush" Color="#7C83FF" />
+            <!-- Muted Pastel Accents -->
+            <SolidColorBrush x:Key="PrimaryAccentBrush" Color="#4ED9C8" />
+            <SolidColorBrush x:Key="PrimaryAccentHoverBrush" Color="#64E5D6" />
+            <SolidColorBrush x:Key="SecondaryAccentBrush" Color="#A5B4FC" />
+            <SolidColorBrush x:Key="SecondaryAccentHoverBrush" Color="#C7D2FE" />
+            <SolidColorBrush x:Key="SuccessBrush" Color="#34D399" />
+            <SolidColorBrush x:Key="WarningBrush" Color="#FBBF24" />
+            <SolidColorBrush x:Key="ErrorBrush" Color="#F87171" />
+            <SolidColorBrush x:Key="ErrorHoverBrush" Color="#FCA5A5" />
             
-            <!-- Typography Colors -->
-            <SolidColorBrush x:Key="PrimaryTextBrush" Color="#F3F5F9" />
-            <SolidColorBrush x:Key="SecondaryTextBrush" Color="#A1A9B8" />
-            <SolidColorBrush x:Key="MutedTextBrush" Color="#697386" />
+            <!-- Typography Hierarchy (High Legibility Minimalist) -->
+            <SolidColorBrush x:Key="PrimaryTextBrush" Color="#F8FAFC" />
+            <SolidColorBrush x:Key="SecondaryTextBrush" Color="#94A3B8" />
+            <SolidColorBrush x:Key="MutedTextBrush" Color="#64748B" />
             
-            <!-- Functional Status Colors -->
-            <SolidColorBrush x:Key="SuccessBrush" Color="#36C98F" />
-            <SolidColorBrush x:Key="WarningBrush" Color="#F2B84B" />
-            <SolidColorBrush x:Key="ErrorBrush" Color="#F06A75" />
-            
-            <!-- Borders and Dividers -->
-            <SolidColorBrush x:Key="BorderBrush" Color="#252C38" />
+            <!-- Subtle Hairline Borders (Crisp 1px Precision) -->
+            <SolidColorBrush x:Key="BorderBrush" Color="#1E2433" />
+            <SolidColorBrush x:Key="BorderHoverBrush" Color="#333E56" />
+            <SolidColorBrush x:Key="BorderAccentBrush" Color="#4ED9C8" />
 
             <!-- Typography Families -->
             <FontFamily x:Key="DefaultFontFamily">Segoe UI Variable, Segoe UI, sans-serif</FontFamily>
@@ -45,8 +50,8 @@
                 <Setter Property="Background" Value="{StaticResource ElevatedSurfaceBrush}" />
                 <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
                 <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="CornerRadius" Value="8" />
-                <Setter Property="Padding" Value="18" />
+                <Setter Property="CornerRadius" Value="10" />
+                <Setter Property="Padding" Value="20" />
             </Style>
 
             <!-- Flat Card Style for inner groupings -->
@@ -54,49 +59,253 @@
                 <Setter Property="Background" Value="{StaticResource SecondaryBackgroundBrush}" />
                 <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
                 <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="CornerRadius" Value="6" />
+                <Setter Property="CornerRadius" Value="8" />
                 <Setter Property="Padding" Value="14" />
             </Style>
 
-            <!-- Primary Action Button (Teal Accent, Dark Text) -->
+            <!-- Primary Action Button (Pastel Mint, Obsidian Text, Smooth Hover) -->
             <Style x:Key="PrimaryButtonStyle" TargetType="Button">
                 <Setter Property="Background" Value="{StaticResource PrimaryAccentBrush}" />
-                <Setter Property="Foreground" Value="#0B0D12" />
-                <Setter Property="CornerRadius" Value="6" />
+                <Setter Property="Foreground" Value="#08090C" />
+                <Setter Property="BorderBrush" Value="{StaticResource PrimaryAccentBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="CornerRadius" Value="8" />
                 <Setter Property="Padding" Value="16,8" />
                 <Setter Property="FontWeight" Value="SemiBold" />
-                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="RootBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="{TemplateBinding CornerRadius}"
+                                    Padding="{TemplateBinding Padding}">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <Setter Target="RootBorder.Background" Value="{StaticResource PrimaryAccentHoverBrush}" />
+                                                <Setter Target="RootBorder.BorderBrush" Value="{StaticResource PrimaryAccentHoverBrush}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Target="RootBorder.Background" Value="{StaticResource PrimaryAccentBrush}" />
+                                                <Setter Target="RootBorder.BorderBrush" Value="{StaticResource PrimaryAccentBrush}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Disabled">
+                                            <VisualState.Setters>
+                                                <Setter Target="RootBorder.Opacity" Value="0.4" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  Foreground="{TemplateBinding Foreground}" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>
 
-            <!-- Secondary Action Button (Elevated Surface, Subtle Border) -->
+            <!-- Secondary Action Button (Obsidian Surface, Mint Hairline Glow on Hover) -->
             <Style x:Key="SecondaryButtonStyle" TargetType="Button">
                 <Setter Property="Background" Value="{StaticResource ElevatedSurfaceBrush}" />
                 <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
                 <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
-                <Setter Property="CornerRadius" Value="6" />
+                <Setter Property="CornerRadius" Value="8" />
                 <Setter Property="Padding" Value="14,8" />
                 <Setter Property="FontWeight" Value="Normal" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="RootBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="{TemplateBinding CornerRadius}"
+                                    Padding="{TemplateBinding Padding}">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <Setter Target="RootBorder.Background" Value="{StaticResource ElevatedSurfaceHoverBrush}" />
+                                                <Setter Target="RootBorder.BorderBrush" Value="{StaticResource PrimaryAccentBrush}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Target="RootBorder.Background" Value="{StaticResource SecondaryBackgroundBrush}" />
+                                                <Setter Target="RootBorder.BorderBrush" Value="{StaticResource BorderBrush}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Disabled">
+                                            <VisualState.Setters>
+                                                <Setter Target="RootBorder.Opacity" Value="0.4" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  Foreground="{TemplateBinding Foreground}" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>
 
-            <!-- Indigo Accent Button -->
+            <!-- Quick Action Card Button (Dashboard Tile Button with Border Glow) -->
+            <Style x:Key="QuickActionCardButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="{StaticResource ElevatedSurfaceBrush}" />
+                <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
+                <Setter Property="CornerRadius" Value="10" />
+                <Setter Property="Padding" Value="12,14" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="RootBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="{TemplateBinding CornerRadius}"
+                                    Padding="{TemplateBinding Padding}">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <Setter Target="RootBorder.Background" Value="{StaticResource ElevatedSurfaceHoverBrush}" />
+                                                <Setter Target="RootBorder.BorderBrush" Value="{StaticResource PrimaryAccentBrush}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Target="RootBorder.Background" Value="{StaticResource SecondaryBackgroundBrush}" />
+                                                <Setter Target="RootBorder.BorderBrush" Value="{StaticResource BorderBrush}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Disabled">
+                                            <VisualState.Setters>
+                                                <Setter Target="RootBorder.Opacity" Value="0.4" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  Foreground="{TemplateBinding Foreground}" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Pastel Indigo Accent Button -->
             <Style x:Key="IndigoButtonStyle" TargetType="Button">
                 <Setter Property="Background" Value="{StaticResource SecondaryAccentBrush}" />
-                <Setter Property="Foreground" Value="#0B0D12" />
-                <Setter Property="CornerRadius" Value="6" />
+                <Setter Property="Foreground" Value="#08090C" />
+                <Setter Property="BorderBrush" Value="{StaticResource SecondaryAccentBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="CornerRadius" Value="8" />
                 <Setter Property="Padding" Value="16,8" />
                 <Setter Property="FontWeight" Value="SemiBold" />
-                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="RootBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="{TemplateBinding CornerRadius}"
+                                    Padding="{TemplateBinding Padding}">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <Setter Target="RootBorder.Background" Value="{StaticResource SecondaryAccentHoverBrush}" />
+                                                <Setter Target="RootBorder.BorderBrush" Value="{StaticResource SecondaryAccentHoverBrush}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Target="RootBorder.Background" Value="{StaticResource SecondaryAccentBrush}" />
+                                                <Setter Target="RootBorder.BorderBrush" Value="{StaticResource SecondaryAccentBrush}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Disabled">
+                                            <VisualState.Setters>
+                                                <Setter Target="RootBorder.Opacity" Value="0.4" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  Foreground="{TemplateBinding Foreground}" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>
 
-            <!-- Destructive Action Button (Error Red) -->
+            <!-- Destructive Action Button (Pastel Rose) -->
             <Style x:Key="DestructiveButtonStyle" TargetType="Button">
                 <Setter Property="Background" Value="{StaticResource ErrorBrush}" />
-                <Setter Property="Foreground" Value="#0B0D12" />
-                <Setter Property="CornerRadius" Value="6" />
+                <Setter Property="Foreground" Value="#08090C" />
+                <Setter Property="BorderBrush" Value="{StaticResource ErrorBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="CornerRadius" Value="8" />
                 <Setter Property="Padding" Value="14,8" />
                 <Setter Property="FontWeight" Value="SemiBold" />
-                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="RootBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="{TemplateBinding CornerRadius}"
+                                    Padding="{TemplateBinding Padding}">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <Setter Target="RootBorder.Background" Value="{StaticResource ErrorHoverBrush}" />
+                                                <Setter Target="RootBorder.BorderBrush" Value="{StaticResource ErrorHoverBrush}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Target="RootBorder.Background" Value="{StaticResource ErrorBrush}" />
+                                                <Setter Target="RootBorder.BorderBrush" Value="{StaticResource ErrorBrush}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Disabled">
+                                            <VisualState.Setters>
+                                                <Setter Target="RootBorder.Opacity" Value="0.4" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  Foreground="{TemplateBinding Foreground}" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>
 
             <!-- Backward compatibility aliases -->

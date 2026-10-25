@@ -52,7 +52,7 @@
             <Button Grid.Column="3" Content="Clear Audit History" Style="{StaticResource DestructiveButtonStyle}" Click="ClearLogsButton_Click" />
         </Grid>
 
-        <!-- LOG ENTRIES LIST -->
+        <!-- LOG ENTRIES LIST (STAGGERED ENTRANCE) -->
         <Border Grid.Row="2" Style="{StaticResource SecurityCardStyle}" Padding="0">
             <ListView x:Name="LogsListView">
                 <ListView.Header>

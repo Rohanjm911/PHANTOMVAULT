@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Text.Json.Serialization;
 using PhantomVault.Core.Enums;
 
 namespace PhantomVault.Core.Models;
@@ -7,20 +9,86 @@ namespace PhantomVault.Core.Models;
 /// <summary>
 /// Descriptor representing a known local vault and its status.
 /// </summary>
-public class VaultDescriptor
+public class VaultDescriptor : INotifyPropertyChanged
 {
+    private VaultState _state = VaultState.Locked;
+    private int _fileCount;
+    private long _totalPlaintextBytes;
+    private long _totalCiphertextBytes;
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
     public Guid Id { get; set; } = Guid.NewGuid();
     public string Name { get; set; } = string.Empty;
     public string VaultPath { get; set; } = string.Empty;
-    public VaultState State { get; set; } = VaultState.Locked;
+
+    public VaultState State
+    {
+        get => _state;
+        set
+        {
+            if (_state != value)
+            {
+                _state = value;
+                OnPropertyChanged(nameof(State));
+                OnPropertyChanged(nameof(IsUnlocked));
+            }
+        }
+    }
+
+    [JsonIgnore]
+    public bool IsUnlocked => State == VaultState.Unlocked;
+
     public KdfAlgorithm KdfAlgorithm { get; set; } = KdfAlgorithm.Argon2id;
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
     public DateTime? LastUnlockedAtUtc { get; set; }
-    public int FileCount { get; set; }
-    public long TotalPlaintextBytes { get; set; }
-    public long TotalCiphertextBytes { get; set; }
+
+    public int FileCount
+    {
+        get => _fileCount;
+        set
+        {
+            if (_fileCount != value)
+            {
+                _fileCount = value;
+                OnPropertyChanged(nameof(FileCount));
+            }
+        }
+    }
+
+    public long TotalPlaintextBytes
+    {
+        get => _totalPlaintextBytes;
+        set
+        {
+            if (_totalPlaintextBytes != value)
+            {
+                _totalPlaintextBytes = value;
+                OnPropertyChanged(nameof(TotalPlaintextBytes));
+            }
+        }
+    }
+
+    public long TotalCiphertextBytes
+    {
+        get => _totalCiphertextBytes;
+        set
+        {
+            if (_totalCiphertextBytes != value)
+            {
+                _totalCiphertextBytes = value;
+                OnPropertyChanged(nameof(TotalCiphertextBytes));
+            }
+        }
+    }
+
     public bool AutoLockEnabled { get; set; } = true;
     public int AutoLockTimeoutMinutes { get; set; } = 15;
+
+    protected void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
 }
 
 /// <summary>

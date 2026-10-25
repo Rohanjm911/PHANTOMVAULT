@@ -1,15 +1,10 @@
-# 📦 PHANTOMVAULT — Required Packages & How-To-Run Guide
+# 📦 PHANTOMVAULT — Required Packages & Dependencies Specification
 
 <div align="center">
 
-```
-██████╗ ██╗  ██╗ █████╗ ███╗   ██╗████████╗ ██████╗ ███╗   ███╗██╗   ██╗ █████╗ ██╗   ██╗██╗  ████████╗
-██╔══██╗██║  ██║██╔══██╗████╗  ██║╚══██╔══╝██╔═══██╗████╗ ████║██║   ██║██╔══██╗██║   ██║██║  ╚══██╔══╝
-██████╔╝███████║███████║██╔██╗ ██║   ██║   ██║   ██║██╔████╔██║██║   ██║███████║██║   ██║██║     ██║   
-██╔═══╝ ██╔══██║██╔══██║██║╚██╗██║   ██║   ██║   ██║██║╚██╔╝██║╚██╗ ██╔╝██╔══██║██║   ██║██║     ██║   
-██║     ██║  ██║██║  ██║██║ ╚████║   ██║   ╚██████╔╝██║ ╚═╝ ██║ ╚████╔╝ ██║  ██║╚██████╔╝███████╗██║   
-╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝    ╚═════╝ ╚═╝     ╚═╝  ╚═══╝  ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝   
-```
+<p align="center">
+  <img src="assets/logo.png" alt="PHANTOMVAULT Official Logo" width="200" style="border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);" />
+</p>
 
 ### *Trust Nothing. Reveal Nothing.*
 
@@ -37,13 +32,8 @@
    - [Cryptography, Security & Hardware Biometrics](#2-cryptography-security--hardware-biometrics)
    - [Storage, In-Memory Steganography & Audio Subsystem](#3-storage-in-memory-steganography--audio-subsystem)
    - [Automated Testing & Verification Suite](#4-automated-testing--verification-suite)
-3. [🚀 How to Run PHANTOMVAULT](#-how-to-run-phantomvault)
-   - [Option 1: Direct Standalone Launch (Root Folder — Instant)](#option-1-direct-standalone-launch-root-folder--instant)
-   - [Option 2: Run via Developer CLI (`dotnet run`)](#option-2-run-via-developer-cli-dotnet-run)
-   - [Option 3: Compile & Publish Production Standalone Binaries](#option-3-compile--publish-production-standalone-binaries)
-   - [Option 4: Run the Complete Automated Test Suite](#option-4-run-the-complete-automated-test-suite)
-4. [🧭 Quick-Start Operational Walkthrough](#-quick-start-operational-walkthrough)
-5. [❓ Troubleshooting & FAQ](#-troubleshooting--faq)
+3. [📥 Dependency Restoration & Verification](#-dependency-restoration--verification)
+4. [🚀 How to Run Guide Reference](#-how-to-run-guide-reference)
 
 ---
 
@@ -111,129 +101,24 @@ All external dependencies in PHANTOMVAULT have been strictly audited for **zero 
 
 ---
 
-## 🚀 How to Run PHANTOMVAULT
+## 📥 Dependency Restoration & Verification
 
-You have 4 different ways to run, build, or test the application depending on whether you want an **instant launch**, **CLI execution**, or **full compilation from source**.
-
-### Option 1: Direct Standalone Launch (Root Folder — Instant)
-
-The application has been compiled into a standalone, unpackaged release that runs immediately with **zero setup or compilation**:
-
-1. **Option 1A (Native Executable)**:
-   - Double-click [`PhantomVault.exe`](file:///d:/projects%20and%20certificates/projects/apps/PHANTOMVAULT/PhantomVault.exe) in the project root folder.
-2. **Option 1B (Batch Launcher)**:
-   - Double-click [`Launch-PHANTOMVAULT.bat`](file:///d:/projects%20and%20certificates/projects/apps/PHANTOMVAULT/Launch-PHANTOMVAULT.bat) in the project root folder.
-3. **Option 1C (Desktop Shortcut)**:
-   - Double-click [`PhantomVault.lnk`](file:///d:/projects%20and%20certificates/projects/apps/PHANTOMVAULT/PhantomVault.lnk) if present.
-4. **Option 1D (Published Binaries Directly)**:
-   - Run [`publish/PhantomVault.App.exe`](file:///d:/projects%20and%20certificates/projects/apps/PHANTOMVAULT/publish/PhantomVault.App.exe).
-
----
-
-### Option 2: Run via Developer CLI (`dotnet run`)
-
-If you want to run the application from source in developer mode using the .NET command line:
+To restore and verify all packages across the entire solution:
 
 ```powershell
-# 1. Open PowerShell in the PHANTOMVAULT root folder
-cd "d:\projects and certificates\projects\apps\PHANTOMVAULT"
-
-# 2. Run the application in Release mode
-dotnet run --project src/PhantomVault.App/PhantomVault.App.csproj -c Release
-```
-
-> [!TIP]
-> If running in Debug mode for breakpoints:
-> ```powershell
-> dotnet run --project src/PhantomVault.App/PhantomVault.App.csproj -c Debug
-> ```
-
----
-
-### Option 3: Compile & Publish Production Standalone Binaries
-
-To build a fresh, optimized standalone distribution package:
-
-```powershell
-# Clean and restore dependencies
-dotnet clean PHANTOMVAULT.sln
+# Restore all NuGet packages for all projects
 dotnet restore PHANTOMVAULT.sln
 
-# Build entire solution with 0 warnings
-dotnet build PHANTOMVAULT.sln -c Release
-
-# Publish self-contained 64-bit binaries to the publish directory
-dotnet publish src/PhantomVault.App/PhantomVault.App.csproj -c Release -r win-x64 -o "./publish"
-```
-
-The resulting binaries in `./publish/` contain all WinUI 3 dependencies, assets, and runtime libraries and can be distributed or moved anywhere on Windows 10/11 machines.
-
----
-
-### Option 4: Run the Complete Automated Test Suite
-
-PHANTOMVAULT includes **49 unit and integration tests** verifying cryptographic framing, tamper detection, KDF validation, stego embedding/extraction, and database atomicity:
-
-```powershell
-# Run all tests across all test projects
-dotnet test PHANTOMVAULT.sln -c Release
-
-# Expected output:
-# Passed!  - Failed: 0, Passed: 15 (PhantomVault.Core.Tests.dll)
-# Passed!  - Failed: 0, Passed: 21 (PhantomVault.Security.Tests.dll)
-# Passed!  - Failed: 0, Passed:  5 (PhantomVault.Steganography.Tests.dll)
-# Passed!  - Failed: 0, Passed:  2 (PhantomVault.Integration.Tests.dll)
-# Passed!  - Failed: 0, Passed:  6 (PhantomVault.Storage.Tests.dll)
-# Total: 49 Passed, 0 Failed (100% Success)
+# Build solution in Release mode to ensure all package assemblies resolve
+dotnet build PHANTOMVAULT.sln -c Release --no-restore
 ```
 
 ---
 
-## 🧭 Quick-Start Operational Walkthrough
+## 🚀 How to Run Guide Reference
 
-Once the application launches, follow these steps to explore all core capabilities:
-
-1. **Initialize Your First Vault**:
-   - Go to **My Vaults** -> click **`+ New Vault`**.
-   - Type a vault name and choose a strong Master Password. Watch the live entropy HUD score.
-   - Click **`Create Vault`**.
-2. **Import Files via Drag & Drop**:
-   - Unlock the vault using your password or **Windows Hello Biometrics**.
-   - Navigate to **Vault Workspace**.
-   - Drag and drop files from Windows Explorer onto the illuminated drop zone. Files are immediately encrypted into chunked ciphertext.
-3. **Zero-Disk In-Memory Preview**:
-   - Double-click or click **Preview** on any encrypted image, text document, or code file.
-   - The file decrypts directly into RAM (zero temporary files written to disk) with a raw 16-byte hex forensics inspector.
-4. **Configure Plausible Deniability (Coercion Defense)**:
-   - On the Vault Workspace toolbar, click **`Plausible Deniability...`**.
-   - Set a secondary secret Duress Password.
-   - When unlocked with the duress password, an isolated decoy enclave opens with realistic decoy files (`Tax_Filing_Summary_2024.txt`, etc.), while the real vault remains completely hidden.
-5. **Covert Steganography Studio**:
-   - Go to **Steganography** -> Select a carrier (PNG image or WAV audio).
-   - For WAV files, click **`▶ Play Carrier Audio`** to audition the pristine audio.
-   - Select a payload file and set an encryption password -> Click **`Embed & Save Stego File`**.
-   - Click **`▶ Audition Stego Audio`** to verify 0.0000% audible distortion.
-6. **DoD 5220.22-M File Shredder**:
-   - In Vault Workspace, click **`Shred External File`**.
-   - Select any unencrypted sensitive file on your PC to sanitize it with 3-pass cryptographic overwriting, timestamp scrambling, and MFT GUID renaming.
-7. **Emergency Lockdown**:
-   - Press **`Win + L`** or click the red **`EMERGENCY LOCK`** button at any time to instantly purge keys from RAM and seal all vaults.
-
----
-
-## ❓ Troubleshooting & FAQ
-
-### Q1: Windows Defender SmartScreen shows "Windows protected your PC"?
-> **Solution**: Because PHANTOMVAULT is an unpackaged local build without an enterprise commercial EV Code Signing Certificate, Windows SmartScreen may show an initial warning. Click **"More info"** -> click **"Run anyway"**. The application is 100% open source, local-first, and contains zero remote telemetry.
-
-### Q2: What happens if I forget my Master Password?
-> **Answer**: Your data is **permanently and mathematically unrecoverable**. PHANTOMVAULT maintains zero central servers, zero cloud key escrows, and zero recovery backdoors. Keep your master password safe.
-
-### Q3: Does PHANTOMVAULT write decrypted temporary files to the disk?
-> **Answer**: **No.** All previews and audio playbacks operate strictly in RAM using `MemoryStream` and byte arrays. Memory is immediately wiped using `CryptographicOperations.ZeroMemory()` upon closing the preview.
-
-### Q4: How do I audition or disable the Tactical Cyber Sound Effects?
-> **Answer**: Go to **Settings** -> scroll to **"TACTICAL CYBER SOUND EFFECTS & ACOUSTIC FEEDBACK"**. You can toggle sound effects on/off or click the audition buttons (`Unlock Chime`, `Lock Arming`, `DoD Shred`, `Stego Chirp`, `Lockdown Alarm`) to test them.
+For execution instructions, standalone launch options, CLI developer mode, and operational guides, see:
+👉 **[HOW-TO-RUN.md](file:///d:/projects%20and%20certificates/projects/apps/PHANTOMVAULT/HOW-TO-RUN.md)**
 
 ---
 

@@ -14,8 +14,8 @@ public sealed partial class DashboardView : Page
 
     public DashboardView()
     {
-        InitializeComponent();
         _vm = App.Services.GetRequiredService<MainViewModel>();
+        InitializeComponent();
         _vm.PropertyChanged += Vm_PropertyChanged;
         Loaded += DashboardView_Loaded;
     }

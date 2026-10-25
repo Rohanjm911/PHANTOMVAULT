@@ -8,6 +8,23 @@
     xmlns:models="using:PhantomVault.Core.Models"
     mc:Ignorable="d">
 
+    <Page.Resources>
+        <!-- TACTICAL SHAKE ANIMATION ON FAILED MASTER PASSWORD OR AUTH ERROR -->
+        <Storyboard x:Name="ShakeStoryboard">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LockedCardTranslation" Storyboard.TargetProperty="X">
+                <EasingDoubleKeyFrame KeyTime="0:0:0.00" Value="0" />
+                <EasingDoubleKeyFrame KeyTime="0:0:0.04" Value="-14" />
+                <EasingDoubleKeyFrame KeyTime="0:0:0.08" Value="14" />
+                <EasingDoubleKeyFrame KeyTime="0:0:0.12" Value="-10" />
+                <EasingDoubleKeyFrame KeyTime="0:0:0.16" Value="10" />
+                <EasingDoubleKeyFrame KeyTime="0:0:0.20" Value="-6" />
+                <EasingDoubleKeyFrame KeyTime="0:0:0.24" Value="6" />
+                <EasingDoubleKeyFrame KeyTime="0:0:0.28" Value="-2" />
+                <EasingDoubleKeyFrame KeyTime="0:0:0.32" Value="0" />
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+    </Page.Resources>
+
     <Grid Padding="28" RowSpacing="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -26,7 +43,7 @@
                 <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                     <TextBlock Text="PHANTOMVAULT" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
                     <TextBlock Text="/" FontSize="12" Foreground="{StaticResource MutedTextBrush}" />
-                    <TextBlock x:Name="BreadcrumbVaultNameText" Text="PersonalVault" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource PrimaryAccentBrush}" />
+                    <TextBlock x:Name="BreadcrumbVaultNameText" Text="No Vault Selected" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource PrimaryAccentBrush}" />
                     <TextBlock Text="/" FontSize="12" Foreground="{StaticResource MutedTextBrush}" />
                     <TextBlock Text="Encrypted Workspace" FontSize="12" Foreground="{StaticResource MutedTextBrush}" />
                 </StackPanel>
@@ -50,7 +67,10 @@
         <Grid Grid.Row="1">
             <!-- LOCKED STATE -->
             <Grid x:Name="LockedPanel" Visibility="Visible" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="460">
-                <Border Style="{StaticResource SecurityCardStyle}" Padding="36">
+                <Border x:Name="LockedCardBorder" Style="{StaticResource SecurityCardStyle}" Padding="36" RenderTransformOrigin="0.5,0.5">
+                    <Border.RenderTransform>
+                        <TranslateTransform x:Name="LockedCardTranslation" X="0" Y="0" />
+                    </Border.RenderTransform>
                     <StackPanel Spacing="18" HorizontalAlignment="Stretch">
                         <Border Background="{StaticResource SecondaryBackgroundBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="32" Width="64" Height="64" HorizontalAlignment="Center">
                             <FontIcon Glyph="&#xE72E;" FontSize="28" Foreground="{StaticResource PrimaryAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
@@ -72,8 +92,13 @@
                 </Border>
             </Grid>
 
-            <!-- UNLOCKED STATE -->
+            <!-- UNLOCKED STATE (STAGGERED ENTRANCE ANIMATION) -->
             <Grid x:Name="UnlockedPanel" Visibility="Collapsed">
+                <Grid.ChildrenTransitions>
+                    <TransitionCollection>
+                        <EntranceThemeTransition FromVerticalOffset="24" IsStaggeringEnabled="True" />
+                    </TransitionCollection>
+                </Grid.ChildrenTransitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />

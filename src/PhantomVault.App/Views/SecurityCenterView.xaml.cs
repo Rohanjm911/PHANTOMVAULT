@@ -11,11 +11,12 @@ public sealed partial class SecurityCenterView : Page
 
     public SecurityCenterView()
     {
-        InitializeComponent();
         _vm = App.Services.GetRequiredService<MainViewModel>();
         DataContext = _vm;
+        InitializeComponent();
         Loaded += (s, e) =>
         {
+            if (_vm == null) return;
             LastIntegrityCheckText.Text = $"Status: {_vm.LastIntegrityCheckResult}";
             LastBackupStatusText.Text = _vm.LastBackupDateText;
         };

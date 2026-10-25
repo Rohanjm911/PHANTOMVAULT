@@ -25,11 +25,42 @@ public partial class App : Application
     public App()
     {
         InitializeComponent();
+
         UnhandledException += (sender, e) =>
         {
-            System.Diagnostics.Debug.WriteLine($"[UNHANDLED ERROR] {e.Message} - {e.Exception}");
+            LogCrash("UnhandledException", e.Exception, e.Message);
+            e.Handled = true;
         };
+
+        AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+        {
+            if (e.ExceptionObject is Exception ex)
+            {
+                LogCrash("AppDomain.UnhandledException", ex, ex.Message);
+            }
+        };
+
+        System.Threading.Tasks.TaskScheduler.UnobservedTaskException += (sender, e) =>
+        {
+            LogCrash("UnobservedTaskException", e.Exception, e.Exception.Message);
+            e.SetObserved();
+        };
+
         Services = ConfigureServices();
+    }
+
+    private static void LogCrash(string source, Exception? ex, string message)
+    {
+        try
+        {
+            string logDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PHANTOMVAULT");
+            if (!Directory.Exists(logDir)) Directory.CreateDirectory(logDir);
+            string logPath = Path.Combine(logDir, "crash_log.txt");
+            string entry = $"[{DateTime.UtcNow:O}] [{source}] {message}\n{ex}\n{new string('-', 60)}\n";
+            File.AppendAllText(logPath, entry);
+            System.Diagnostics.Debug.WriteLine($"[CRASH LOGGED] {entry}");
+        }
+        catch { }
     }
 
     private static IServiceProvider ConfigureServices()

@@ -27,6 +27,11 @@
             <TabViewItem Header="Conceal Data (Hide)" IsClosable="False">
                 <ScrollViewer Padding="0,16,0,0">
                     <StackPanel Spacing="16" MaxWidth="840" HorizontalAlignment="Left">
+                        <StackPanel.ChildrenTransitions>
+                            <TransitionCollection>
+                                <EntranceThemeTransition FromVerticalOffset="20" IsStaggeringEnabled="True" />
+                            </TransitionCollection>
+                        </StackPanel.ChildrenTransitions>
 
                         <Border x:Name="CarrierCardBorder" Style="{StaticResource SecurityCardStyle}" 
                                 AllowDrop="True" DragOver="CarrierDrop_DragOver" DragLeave="CarrierDrop_DragLeave" Drop="CarrierDrop_Drop">
@@ -320,6 +325,11 @@
             <TabViewItem Header="Extract Hidden Data" IsClosable="False">
                 <ScrollViewer Padding="0,16,0,0">
                     <StackPanel Spacing="16" MaxWidth="800" HorizontalAlignment="Left">
+                        <StackPanel.ChildrenTransitions>
+                            <TransitionCollection>
+                                <EntranceThemeTransition FromVerticalOffset="20" IsStaggeringEnabled="True" />
+                            </TransitionCollection>
+                        </StackPanel.ChildrenTransitions>
                         <Border Style="{StaticResource SecurityCardStyle}"
                                 AllowDrop="True" DragOver="CarrierDrop_DragOver" DragLeave="CarrierDrop_DragLeave" Drop="ExtractCarrierDrop_Drop">
                             <StackPanel Spacing="12">

@@ -19,9 +19,9 @@ public sealed partial class StegoView : Page
 
     public StegoView()
     {
-        InitializeComponent();
         _vm = App.Services.GetRequiredService<MainViewModel>();
         DataContext = _vm;
+        InitializeComponent();
     }
 
     private async void BrowseCarrierButton_Click(object sender, RoutedEventArgs e)

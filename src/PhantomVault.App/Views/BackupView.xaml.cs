@@ -14,9 +14,9 @@ public sealed partial class BackupView : Page
 
     public BackupView()
     {
-        InitializeComponent();
         _vm = App.Services.GetRequiredService<MainViewModel>();
         DataContext = _vm;
+        InitializeComponent();
     }
 
     private async void CreateBackupButton_Click(object sender, RoutedEventArgs e)

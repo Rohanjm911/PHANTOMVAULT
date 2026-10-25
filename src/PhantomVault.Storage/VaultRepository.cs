@@ -528,6 +528,7 @@ public sealed class VaultRepository : IVaultRepository
                     var list = JsonSerializer.Deserialize<List<VaultDescriptor>>(json);
                     if (list != null)
                     {
+                        int previousCount = list.Count;
                         _vaultRegistry.Clear();
                         foreach (var v in list)
                         {
@@ -536,6 +537,11 @@ public sealed class VaultRepository : IVaultRepository
                             {
                                 _vaultRegistry.Add(v);
                             }
+                        }
+
+                        if (_vaultRegistry.Count != previousCount)
+                        {
+                            SaveRegistry();
                         }
                     }
                 }

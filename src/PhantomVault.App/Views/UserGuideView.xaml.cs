@@ -15,9 +15,9 @@ public sealed partial class UserGuideView : Page
 
     public UserGuideView()
     {
-        InitializeComponent();
         _vm = App.Services.GetRequiredService<MainViewModel>();
         DataContext = _vm;
+        InitializeComponent();
 
         Loaded += UserGuideView_Loaded;
     }

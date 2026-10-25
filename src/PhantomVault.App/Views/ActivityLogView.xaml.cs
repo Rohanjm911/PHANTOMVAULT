@@ -12,25 +12,27 @@ public sealed partial class ActivityLogView : Page
 
     public ActivityLogView()
     {
-        InitializeComponent();
         _vm = App.Services.GetRequiredService<MainViewModel>();
         DataContext = _vm;
+        InitializeComponent();
         Loaded += ActivityLogView_Loaded;
     }
 
     private async void ActivityLogView_Loaded(object sender, RoutedEventArgs e)
     {
+        if (_vm == null) return;
         await _vm.RefreshActivityLogsAsync();
         LogsListView.ItemsSource = _vm.FilteredActivityLogs;
     }
 
     private async void RefreshButton_Click(object sender, RoutedEventArgs e)
     {
-        await _vm.RefreshActivityLogsAsync();
+        if (_vm != null) await _vm.RefreshActivityLogsAsync();
     }
 
     private async void ClearLogsButton_Click(object sender, RoutedEventArgs e)
     {
+        if (_vm == null) return;
         var dialog = new ContentDialog
         {
             Title = "Clear Audit History",
@@ -50,6 +52,7 @@ public sealed partial class ActivityLogView : Page
 
     private void FilterCategoryComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        if (_vm == null || FilterCategoryComboBox == null) return;
         if (FilterCategoryComboBox.SelectedItem is ComboBoxItem item && item.Tag != null)
         {
             _vm.SelectedLogCategory = item.Tag.ToString() ?? "All";
@@ -58,6 +61,7 @@ public sealed partial class ActivityLogView : Page
 
     private void SearchLogBox_TextChanged(object sender, TextChangedEventArgs e)
     {
+        if (_vm == null || SearchLogBox == null) return;
         _vm.LogSearchQuery = SearchLogBox.Text;
     }
 }

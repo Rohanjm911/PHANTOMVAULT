@@ -12,16 +12,19 @@ public sealed partial class SettingsView : Page
 
     public SettingsView()
     {
-        InitializeComponent();
         _vm = App.Services.GetRequiredService<MainViewModel>();
         DataContext = _vm;
+        InitializeComponent();
         Loaded += SettingsView_Loaded;
     }
 
     private void SettingsView_Loaded(object sender, RoutedEventArgs e)
     {
         DefaultVaultDirBox.Text = PhantomVault.Storage.StoragePaths.DefaultVaultsDirectory;
-        SoundEffectsToggleSwitch.IsOn = _vm.SoundService.IsSoundEnabled;
+        if (_vm?.SoundService != null && SoundEffectsToggleSwitch != null)
+        {
+            SoundEffectsToggleSwitch.IsOn = _vm.SoundService.IsSoundEnabled;
+        }
     }
 
     private async void BrowseDefaultDir_Click(object sender, RoutedEventArgs e)
@@ -30,13 +33,16 @@ public sealed partial class SettingsView : Page
         if (!string.IsNullOrEmpty(folder))
         {
             DefaultVaultDirBox.Text = folder;
-            _vm.ShowStatus("Default vault root path updated for this session.", InfoBarSeverity.Informational);
+            _vm?.ShowStatus("Default vault root path updated for this session.", InfoBarSeverity.Informational);
         }
     }
 
     private void SoundEffectsToggleSwitch_Toggled(object sender, RoutedEventArgs e)
     {
-        _vm.SoundService.IsSoundEnabled = SoundEffectsToggleSwitch.IsOn;
+        if (_vm?.SoundService != null && SoundEffectsToggleSwitch != null)
+        {
+            _vm.SoundService.IsSoundEnabled = SoundEffectsToggleSwitch.IsOn;
+        }
     }
 
     private void TestUnlockSound_Click(object sender, RoutedEventArgs e) => _vm.SoundService.PlayUnlockSound();

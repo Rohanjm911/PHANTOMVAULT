@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:PhantomVault.Core.Models"
+    xmlns:views="using:PhantomVault_App.Views"
     mc:Ignorable="d">
 
     <ScrollViewer Padding="28" VerticalScrollBarVisibility="Auto">
@@ -30,8 +31,13 @@
                 </StackPanel>
             </Grid>
 
-            <!-- VAULTS LIST -->
+            <!-- VAULTS LIST (STAGGERED ENTRANCE) -->
             <ItemsControl x:Name="VaultsItemsControl">
+                <ItemsControl.ItemContainerTransitions>
+                    <TransitionCollection>
+                        <EntranceThemeTransition FromVerticalOffset="24" IsStaggeringEnabled="True" />
+                    </TransitionCollection>
+                </ItemsControl.ItemContainerTransitions>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="models:VaultDescriptor">
                         <Border Style="{StaticResource SecurityCardStyle}" Margin="0,0,0,14">
@@ -67,7 +73,7 @@
                                         </Border>
 
                                         <Border CornerRadius="4" Padding="10,4" Background="{StaticResource SecondaryBackgroundBrush}" BorderBrush="{StaticResource PrimaryAccentBrush}" BorderThickness="1">
-                                            <TextBlock Text="{x:Bind State}" FontSize="11" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" />
+                                            <TextBlock Text="{x:Bind State, Mode=OneWay}" FontSize="11" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" />
                                         </Border>
                                     </StackPanel>
                                 </Grid>
@@ -98,7 +104,8 @@
 
                                     <!-- ACTION BUTTONS -->
                                     <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                        <Button Content="Unlock" Style="{StaticResource PrimaryButtonStyle}" Padding="14,6" Click="UnlockVaultCard_Click" Tag="{x:Bind}" />
+                                        <Button Content="Unlock" Style="{StaticResource PrimaryButtonStyle}" Padding="14,6" Click="UnlockVaultCard_Click" Tag="{x:Bind}" Visibility="{x:Bind views:VaultsView.GetUnlockVisibility(State), Mode=OneWay}" />
+                                        <Button Content="Lock" Style="{StaticResource DestructiveButtonStyle}" Padding="14,6" Click="LockVaultCard_Click" Tag="{x:Bind}" Visibility="{x:Bind views:VaultsView.GetLockVisibility(State), Mode=OneWay}" />
                                         <Button Content="Open Files" Style="{StaticResource SecondaryButtonStyle}" Padding="12,6" Click="OpenWorkspaceCard_Click" Tag="{x:Bind}" />
                                         <Button Content="Backup" Style="{StaticResource SecondaryButtonStyle}" Padding="12,6" Click="BackupVaultCard_Click" Tag="{x:Bind}" />
                                         <Button Content="Verify" Style="{StaticResource SecondaryButtonStyle}" Padding="12,6" Click="VerifyVaultCard_Click" Tag="{x:Bind}" />

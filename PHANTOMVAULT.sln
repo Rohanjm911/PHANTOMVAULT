@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhantomVault.Steganography.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhantomVault.Integration.Tests", "tests\PhantomVault.Integration.Tests\PhantomVault.Integration.Tests.csproj", "{6B86E040-8B4C-470C-93C6-D3774F634840}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhantomVault.Launcher", "src\PhantomVault.Launcher\PhantomVault.Launcher.csproj", "{7A4624C1-028E-4B31-9356-14A715AAB9B3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -171,6 +173,18 @@ Global
 		{6B86E040-8B4C-470C-93C6-D3774F634840}.Release|x64.Build.0 = Release|Any CPU
 		{6B86E040-8B4C-470C-93C6-D3774F634840}.Release|x86.ActiveCfg = Release|Any CPU
 		{6B86E040-8B4C-470C-93C6-D3774F634840}.Release|x86.Build.0 = Release|Any CPU
+		{7A4624C1-028E-4B31-9356-14A715AAB9B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A4624C1-028E-4B31-9356-14A715AAB9B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A4624C1-028E-4B31-9356-14A715AAB9B3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7A4624C1-028E-4B31-9356-14A715AAB9B3}.Debug|x64.Build.0 = Debug|Any CPU
+		{7A4624C1-028E-4B31-9356-14A715AAB9B3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7A4624C1-028E-4B31-9356-14A715AAB9B3}.Debug|x86.Build.0 = Debug|Any CPU
+		{7A4624C1-028E-4B31-9356-14A715AAB9B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A4624C1-028E-4B31-9356-14A715AAB9B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A4624C1-028E-4B31-9356-14A715AAB9B3}.Release|x64.ActiveCfg = Release|Any CPU
+		{7A4624C1-028E-4B31-9356-14A715AAB9B3}.Release|x64.Build.0 = Release|Any CPU
+		{7A4624C1-028E-4B31-9356-14A715AAB9B3}.Release|x86.ActiveCfg = Release|Any CPU
+		{7A4624C1-028E-4B31-9356-14A715AAB9B3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -187,5 +201,6 @@ Global
 		{D0D72F09-E0CC-4381-AFB0-1AA25A95A2C7} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{084EF9FB-CD8C-4828-8F51-CCA7E69D1006} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{6B86E040-8B4C-470C-93C6-D3774F634840} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
+		{7A4624C1-028E-4B31-9356-14A715AAB9B3} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 EndGlobal

@@ -35,13 +35,7 @@ public sealed partial class MainPage : Page
             await _vm.InitializeAsync();
 
             NavView.SelectedItem = NavView.MenuItems[0];
-            ContentFrame.Navigate(typeof(DashboardView));
             UpdateStatusBadge();
-
-            if (_vm.Vaults.Count == 0 && this.XamlRoot != null)
-            {
-                await ShowFirstRunWizardAsync();
-            }
         }
         catch (Exception ex)
         {
@@ -66,14 +60,30 @@ public sealed partial class MainPage : Page
                 case nameof(_vm.IsBusy):
                 case nameof(_vm.BusyStatusText):
                 case nameof(_vm.OperationProgress):
-                    BusyOverlay.Visibility = _vm.IsBusy ? Visibility.Visible : Visibility.Collapsed;
+                    if (_vm.IsBusy)
+                    {
+                        BusyOverlay.Visibility = Visibility.Visible;
+                        BusyFadeInStoryboard.Begin();
+                    }
+                    else
+                    {
+                        BusyOverlay.Visibility = Visibility.Collapsed;
+                    }
                     BusyText.Text = _vm.BusyStatusText;
                     BusyProgressBar.Value = _vm.OperationProgress;
                     break;
 
                 case nameof(_vm.IsDeadMansWarningVisible):
                 case nameof(_vm.DeadMansCountdownSeconds):
-                    DeadMansBanner.Visibility = _vm.IsDeadMansWarningVisible ? Visibility.Visible : Visibility.Collapsed;
+                    if (_vm.IsDeadMansWarningVisible)
+                    {
+                        DeadMansBanner.Visibility = Visibility.Visible;
+                        DeadMansSlideInStoryboard.Begin();
+                    }
+                    else
+                    {
+                        DeadMansBanner.Visibility = Visibility.Collapsed;
+                    }
                     DeadMansCountdownText.Text = $"INACTIVITY WARNING: All vaults locking in {_vm.DeadMansCountdownSeconds} seconds!";
                     break;
 
@@ -94,10 +104,13 @@ public sealed partial class MainPage : Page
             VaultStatusPill.Background = (Brush)Application.Current.Resources["SuccessBrush"];
             VaultStatusPill.BorderBrush = (Brush)Application.Current.Resources["SuccessBrush"];
             VaultStatusText.Text = "UNLOCKED";
-            VaultStatusText.Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 11, 13, 18));
+            VaultStatusText.Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 8, 9, 12));
+            try { VaultUnlockedPulseStoryboard.Begin(); } catch { }
         }
         else
         {
+            try { VaultUnlockedPulseStoryboard.Stop(); } catch { }
+            VaultStatusPill.Opacity = 1.0;
             VaultStatusPill.Background = (Brush)Application.Current.Resources["ElevatedSurfaceBrush"];
             VaultStatusPill.BorderBrush = (Brush)Application.Current.Resources["BorderBrush"];
             VaultStatusText.Text = "LOCKED";
@@ -149,7 +162,16 @@ public sealed partial class MainPage : Page
             _ => typeof(DashboardView)
         };
 
-        ContentFrame.Navigate(targetPage);
+        try
+        {
+            if (ContentFrame.CurrentSourcePageType == targetPage) return;
+            ContentFrame.Navigate(targetPage);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[NAVIGATION ERROR] Failed to navigate to {tag}: {ex}");
+            _vm?.ShowStatus($"Navigation error: {ex.Message}", InfoBarSeverity.Error);
+        }
     }
 
     private async void EmergencyLockAll_Click(object sender, RoutedEventArgs e)

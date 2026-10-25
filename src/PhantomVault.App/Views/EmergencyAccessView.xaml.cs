@@ -11,14 +11,15 @@ public sealed partial class EmergencyAccessView : Page
 
     public EmergencyAccessView()
     {
-        InitializeComponent();
         _vm = App.Services.GetRequiredService<MainViewModel>();
         DataContext = _vm;
+        InitializeComponent();
         Loaded += EmergencyAccessView_Loaded;
     }
 
     private void EmergencyAccessView_Loaded(object sender, RoutedEventArgs e)
     {
+        if (_vm == null) return;
         AutoLockToggle.IsOn = _vm.IsAutoLockEnabled;
         InactivitySlider.Value = _vm.InactivityTimeoutMinutes;
         InactivityTimeoutLabel.Text = $"{_vm.InactivityTimeoutMinutes} Minutes";
@@ -37,6 +38,7 @@ public sealed partial class EmergencyAccessView : Page
 
     private void PolicySettingChanged(object sender, RoutedEventArgs e)
     {
+        if (_vm == null || AutoLockToggle == null || SessionLockToggle == null || DeadMansToggle == null) return;
         _vm.IsAutoLockEnabled = AutoLockToggle.IsOn;
         _vm.IsSessionLockEnabled = SessionLockToggle.IsOn;
         _vm.IsDeadMansEnabled = DeadMansToggle.IsOn;
@@ -44,7 +46,7 @@ public sealed partial class EmergencyAccessView : Page
 
     private void InactivitySlider_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
-        if (InactivityTimeoutLabel != null)
+        if (_vm != null && InactivityTimeoutLabel != null)
         {
             int val = (int)e.NewValue;
             _vm.InactivityTimeoutMinutes = val;
@@ -54,7 +56,7 @@ public sealed partial class EmergencyAccessView : Page
 
     private void DeadMansSlider_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
-        if (DeadMansTimeoutLabel != null)
+        if (_vm != null && DeadMansTimeoutLabel != null)
         {
             int val = (int)e.NewValue;
             _vm.DeadMansTimeoutMinutes = val;
@@ -64,7 +66,7 @@ public sealed partial class EmergencyAccessView : Page
 
     private void WarningCountdownSlider_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
-        if (WarningCountdownLabel != null)
+        if (_vm != null && WarningCountdownLabel != null)
         {
             int val = (int)e.NewValue;
             _vm.WarningCountdownSeconds = val;
