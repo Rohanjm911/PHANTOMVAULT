@@ -49,6 +49,33 @@
                 </StackPanel>
             </Border>
 
+            <!-- SECTION: TACTICAL CYBER SOUND EFFECTS -->
+            <Border Style="{StaticResource SecurityCardStyle}">
+                <StackPanel Spacing="14">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE767;" FontSize="16" Foreground="{StaticResource PrimaryAccentBrush}" />
+                        <TextBlock Text="TACTICAL CYBER SOUND EFFECTS &amp; ACOUSTIC FEEDBACK" FontSize="13" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" />
+                    </StackPanel>
+
+                    <TextBlock Text="Pure mathematical in-memory synthesized PCM audio feedback. Provides responsive acoustic confirmation for unlocking, locking, shredding, and emergency alarms." 
+                               Foreground="{StaticResource SecondaryTextBrush}" FontSize="12" />
+
+                    <ToggleSwitch x:Name="SoundEffectsToggleSwitch" Header="Enable Tactical Cyber Audio Feedback" IsOn="True" Toggled="SoundEffectsToggleSwitch_Toggled" />
+
+                    <!-- AUDITION BUTTONS -->
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Audition Synthesized Waveforms" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource MutedTextBrush}" />
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button Content="🔊 Unlock Chime" Style="{StaticResource SecondaryButtonStyle}" Click="TestUnlockSound_Click" />
+                            <Button Content="🔒 Lock Arming" Style="{StaticResource SecondaryButtonStyle}" Click="TestLockSound_Click" />
+                            <Button Content="☣️ DoD Shred" Style="{StaticResource SecondaryButtonStyle}" Click="TestShredSound_Click" />
+                            <Button Content="📡 Stego Chirp" Style="{StaticResource SecondaryButtonStyle}" Click="TestStegoSound_Click" />
+                            <Button Content="🚨 Lockdown Alarm" Style="{StaticResource DestructiveButtonStyle}" Click="TestEmergencySound_Click" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
             <!-- SECTION 2: PRIVACY & ZERO TELEMETRY -->
             <Border Style="{StaticResource SecurityCardStyle}">
                 <StackPanel Spacing="14">

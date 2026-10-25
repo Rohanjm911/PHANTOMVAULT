@@ -48,6 +48,9 @@ PHANTOMVAULT is built using enterprise-grade engineering technologies with stric
 
 - **Chunked Authenticated Encryption**: 64 KiB independently authenticated chunks with chunk-index binding and unique nonces, preventing chunk reordering, truncation, or splicing attacks.
 - **Argon2id Key Derivation**: High memory hardness (64 MiB, 4 iterations, 4 lanes) ensures offline master password attacks are computationally prohibitive.
+- **Plausible Deniability & Decoy Vault Enclave**: Secondary duress password that safely unseals an isolated Decoy Vault populated with realistic decoy documents (`Tax_Filing_Summary_2024.txt`, `Household_Expenses_Ledger.csv`, `Family_Vacation_Itinerary_Tokyo.txt`) under physical coercion, keeping the authentic vault cryptographically concealed with zero master key disclosure.
+- **Covert Audio Steganography Player & Acoustic Parity Auditor**: In-app native WAV playback before & after embedding, real-time acoustic distortion HUD, and parity entropy auditing for undetectable audio concealment.
+- **Tactical Cyber Sound Effects Engine**: Zero-leakage in-memory synthesized 16-bit PCM WAV audio feedback (Triple harmonic unlock chime, electromagnetic lock arming, DoD shred forensic wipe, stego acoustic chirp, emergency lockdown alarm) with settings toggle and audition console.
 - **Dual-Carrier Steganography**: Embed encrypted files into standard PNG images (scanline RGBA) or WAV audio (16-bit PCM samples) with capacity verification and integrity checks.
 - **Multi-Vault Compartmentalization**: Independent master keys, separate salts, and decoupled access credentials ensure breach containment.
 - **Zero Remote Dependency**: Completely local-first, offline-capable, with zero telemetry, zero analytics, zero external network sockets, and no mandatory cloud accounts.

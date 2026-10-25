@@ -142,6 +142,7 @@
                         </DropDownButton>
 
                         <Button Content="Shred External File" Style="{StaticResource DestructiveButtonStyle}" Click="StandaloneShredderButton_Click" />
+                        <Button Content="Plausible Deniability..." Style="{StaticResource SecondaryButtonStyle}" Click="SetupDuressButton_Click" ToolTipService.ToolTip="Configure secondary duress password for decoy vault unsealing" />
                         <Button Content="Lock Vault" Style="{StaticResource SecondaryButtonStyle}" Click="LockButton_Click" />
                     </StackPanel>
 

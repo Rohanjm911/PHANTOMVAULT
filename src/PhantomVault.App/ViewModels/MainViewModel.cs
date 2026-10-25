@@ -26,6 +26,8 @@ public partial class MainViewModel : ObservableObject
     private readonly IPasswordPolicyValidator _passwordValidator;
     private readonly ISecureShredderService _shredderService;
     private readonly IWindowsHelloService _windowsHelloService;
+    private readonly ISoundEffectService _soundService;
+    private readonly IDecoyVaultService _decoyService;
 
     public MainViewModel(
         IVaultRepository vaultRepo,
@@ -36,7 +38,9 @@ public partial class MainViewModel : ObservableObject
         ISecurityPolicyService policyService,
         IPasswordPolicyValidator passwordValidator,
         ISecureShredderService shredderService,
-        IWindowsHelloService windowsHelloService)
+        IWindowsHelloService windowsHelloService,
+        ISoundEffectService soundService,
+        IDecoyVaultService decoyService)
     {
         _vaultRepo = vaultRepo;
         _fileManager = fileManager;
@@ -47,6 +51,8 @@ public partial class MainViewModel : ObservableObject
         _passwordValidator = passwordValidator;
         _shredderService = shredderService;
         _windowsHelloService = windowsHelloService;
+        _soundService = soundService;
+        _decoyService = decoyService;
 
         _policyService.DeadMansSwitchCountdownTick += seconds =>
         {
@@ -61,6 +67,20 @@ public partial class MainViewModel : ObservableObject
         };
 
         _ = CheckWindowsHelloSupportAsync();
+    }
+
+    public ISoundEffectService SoundService => _soundService;
+    public IDecoyVaultService DecoyService => _decoyService;
+
+    [ObservableProperty]
+    private bool _isSoundEffectsEnabled = true;
+
+    [ObservableProperty]
+    private bool _hasDuressPassword;
+
+    partial void OnIsSoundEffectsEnabledChanged(bool value)
+    {
+        _soundService.IsSoundEnabled = value;
     }
 
     [ObservableProperty]
@@ -270,11 +290,31 @@ public partial class MainViewModel : ObservableObject
             BusyStatusText = "Deriving key and unlocking vault...";
             _policyService.RegisterUserActivity();
 
+            // Plausible Deniability Check (Duress / Decoy Mode)
+            if (await _decoyService.VerifyIsDuressPasswordAsync(SelectedVault.Id, password))
+            {
+                var decoyVault = await _decoyService.EnsureDecoyVaultAsync(SelectedVault.Id, password);
+                SelectedVault.State = VaultState.Unlocked;
+                UpdateLockState();
+
+                var decoyEntries = await _fileManager.GetEntriesAsync(decoyVault.Id);
+                Entries.Clear();
+                foreach (var entry in decoyEntries) Entries.Add(entry);
+
+                _soundService.PlayUnlockSound();
+                await _logService.LogEventAsync(ActivityEventType.DuressUnlockTriggered, ActivitySeverity.SecurityAlert, SelectedVault.Name, "Coercion alert: Duress password entered. Decoy vault unsealed seamlessly.");
+                await RefreshActivityLogsAsync();
+
+                ShowStatus($"Vault '{SelectedVault.Name}' unlocked.", InfoBarSeverity.Success);
+                return;
+            }
+
             await _vaultRepo.UnlockVaultAsync(SelectedVault.Id, password);
             SelectedVault.State = VaultState.Unlocked;
             UpdateLockState();
 
             await LoadEntriesAsync();
+            _soundService.PlayUnlockSound();
             await _logService.LogEventAsync(ActivityEventType.VaultUnlocked, ActivitySeverity.Info, SelectedVault.Name, "Vault unlocked successfully.");
             await RefreshActivityLogsAsync();
 
@@ -306,6 +346,7 @@ public partial class MainViewModel : ObservableObject
             UpdateLockState();
             Entries.Clear();
 
+            _soundService.PlayLockSound();
             await _logService.LogEventAsync(ActivityEventType.VaultLocked, ActivitySeverity.Info, SelectedVault.Name, "Vault locked.");
             await RefreshActivityLogsAsync();
             ShowStatus($"Vault '{SelectedVault.Name}' locked and keys cleared from memory.", InfoBarSeverity.Informational);
@@ -329,6 +370,7 @@ public partial class MainViewModel : ObservableObject
             UpdateLockState();
             Entries.Clear();
 
+            _soundService.PlayEmergencySound();
             await _logService.LogEventAsync(ActivityEventType.EmergencyLockTriggered, ActivitySeverity.SecurityAlert, "GLOBAL", "Global emergency lock triggered. All keys destroyed in RAM.");
             await RefreshActivityLogsAsync();
             ShowStatus("All vaults have been locked. Cryptographic keys cleared from volatile RAM.", InfoBarSeverity.Warning);
@@ -437,6 +479,7 @@ public partial class MainViewModel : ObservableObject
             {
                 BusyStatusText = $"Securely shredding plaintext original (DoD 5220.22-M)...";
                 await _shredderService.ShredFileAsync(filePath, 3, progress);
+                _soundService.PlayShredSound();
                 await _logService.LogEventAsync(ActivityEventType.FilePurged, ActivitySeverity.Warning, SelectedVault.Name, $"Plaintext original securely destroyed: {Path.GetFileName(filePath)}");
                 ShowStatus($"Encrypted '{entry.Name}' & securely shredded original from disk.", InfoBarSeverity.Success);
             }
@@ -496,6 +539,7 @@ public partial class MainViewModel : ObservableObject
 
             var progress = new Progress<double>(p => OperationProgress = p);
             await _shredderService.ShredFileAsync(filePath, 3, progress);
+            _soundService.PlayShredSound();
 
             await _logService.LogEventAsync(ActivityEventType.FilePurged, ActivitySeverity.Warning, "SYSTEM", $"External file securely shredded: {fileName}");
             await RefreshActivityLogsAsync();
@@ -640,6 +684,7 @@ public partial class MainViewModel : ObservableObject
 
             var progress = new Progress<double>(p => OperationProgress = p);
             await _stegoService.EmbedPayloadAsync(StegoCarrierPath, StegoPayloadPath, StegoPassword, outPath, progress);
+            _soundService.PlayStegoSound();
 
             await _logService.LogEventAsync(ActivityEventType.StegoPayloadEmbedded, ActivitySeverity.Info, "STEGO", $"Payload embedded into {Path.GetFileName(outPath)}");
             await RefreshActivityLogsAsync();
@@ -678,6 +723,7 @@ public partial class MainViewModel : ObservableObject
 
             var progress = new Progress<double>(p => OperationProgress = p);
             var result = await _stegoService.ExtractPayloadAsync(StegoExtractionCarrierPath, StegoExtractionPassword, outDir, progress);
+            _soundService.PlayStegoSound();
 
             await _logService.LogEventAsync(ActivityEventType.StegoPayloadExtracted, ActivitySeverity.Info, "STEGO", $"Payload '{result.OriginalFileName}' extracted.");
             await RefreshActivityLogsAsync();
@@ -1020,6 +1066,44 @@ public partial class MainViewModel : ObservableObject
         IsDeadMansWarningVisible = false;
         DeadMansCountdownSeconds = 0;
         ShowStatus("Pending emergency action safely cancelled.", InfoBarSeverity.Informational);
+    }
+
+    public async Task SetupDuressPasswordAsync(string duressPassword)
+    {
+        if (SelectedVault == null) return;
+        try
+        {
+            IsBusy = true;
+            BusyStatusText = "Configuring plausible deniability decoy enclave...";
+            _policyService.RegisterUserActivity();
+
+            await _decoyService.SetDuressPasswordAsync(SelectedVault.Id, duressPassword);
+            HasDuressPassword = true;
+            _soundService.PlayStegoSound();
+            await _logService.LogEventAsync(ActivityEventType.DecoyVaultCreated, ActivitySeverity.Info, SelectedVault.Name, "Plausible deniability decoy enclave configured.");
+            await RefreshActivityLogsAsync();
+            ShowStatus("Plausible deniability configured. Entering this duress password will seamlessly unseal the decoy enclave.", InfoBarSeverity.Success);
+        }
+        catch (Exception ex)
+        {
+            ShowStatus($"Failed to configure duress password: {ex.Message}", InfoBarSeverity.Error);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    public async Task RefreshDuressStatusAsync()
+    {
+        if (SelectedVault != null)
+        {
+            HasDuressPassword = await _decoyService.HasDuressPasswordAsync(SelectedVault.Id);
+        }
+        else
+        {
+            HasDuressPassword = false;
+        }
     }
 
     public PasswordStrengthResult EvaluatePassword(string password)

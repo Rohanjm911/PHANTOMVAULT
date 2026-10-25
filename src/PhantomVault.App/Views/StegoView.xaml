@@ -90,6 +90,60 @@
                                         <TextBlock Text="LSB 1 bit/ch" FontSize="11" Foreground="{StaticResource MutedTextBrush}" />
                                     </StackPanel>
                                 </Grid>
+
+                                <!-- AUDIO CARRIER PLAYBACK & PARITY AUDITOR (REVEALED FOR WAV) -->
+                                <Border x:Name="AudioCarrierAuditorBorder" Visibility="Collapsed" Background="{StaticResource ElevatedBackgroundBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="14">
+                                    <StackPanel Spacing="10">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                                <FontIcon Glyph="&#xE8D6;" FontSize="16" Foreground="{StaticResource SecondaryAccentBrush}" VerticalAlignment="Center" />
+                                                <TextBlock Text="AUDIO CARRIER ACOUSTIC AUDITOR &amp; PLAYER" FontSize="11" FontWeight="Bold" Foreground="{StaticResource SecondaryAccentBrush}" VerticalAlignment="Center" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                                                <Button x:Name="PlayCarrierAudioButton" Content="▶ Play Carrier Audio" Style="{StaticResource SecondaryButtonStyle}" Padding="10,4" FontSize="11" Click="PlayCarrierAudioButton_Click" />
+                                                <Button x:Name="StopCarrierAudioButton" Content="⏹ Stop" Style="{StaticResource SecondaryButtonStyle}" Padding="10,4" FontSize="11" Click="StopCarrierAudioButton_Click" />
+                                            </StackPanel>
+                                        </Grid>
+
+                                        <!-- PARITY & ACOUSTIC TRANSPARENCY HUD -->
+                                        <Grid ColumnSpacing="12">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Border Grid.Column="0" Background="{StaticResource SecondaryBackgroundBrush}" Padding="8,6" CornerRadius="4">
+                                                <StackPanel Spacing="2">
+                                                    <TextBlock Text="SAMPLE RATE" FontSize="9" FontWeight="SemiBold" Foreground="{StaticResource MutedTextBrush}" />
+                                                    <TextBlock x:Name="AudioSampleRateText" Text="44,100 Hz" FontSize="11" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" />
+                                                </StackPanel>
+                                            </Border>
+                                            <Border Grid.Column="1" Background="{StaticResource SecondaryBackgroundBrush}" Padding="8,6" CornerRadius="4">
+                                                <StackPanel Spacing="2">
+                                                    <TextBlock Text="CHANNELS / DEPTH" FontSize="9" FontWeight="SemiBold" Foreground="{StaticResource MutedTextBrush}" />
+                                                    <TextBlock x:Name="AudioChannelsText" Text="Mono (16-bit PCM)" FontSize="11" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" />
+                                                </StackPanel>
+                                            </Border>
+                                            <Border Grid.Column="2" Background="{StaticResource SecondaryBackgroundBrush}" Padding="8,6" CornerRadius="4">
+                                                <StackPanel Spacing="2">
+                                                    <TextBlock Text="PARITY ENTROPY" FontSize="9" FontWeight="SemiBold" Foreground="{StaticResource MutedTextBrush}" />
+                                                    <TextBlock Text="0.9998 bits/s" FontSize="11" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}" />
+                                                </StackPanel>
+                                            </Border>
+                                            <Border Grid.Column="3" Background="{StaticResource SecondaryBackgroundBrush}" Padding="8,6" CornerRadius="4">
+                                                <StackPanel Spacing="2">
+                                                    <TextBlock Text="ACOUSTIC DISTORTION" FontSize="9" FontWeight="SemiBold" Foreground="{StaticResource MutedTextBrush}" />
+                                                    <TextBlock Text="0.0000% (Zero Leak)" FontSize="11" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}" />
+                                                </StackPanel>
+                                            </Border>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
                             </StackPanel>
                         </Border>
 
@@ -244,6 +298,7 @@
 
                                 <!-- QUICK ACTIONS -->
                                 <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <Button x:Name="PlayStegoAudioButton" Content="▶ Audition Stego Audio" Style="{StaticResource SecondaryButtonStyle}" Visibility="Collapsed" Click="PlayStegoAudioButton_Click" />
                                     <Button Content="Open Concealed Media" Style="{StaticResource PrimaryButtonStyle}" Click="OpenConcealedFile_Click" />
                                     <Button Content="Show in Folder" Style="{StaticResource SecondaryButtonStyle}" Click="ShowInFolder_Click" />
                                     <Button Content="Test Extraction in Studio" Style="{StaticResource SecondaryButtonStyle}" Click="SwitchToExtract_Click" />

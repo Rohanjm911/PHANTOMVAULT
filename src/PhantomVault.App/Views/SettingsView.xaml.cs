@@ -21,6 +21,7 @@ public sealed partial class SettingsView : Page
     private void SettingsView_Loaded(object sender, RoutedEventArgs e)
     {
         DefaultVaultDirBox.Text = PhantomVault.Storage.StoragePaths.DefaultVaultsDirectory;
+        SoundEffectsToggleSwitch.IsOn = _vm.SoundService.IsSoundEnabled;
     }
 
     private async void BrowseDefaultDir_Click(object sender, RoutedEventArgs e)
@@ -32,4 +33,15 @@ public sealed partial class SettingsView : Page
             _vm.ShowStatus("Default vault root path updated for this session.", InfoBarSeverity.Informational);
         }
     }
+
+    private void SoundEffectsToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+    {
+        _vm.SoundService.IsSoundEnabled = SoundEffectsToggleSwitch.IsOn;
+    }
+
+    private void TestUnlockSound_Click(object sender, RoutedEventArgs e) => _vm.SoundService.PlayUnlockSound();
+    private void TestLockSound_Click(object sender, RoutedEventArgs e) => _vm.SoundService.PlayLockSound();
+    private void TestShredSound_Click(object sender, RoutedEventArgs e) => _vm.SoundService.PlayShredSound();
+    private void TestStegoSound_Click(object sender, RoutedEventArgs e) => _vm.SoundService.PlayStegoSound();
+    private void TestEmergencySound_Click(object sender, RoutedEventArgs e) => _vm.SoundService.PlayEmergencySound();
 }

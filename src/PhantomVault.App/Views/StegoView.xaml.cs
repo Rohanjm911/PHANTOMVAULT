@@ -62,17 +62,20 @@ public sealed partial class StegoView : Page
             CarrierFileSizeText.Text = $"{MainViewModel.FormatBytes(fi.Length)} on disk";
             CarrierCapacityText.Text = MainViewModel.FormatBytes(_vm.StegoCarrierInfo.UsableCapacityBytes);
 
-            // Thumbnail / Icon
+            // Thumbnail / Icon & Audio Auditor Panel
             if (isPng && File.Exists(path))
             {
                 CarrierThumbnailImage.Source = new BitmapImage(new Uri(path));
                 CarrierThumbnailImage.Visibility = Visibility.Visible;
                 CarrierAudioIcon.Visibility = Visibility.Collapsed;
+                AudioCarrierAuditorBorder.Visibility = Visibility.Collapsed;
             }
             else
             {
                 CarrierThumbnailImage.Visibility = Visibility.Collapsed;
                 CarrierAudioIcon.Visibility = Visibility.Visible;
+                AudioCarrierAuditorBorder.Visibility = Visibility.Visible;
+                AudioChannelsText.Text = _vm.StegoCarrierInfo.Channels == 1 ? "Mono (16-bit PCM)" : "Stereo (16-bit PCM)";
             }
 
             // Auto-suggest default output path
@@ -182,7 +185,44 @@ public sealed partial class StegoView : Page
         var stegoFi = new FileInfo(stegoPath);
         CompareOriginalSpecsText.Text = $"{origFi.Name} ({MainViewModel.FormatBytes(origFi.Length)}) • Original";
         CompareStegoSpecsText.Text = $"{stegoFi.Name} ({MainViewModel.FormatBytes(stegoFi.Length)}) • Concealed";
+        PlayStegoAudioButton.Visibility = isPng ? Visibility.Collapsed : Visibility.Visible;
     }
+
+    #region Audio Carrier Playback & Acoustic Auditing
+    private void PlayCarrierAudioButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (string.IsNullOrEmpty(_vm.StegoCarrierPath) || !File.Exists(_vm.StegoCarrierPath)) return;
+        try
+        {
+            NativeAudioPlayer.PlayFile(_vm.StegoCarrierPath);
+            _vm.ShowStatus("Playing pristine carrier audio...", InfoBarSeverity.Informational);
+        }
+        catch (Exception ex)
+        {
+            _vm.ShowStatus($"Audio playback error: {ex.Message}", InfoBarSeverity.Error);
+        }
+    }
+
+    private void StopCarrierAudioButton_Click(object sender, RoutedEventArgs e)
+    {
+        NativeAudioPlayer.Stop();
+        _vm.ShowStatus("Audio playback stopped.", InfoBarSeverity.Informational);
+    }
+
+    private void PlayStegoAudioButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (string.IsNullOrEmpty(_lastGeneratedStegoPath) || !File.Exists(_lastGeneratedStegoPath)) return;
+        try
+        {
+            NativeAudioPlayer.PlayFile(_lastGeneratedStegoPath);
+            _vm.ShowStatus("Playing concealed stego audio (auditing zero acoustic distortion)...", InfoBarSeverity.Success);
+        }
+        catch (Exception ex)
+        {
+            _vm.ShowStatus($"Stego audio playback error: {ex.Message}", InfoBarSeverity.Error);
+        }
+    }
+    #endregion
 
     private void OpenConcealedFile_Click(object sender, RoutedEventArgs e)
     {

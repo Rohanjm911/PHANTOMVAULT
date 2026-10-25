@@ -168,3 +168,30 @@ public interface IWindowsHelloService
     Task<bool> VerifyUserAsync(string promptMessage);
 }
 
+/// <summary>
+/// Tactical cybersecurity audio synthesis and acoustic feedback service.
+/// Plays pure mathematically generated in-memory PCM WAV streams.
+/// </summary>
+public interface ISoundEffectService
+{
+    bool IsSoundEnabled { get; set; }
+    void PlayUnlockSound();
+    void PlayLockSound();
+    void PlayEmergencySound();
+    void PlayShredSound();
+    void PlayStegoSound();
+}
+
+/// <summary>
+/// Provides plausible deniability under physical duress or coercion.
+/// Configures and manages secondary decoy vaults tied to duress passwords.
+/// </summary>
+public interface IDecoyVaultService
+{
+    Task<bool> HasDuressPasswordAsync(Guid vaultId);
+    Task SetDuressPasswordAsync(Guid vaultId, string duressPassword);
+    Task<bool> VerifyIsDuressPasswordAsync(Guid vaultId, string candidatePassword);
+    Task<VaultDescriptor> EnsureDecoyVaultAsync(Guid masterVaultId, string duressPassword);
+    Task PopulateRealisticDecoyFilesAsync(Guid decoyVaultId);
+}
+

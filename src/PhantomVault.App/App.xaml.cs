@@ -60,6 +60,10 @@ public partial class App : Application
         services.AddSingleton<ISecureShredderService, PhantomVault.Security.Shredding.FileShredderService>();
         services.AddSingleton<IWindowsHelloService, Services.WindowsHelloService>();
 
+        // Tactical Audio Synthesis & Plausible Deniability
+        services.AddSingleton<ISoundEffectService, Services.SoundEffectService>();
+        services.AddSingleton<IDecoyVaultService, PhantomVault.Infrastructure.Decoy.DecoyVaultService>();
+
         // ViewModels
         services.AddSingleton<ViewModels.MainViewModel>();
 

@@ -71,6 +71,8 @@ public enum ActivityEventType
     IntegrityCheckFailed,
     SecuritySettingsChanged,
     EmergencyLockTriggered,
+    DuressUnlockTriggered,
+    DecoyVaultCreated,
     StegoPayloadEmbedded,
     StegoPayloadExtracted
 }

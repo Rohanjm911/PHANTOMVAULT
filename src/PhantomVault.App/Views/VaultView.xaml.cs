@@ -477,4 +477,52 @@ public sealed partial class VaultView : Page
         }
     }
     #endregion
+
+    #region Plausible Deniability Handlers
+    private async void SetupDuressButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_vm.SelectedVault == null) return;
+
+        var panel = new StackPanel { Spacing = 12 };
+        panel.Children.Add(new TextBlock
+        {
+            Text = "Configure a secret secondary password to disclose if forced to unlock under physical duress or coercion. Entering this password will seamlessly unseal an isolated Decoy Vault populated with realistic decoy files, keeping your authentic vault cryptographically untouched.",
+            TextWrapping = TextWrapping.Wrap,
+            Foreground = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["SecondaryTextBrush"],
+            FontSize = 12
+        });
+
+        var duressBox = new PasswordBox { Header = "Duress / Coercion Password", PlaceholderText = "Enter decoy unsealing password" };
+        var confirmBox = new PasswordBox { Header = "Confirm Duress Password", PlaceholderText = "Re-enter duress password" };
+        panel.Children.Add(duressBox);
+        panel.Children.Add(confirmBox);
+
+        var dialog = new ContentDialog
+        {
+            Title = "Plausible Deniability Setup",
+            Content = panel,
+            PrimaryButtonText = "Activate Decoy Enclave",
+            CloseButtonText = "Cancel",
+            DefaultButton = ContentDialogButton.Primary,
+            XamlRoot = this.XamlRoot
+        };
+
+        var res = await dialog.ShowAsync();
+        if (res == ContentDialogResult.Primary)
+        {
+            if (string.IsNullOrWhiteSpace(duressBox.Password) || duressBox.Password.Length < 6)
+            {
+                _vm.ShowStatus("Duress password must be at least 6 characters.", InfoBarSeverity.Error);
+                return;
+            }
+            if (duressBox.Password != confirmBox.Password)
+            {
+                _vm.ShowStatus("Duress passwords do not match.", InfoBarSeverity.Error);
+                return;
+            }
+
+            await _vm.SetupDuressPasswordAsync(duressBox.Password);
+        }
+    }
+    #endregion
 }
