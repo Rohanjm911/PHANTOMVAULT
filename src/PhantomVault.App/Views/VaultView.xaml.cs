@@ -9,6 +9,7 @@ using PhantomVault.Core.Enums;
 using PhantomVault.Core.Models;
 using PhantomVault_App.Helpers;
 using PhantomVault_App.ViewModels;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace PhantomVault_App.Views;
 
@@ -203,5 +204,45 @@ public sealed partial class VaultView : Page
     private void NewVaultButton_Click(object sender, RoutedEventArgs e)
     {
         _vm.RequestNavigate("Vaults");
+    }
+
+    private void FilesArea_DragOver(object sender, DragEventArgs e)
+    {
+        if (e.DataView.Contains(StandardDataFormats.StorageItems))
+        {
+            e.AcceptedOperation = DataPackageOperation.Copy;
+            e.DragUIOverride.Caption = "Encrypt & Store in Vault";
+            e.DragUIOverride.IsCaptionVisible = true;
+            e.DragUIOverride.IsContentVisible = true;
+            DropTargetOverlay.Visibility = Visibility.Visible;
+        }
+    }
+
+    private void FilesArea_DragLeave(object sender, DragEventArgs e)
+    {
+        DropTargetOverlay.Visibility = Visibility.Collapsed;
+    }
+
+    private async void FilesArea_Drop(object sender, DragEventArgs e)
+    {
+        DropTargetOverlay.Visibility = Visibility.Collapsed;
+        if (e.DataView.Contains(StandardDataFormats.StorageItems))
+        {
+            var items = await e.DataView.GetStorageItemsAsync();
+            int importedCount = 0;
+            foreach (var item in items)
+            {
+                if (item is Windows.Storage.StorageFile file)
+                {
+                    await _vm.ImportFileAsync(file.Path);
+                    importedCount++;
+                }
+            }
+
+            if (importedCount > 0)
+            {
+                UpdateLockDisplay(_vm.IsUnlocked);
+            }
+        }
     }
 }

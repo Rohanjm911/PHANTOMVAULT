@@ -137,8 +137,10 @@
                     <Button Grid.Column="2" Content="Verify All Integrities" Style="{StaticResource SecondaryButtonStyle}" Click="VerifyAllButton_Click" />
                 </Grid>
 
-                <!-- FILES LIST & EMPTY STATE -->
-                <Grid Grid.Row="2">
+                <!-- FILES LIST & EMPTY STATE WITH DRAG-AND-DROP -->
+                <Grid Grid.Row="2" x:Name="FilesContainerGrid" AllowDrop="True" 
+                      DragOver="FilesArea_DragOver" DragLeave="FilesArea_DragLeave" Drop="FilesArea_Drop">
+                    
                     <!-- LIST VIEW -->
                     <Border x:Name="FilesListBorder" Style="{StaticResource SecurityCardStyle}" Padding="0" Visibility="Visible">
                         <ListView x:Name="FilesListView" SelectionMode="Single">
@@ -190,14 +192,30 @@
                         </ListView>
                     </Border>
 
-                    <!-- EMPTY VAULT STATE -->
-                    <Border x:Name="EmptyVaultWorkspaceBorder" Style="{StaticResource SecurityCardStyle}" Padding="40" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="500" Visibility="Collapsed">
+                    <!-- EMPTY VAULT STATE (WITH DRAG & DROP HINT) -->
+                    <Border x:Name="EmptyVaultWorkspaceBorder" Background="{StaticResource ElevatedBackgroundBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="2" CornerRadius="12" Padding="40" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="520" Visibility="Collapsed">
                         <StackPanel Spacing="14" HorizontalAlignment="Center">
-                            <FontIcon Glyph="&#xE8B7;" FontSize="44" Foreground="{StaticResource PrimaryAccentBrush}" HorizontalAlignment="Center" />
-                            <TextBlock Text="This vault is empty." FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Foreground="{StaticResource PrimaryTextBrush}" />
-                            <TextBlock Text="Import files to begin building your private workspace. All items are chunked and encrypted with AES-256-GCM." 
+                            <Border Background="{StaticResource SecondaryBackgroundBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="28" Width="56" Height="56" HorizontalAlignment="Center">
+                                <FontIcon Glyph="&#xE898;" FontSize="26" Foreground="{StaticResource PrimaryAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <TextBlock Text="This vault is empty." FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" Foreground="{StaticResource PrimaryTextBrush}" />
+                            <TextBlock Text="Drag and drop files directly here to encrypt, or click below to browse from your device. All files are partitioned into 64 KiB independently authenticated AES-256-GCM chunks." 
                                        Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap" TextAlignment="Center" FontSize="13" />
-                            <Button Content="Import Files" Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Center" Padding="20,10" Click="ImportButton_Click" />
+                            <Button Content="Browse &amp; Import Files" Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Center" Padding="22,10" Click="ImportButton_Click" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- DRAG OVERLAY -->
+                    <Border x:Name="DropTargetOverlay" Visibility="Collapsed" Background="#E611151D" BorderBrush="{StaticResource PrimaryAccentBrush}" BorderThickness="2" CornerRadius="8" Padding="32" Canvas.ZIndex="100">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="14">
+                            <Border Background="{StaticResource ElevatedBackgroundBrush}" BorderBrush="{StaticResource PrimaryAccentBrush}" BorderThickness="1" CornerRadius="32" Width="64" Height="64" HorizontalAlignment="Center">
+                                <FontIcon Glyph="&#xE898;" FontSize="28" Foreground="{StaticResource PrimaryAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <TextBlock Text="Release to Encrypt &amp; Store" FontSize="20" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" HorizontalAlignment="Center" />
+                            <TextBlock Text="Files will be partitioned into 64 KiB independently authenticated AES-256-GCM chunks." FontSize="13" Foreground="{StaticResource SecondaryTextBrush}" HorizontalAlignment="Center" />
+                            <Border Background="{StaticResource SecondaryBackgroundBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="4" Padding="10,6" HorizontalAlignment="Center">
+                                <TextBlock Text="🔒 Zero Plaintext Leaks • Memory-Zeroized Ingestion" FontSize="11" FontFamily="{StaticResource MonospaceFontFamily}" Foreground="{StaticResource PrimaryAccentBrush}" />
+                            </Border>
                         </StackPanel>
                     </Border>
                 </Grid>

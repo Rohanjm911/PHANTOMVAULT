@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:PhantomVault_App.Controls"
     mc:Ignorable="d">
 
     <Grid Padding="28" RowSpacing="20">
@@ -21,63 +22,94 @@
         </StackPanel>
 
         <!-- TABS: HIDE DATA (GUIDED) / EXTRACT DATA -->
-        <TabView Grid.Row="1" CanReorderTabs="False">
+        <TabView x:Name="StegoTabView" Grid.Row="1" CanReorderTabs="False">
             <!-- TAB 1: GUIDED CONCEALMENT WORKFLOW -->
             <TabViewItem Header="Conceal Data (Hide)" IsClosable="False">
                 <ScrollViewer Padding="0,16,0,0">
-                    <StackPanel Spacing="16" MaxWidth="800" HorizontalAlignment="Left">
+                    <StackPanel Spacing="16" MaxWidth="840" HorizontalAlignment="Left">
 
-                        <!-- STEP 1: SELECT CARRIER -->
-                        <Border Style="{StaticResource SecurityCardStyle}">
+                        <!-- STEP 1: SELECT CARRIER (DRAG & DROP READY) -->
+                        <Border x:Name="CarrierCardBorder" Style="{StaticResource SecurityCardStyle}" 
+                                AllowDrop="True" DragOver="CarrierDrop_DragOver" DragLeave="CarrierDrop_DragLeave" Drop="CarrierDrop_Drop">
                             <StackPanel Spacing="12">
-                                <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <Border Background="{StaticResource PrimaryAccentBrush}" CornerRadius="10" Width="20" Height="20">
-                                        <TextBlock Text="1" FontSize="11" FontWeight="Bold" Foreground="#0B0D12" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                    </Border>
-                                    <TextBlock Text="SELECT CARRIER MEDIA" FontSize="12" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" VerticalAlignment="Center" />
-                                </StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <Border Background="{StaticResource PrimaryAccentBrush}" CornerRadius="10" Width="20" Height="20">
+                                            <TextBlock Text="1" FontSize="11" FontWeight="Bold" Foreground="#0B0D12" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="SELECT CARRIER MEDIA" FontSize="12" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" Text="💡 Drag &amp; drop PNG or WAV here" FontSize="11" Foreground="{StaticResource MutedTextBrush}" VerticalAlignment="Center" />
+                                </Grid>
 
                                 <Grid ColumnSpacing="10">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBox x:Name="CarrierPathBox" PlaceholderText="Select a .png image or .wav audio carrier..." IsReadOnly="True" />
+                                    <TextBox x:Name="CarrierPathBox" PlaceholderText="Select or drop a .png image or .wav audio carrier..." IsReadOnly="True" />
                                     <Button Grid.Column="1" Content="Browse Carrier..." Style="{StaticResource SecondaryButtonStyle}" Click="BrowseCarrierButton_Click" />
                                 </Grid>
 
-                                <!-- CARRIER CAPACITY REPORT -->
-                                <Grid x:Name="CapacityReportGrid" Visibility="Collapsed" Background="{StaticResource SecondaryBackgroundBrush}" Padding="14" CornerRadius="6" ColumnSpacing="12">
+                                <!-- CARRIER PREVIEW & METRICS REPORT -->
+                                <Grid x:Name="CapacityReportGrid" Visibility="Collapsed" Background="{StaticResource SecondaryBackgroundBrush}" Padding="16" CornerRadius="8" ColumnSpacing="16">
                                     <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0">
-                                        <TextBlock Text="CARRIER TYPE" FontSize="10" Foreground="{StaticResource MutedTextBrush}" />
+
+                                    <!-- Thumbnail or Audio Glyph -->
+                                    <Border Grid.Column="0" Background="{StaticResource ElevatedBackgroundBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6" Width="100" Height="80" VerticalAlignment="Center">
+                                        <Grid>
+                                            <Image x:Name="CarrierThumbnailImage" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <FontIcon x:Name="CarrierAudioIcon" Glyph="&#xE8D6;" FontSize="32" Foreground="{StaticResource SecondaryAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed" />
+                                        </Grid>
+                                    </Border>
+
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                        <TextBlock Text="CARRIER TYPE" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource MutedTextBrush}" />
                                         <TextBlock x:Name="CarrierTypeText" Text="PNG Image" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" />
+                                        <TextBlock x:Name="CarrierFormatText" Text="RGBA 32-bit" FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
                                     </StackPanel>
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="SPECIFICATIONS" FontSize="10" Foreground="{StaticResource MutedTextBrush}" />
+
+                                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="2">
+                                        <TextBlock Text="SPECIFICATIONS" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource MutedTextBrush}" />
                                         <TextBlock x:Name="CarrierDimsText" Text="1920 x 1080" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" />
+                                        <TextBlock x:Name="CarrierFileSizeText" Text="2.4 MB on disk" FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
                                     </StackPanel>
-                                    <StackPanel Grid.Column="2">
-                                        <TextBlock Text="USABLE PAYLOAD CAPACITY" FontSize="10" Foreground="{StaticResource MutedTextBrush}" />
-                                        <TextBlock x:Name="CarrierCapacityText" Text="777.6 KB" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}" />
+
+                                    <StackPanel Grid.Column="3" VerticalAlignment="Center" Spacing="2">
+                                        <TextBlock Text="USABLE CAPACITY" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource MutedTextBrush}" />
+                                        <TextBlock x:Name="CarrierCapacityText" Text="777.6 KB" FontSize="16" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}" />
+                                        <TextBlock Text="LSB 1 bit/ch" FontSize="11" Foreground="{StaticResource MutedTextBrush}" />
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
                         </Border>
 
-                        <!-- STEP 2: SELECT PAYLOAD -->
-                        <Border Style="{StaticResource SecurityCardStyle}">
+                        <!-- STEP 2: SELECT PAYLOAD (DRAG & DROP READY) -->
+                        <Border x:Name="PayloadCardBorder" Style="{StaticResource SecurityCardStyle}" 
+                                AllowDrop="True" DragOver="PayloadDrop_DragOver" DragLeave="PayloadDrop_DragLeave" Drop="PayloadDrop_Drop">
                             <StackPanel Spacing="12">
-                                <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <Border Background="{StaticResource PrimaryAccentBrush}" CornerRadius="10" Width="20" Height="20">
-                                        <TextBlock Text="2" FontSize="11" FontWeight="Bold" Foreground="#0B0D12" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                    </Border>
-                                    <TextBlock Text="SELECT SECRET PAYLOAD" FontSize="12" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" VerticalAlignment="Center" />
-                                </StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <Border Background="{StaticResource PrimaryAccentBrush}" CornerRadius="10" Width="20" Height="20">
+                                            <TextBlock Text="2" FontSize="11" FontWeight="Bold" Foreground="#0B0D12" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="SELECT SECRET PAYLOAD" FontSize="12" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" Text="💡 Drag &amp; drop any secret file here" FontSize="11" Foreground="{StaticResource MutedTextBrush}" VerticalAlignment="Center" />
+                                </Grid>
 
                                 <TextBlock Text="Any file type can be concealed. The payload is encrypted with AES-256-GCM before embedding into the carrier." 
                                            Foreground="{StaticResource SecondaryTextBrush}" FontSize="12" />
@@ -87,17 +119,22 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBox x:Name="PayloadPathBox" PlaceholderText="Select file to encrypt and conceal..." IsReadOnly="True" />
+                                    <TextBox x:Name="PayloadPathBox" PlaceholderText="Select or drop file to encrypt and conceal..." IsReadOnly="True" />
                                     <Button Grid.Column="1" Content="Browse Payload..." Style="{StaticResource SecondaryButtonStyle}" Click="BrowsePayloadButton_Click" />
                                 </Grid>
 
-                                <TextBlock x:Name="PayloadDetailsText" FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" Visibility="Collapsed" />
+                                <Border x:Name="PayloadDetailsBorder" Background="{StaticResource SecondaryBackgroundBrush}" Padding="12,8" CornerRadius="6" Visibility="Collapsed">
+                                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                        <FontIcon Glyph="&#xE8A5;" FontSize="16" Foreground="{StaticResource PrimaryAccentBrush}" VerticalAlignment="Center" />
+                                        <TextBlock x:Name="PayloadDetailsText" FontSize="12" Foreground="{StaticResource PrimaryTextBrush}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Border>
                             </StackPanel>
                         </Border>
 
-                        <!-- STEP 3: CONFIGURE PROTECTION -->
+                        <!-- STEP 3: CONFIGURE PROTECTION WITH INTERACTIVE ENTROPY HUD -->
                         <Border Style="{StaticResource SecurityCardStyle}">
-                            <StackPanel Spacing="12">
+                            <StackPanel Spacing="14">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <Border Background="{StaticResource PrimaryAccentBrush}" CornerRadius="10" Width="20" Height="20">
                                         <TextBlock Text="3" FontSize="11" FontWeight="Bold" Foreground="#0B0D12" HorizontalAlignment="Center" VerticalAlignment="Center" />
@@ -105,8 +142,10 @@
                                     <TextBlock Text="CONFIGURE ENCRYPTION PASSWORD" FontSize="12" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" VerticalAlignment="Center" />
                                 </StackPanel>
 
-                                <PasswordBox x:Name="StegoPasswordBox" PlaceholderText="Enter password to encrypt payload (AES-256-GCM)" PasswordChanged="StegoPasswordBox_PasswordChanged" />
-                                <TextBlock x:Name="StegoEntropyText" Text="Password Strength: Not Evaluated" FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" />
+                                <PasswordBox x:Name="StegoPasswordBox" PlaceholderText="Enter master password to encrypt payload with AES-256-GCM" PasswordChanged="StegoPasswordBox_PasswordChanged" />
+                                
+                                <!-- REUSABLE CYBER HUD ENTROPY METER -->
+                                <controls:PasswordEntropyHud x:Name="StegoEntropyHud" Margin="0,4,0,0" />
                             </StackPanel>
                         </Border>
 
@@ -117,7 +156,7 @@
                                     <Border Background="{StaticResource PrimaryAccentBrush}" CornerRadius="10" Width="20" Height="20">
                                         <TextBlock Text="4" FontSize="11" FontWeight="Bold" Foreground="#0B0D12" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                     </Border>
-                                    <TextBlock Text="CAPACITY VALIDATION" FontSize="12" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" VerticalAlignment="Center" />
+                                    <TextBlock Text="CAPACITY &amp; INTEGRITY VALIDATION" FontSize="12" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" VerticalAlignment="Center" />
                                 </StackPanel>
 
                                 <TextBlock x:Name="CapacityCheckMessageText" Text="Select carrier and secret payload to check capacity." FontSize="12" Foreground="{StaticResource SecondaryTextBrush}" />
@@ -146,7 +185,69 @@
                                     <Button Grid.Column="1" Content="Browse Save As..." Style="{StaticResource SecondaryButtonStyle}" Click="BrowseSaveAs_Click" />
                                 </Grid>
 
-                                <Button Content="Embed and Save Concealed Carrier" Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Left" Padding="24,10" Click="EmbedButton_Click" />
+                                <Button x:Name="EmbedButton" Content="Embed and Save Concealed Carrier" Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Left" Padding="24,10" Click="EmbedButton_Click" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- STEP 6: VISUAL COMPARISON & INSPECTOR RESULTS -->
+                        <Border x:Name="StegoResultCard" Visibility="Collapsed" Style="{StaticResource SecurityCardStyle}" BorderBrush="{StaticResource PrimaryAccentBrush}" BorderThickness="1">
+                            <StackPanel Spacing="16">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon Glyph="&#xE73E;" FontSize="18" Foreground="{StaticResource SuccessBrush}" VerticalAlignment="Center" />
+                                        <TextBlock Text="CONCEALMENT COMPLETE &amp; VERIFIED" FontSize="14" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <Border Grid.Column="1" Background="{StaticResource SecondaryBackgroundBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="4" Padding="8,4">
+                                        <TextBlock Text="0.00% Perceptual Difference" FontSize="11" FontFamily="{StaticResource MonospaceFontFamily}" Foreground="{StaticResource PrimaryAccentBrush}" />
+                                    </Border>
+                                </Grid>
+
+                                <!-- SIDE-BY-SIDE VISUAL COMPARISON -->
+                                <Grid ColumnSpacing="16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Original Carrier Box -->
+                                    <Border Grid.Column="0" Background="{StaticResource SecondaryBackgroundBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="14">
+                                        <StackPanel Spacing="10">
+                                            <TextBlock Text="ORIGINAL CARRIER MEDIA" FontSize="11" FontWeight="Bold" Foreground="{StaticResource SecondaryTextBrush}" />
+                                            <Border Background="{StaticResource PrimaryBackgroundBrush}" CornerRadius="6" Height="140">
+                                                <Grid>
+                                                    <Image x:Name="CompareOriginalImage" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    <FontIcon x:Name="CompareOriginalAudioIcon" Glyph="&#xE8D6;" FontSize="40" Foreground="{StaticResource SecondaryAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed" />
+                                                </Grid>
+                                            </Border>
+                                            <TextBlock x:Name="CompareOriginalSpecsText" Text="1920x1080 • Clean Carrier" FontSize="11" Foreground="{StaticResource MutedTextBrush}" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- Concealed Stego Box -->
+                                    <Border Grid.Column="1" Background="{StaticResource SecondaryBackgroundBrush}" BorderBrush="{StaticResource PrimaryAccentBrush}" BorderThickness="1" CornerRadius="8" Padding="14">
+                                        <StackPanel Spacing="10">
+                                            <TextBlock Text="CONCEALED STEGO CARRIER" FontSize="11" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" />
+                                            <Border Background="{StaticResource PrimaryBackgroundBrush}" CornerRadius="6" Height="140">
+                                                <Grid>
+                                                    <Image x:Name="CompareStegoImage" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    <FontIcon x:Name="CompareStegoAudioIcon" Glyph="&#xE8D6;" FontSize="40" Foreground="{StaticResource PrimaryAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed" />
+                                                </Grid>
+                                            </Border>
+                                            <TextBlock x:Name="CompareStegoSpecsText" Text="1920x1080 • Encrypted Payload Sealed" FontSize="11" Foreground="{StaticResource PrimaryAccentBrush}" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+
+                                <!-- QUICK ACTIONS -->
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <Button Content="Open Concealed Media" Style="{StaticResource PrimaryButtonStyle}" Click="OpenConcealedFile_Click" />
+                                    <Button Content="Show in Folder" Style="{StaticResource SecondaryButtonStyle}" Click="ShowInFolder_Click" />
+                                    <Button Content="Test Extraction in Studio" Style="{StaticResource SecondaryButtonStyle}" Click="SwitchToExtract_Click" />
+                                </StackPanel>
                             </StackPanel>
                         </Border>
 
@@ -166,15 +267,23 @@
             <TabViewItem Header="Extract Hidden Data" IsClosable="False">
                 <ScrollViewer Padding="0,16,0,0">
                     <StackPanel Spacing="16" MaxWidth="800" HorizontalAlignment="Left">
-                        <Border Style="{StaticResource SecurityCardStyle}">
+                        <Border Style="{StaticResource SecurityCardStyle}"
+                                AllowDrop="True" DragOver="CarrierDrop_DragOver" DragLeave="CarrierDrop_DragLeave" Drop="ExtractCarrierDrop_Drop">
                             <StackPanel Spacing="12">
-                                <TextBlock Text="1. SELECT CONCEALED CARRIER" FontSize="12" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="1. SELECT CONCEALED CARRIER" FontSize="12" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" />
+                                    <TextBlock Grid.Column="1" Text="💡 Drag &amp; drop concealed file here" FontSize="11" Foreground="{StaticResource MutedTextBrush}" VerticalAlignment="Center" />
+                                </Grid>
                                 <Grid ColumnSpacing="10">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBox x:Name="ExtractCarrierPathBox" PlaceholderText="Select image or audio containing concealed payload..." IsReadOnly="True" />
+                                    <TextBox x:Name="ExtractCarrierPathBox" PlaceholderText="Select or drop image or audio containing concealed payload..." IsReadOnly="True" />
                                     <Button Grid.Column="1" Content="Browse Carrier..." Style="{StaticResource SecondaryButtonStyle}" Click="BrowseExtractCarrier_Click" />
                                 </Grid>
                             </StackPanel>

@@ -87,18 +87,15 @@ public sealed partial class VaultsView : Page
             Margin = new Thickness(0, 0, 0, 10) 
         };
 
-        var strengthText = new TextBlock 
+        var entropyHud = new Controls.PasswordEntropyHud 
         { 
-            Text = "Password Strength: Not Evaluated", 
-            FontSize = 11, 
-            Foreground = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["SecondaryTextBrush"],
-            Margin = new Thickness(0, 0, 0, 12) 
+            Margin = new Thickness(0, 0, 0, 14) 
         };
 
         passBox.PasswordChanged += (s, a) =>
         {
             var result = _vm.EvaluatePassword(passBox.Password);
-            strengthText.Text = $"Strength: {result.Label} (~{result.EstimatedEntropyBits:F0} bits of entropy)";
+            entropyHud.UpdatePassword(passBox.Password, result);
         };
 
         var kdfBox = new ComboBox 
@@ -124,7 +121,7 @@ public sealed partial class VaultsView : Page
         {
             Width = 460,
             Spacing = 2,
-            Children = { nameBox, pathBox, browseButton, passBox, confirmBox, strengthText, kdfBox, warningText }
+            Children = { nameBox, pathBox, browseButton, passBox, confirmBox, entropyHud, kdfBox, warningText }
         };
 
         var dialog = new ContentDialog

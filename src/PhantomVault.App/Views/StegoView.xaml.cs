@@ -1,17 +1,21 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media.Imaging;
 using PhantomVault.Core.Enums;
 using PhantomVault_App.Helpers;
 using PhantomVault_App.ViewModels;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace PhantomVault_App.Views;
 
 public sealed partial class StegoView : Page
 {
     private readonly MainViewModel _vm;
+    private string _lastGeneratedStegoPath = string.Empty;
 
     public StegoView()
     {
@@ -25,27 +29,7 @@ public sealed partial class StegoView : Page
         string? path = await FilePickerHelper.PickSingleFileAsync(".png", ".wav");
         if (!string.IsNullOrEmpty(path))
         {
-            CarrierPathBox.Text = path;
-            await _vm.AnalyzeCarrierAsync(path);
-
-            if (_vm.StegoCarrierInfo != null)
-            {
-                CapacityReportGrid.Visibility = Visibility.Visible;
-                CarrierTypeText.Text = _vm.StegoCarrierInfo.CarrierType == CarrierType.PngImage ? "PNG Image" : "16-bit PCM WAV Audio";
-                CarrierDimsText.Text = _vm.StegoCarrierInfo.CarrierType == CarrierType.PngImage 
-                    ? $"{_vm.StegoCarrierInfo.Width} x {_vm.StegoCarrierInfo.Height} ({_vm.StegoCarrierInfo.Channels} ch)" 
-                    : $"{_vm.StegoCarrierInfo.TotalCarrierSizeBytes / 2:N0} samples ({_vm.StegoCarrierInfo.Channels} ch)";
-
-                CarrierCapacityText.Text = MainViewModel.FormatBytes(_vm.StegoCarrierInfo.UsableCapacityBytes);
-
-                // Auto-suggest default output path
-                string ext = Path.GetExtension(path);
-                string outPath = Path.Combine(Path.GetDirectoryName(path)!, $"{Path.GetFileNameWithoutExtension(path)}_concealed{ext}");
-                OutputPathBox.Text = outPath;
-                _vm.StegoOutputPath = outPath;
-
-                UpdateCapacityUi();
-            }
+            await ProcessCarrierSelectionAsync(path);
         }
     }
 
@@ -54,15 +38,63 @@ public sealed partial class StegoView : Page
         string? path = await FilePickerHelper.PickSingleFileAsync("*");
         if (!string.IsNullOrEmpty(path))
         {
-            PayloadPathBox.Text = path;
-            _vm.StegoPayloadPath = path;
+            ProcessPayloadSelection(path);
+        }
+    }
+
+    private async System.Threading.Tasks.Task ProcessCarrierSelectionAsync(string path)
+    {
+        CarrierPathBox.Text = path;
+        await _vm.AnalyzeCarrierAsync(path);
+
+        if (_vm.StegoCarrierInfo != null)
+        {
+            CapacityReportGrid.Visibility = Visibility.Visible;
+            bool isPng = _vm.StegoCarrierInfo.CarrierType == CarrierType.PngImage;
+
+            CarrierTypeText.Text = isPng ? "PNG Image" : "16-bit PCM WAV Audio";
+            CarrierFormatText.Text = isPng ? $"RGBA ({_vm.StegoCarrierInfo.Channels} channels)" : $"PCM Stereo ({_vm.StegoCarrierInfo.Channels} ch)";
+            CarrierDimsText.Text = isPng 
+                ? $"{_vm.StegoCarrierInfo.Width} x {_vm.StegoCarrierInfo.Height}" 
+                : $"{_vm.StegoCarrierInfo.TotalCarrierSizeBytes / 2:N0} samples";
 
             var fi = new FileInfo(path);
-            PayloadDetailsText.Text = $"File: {fi.Name} • Size: {MainViewModel.FormatBytes(fi.Length)} ({fi.Length:N0} bytes)";
-            PayloadDetailsText.Visibility = Visibility.Visible;
+            CarrierFileSizeText.Text = $"{MainViewModel.FormatBytes(fi.Length)} on disk";
+            CarrierCapacityText.Text = MainViewModel.FormatBytes(_vm.StegoCarrierInfo.UsableCapacityBytes);
+
+            // Thumbnail / Icon
+            if (isPng && File.Exists(path))
+            {
+                CarrierThumbnailImage.Source = new BitmapImage(new Uri(path));
+                CarrierThumbnailImage.Visibility = Visibility.Visible;
+                CarrierAudioIcon.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                CarrierThumbnailImage.Visibility = Visibility.Collapsed;
+                CarrierAudioIcon.Visibility = Visibility.Visible;
+            }
+
+            // Auto-suggest default output path
+            string ext = Path.GetExtension(path);
+            string outPath = Path.Combine(Path.GetDirectoryName(path)!, $"{Path.GetFileNameWithoutExtension(path)}_concealed{ext}");
+            OutputPathBox.Text = outPath;
+            _vm.StegoOutputPath = outPath;
 
             UpdateCapacityUi();
         }
+    }
+
+    private void ProcessPayloadSelection(string path)
+    {
+        PayloadPathBox.Text = path;
+        _vm.StegoPayloadPath = path;
+
+        var fi = new FileInfo(path);
+        PayloadDetailsText.Text = $"File: {fi.Name} • Size: {MainViewModel.FormatBytes(fi.Length)} ({fi.Length:N0} bytes)";
+        PayloadDetailsBorder.Visibility = Visibility.Visible;
+
+        UpdateCapacityUi();
     }
 
     private void UpdateCapacityUi()
@@ -78,7 +110,7 @@ public sealed partial class StegoView : Page
     {
         _vm.StegoPassword = StegoPasswordBox.Password;
         var strength = _vm.EvaluatePassword(StegoPasswordBox.Password);
-        StegoEntropyText.Text = $"Password Strength: {strength.Label} (~{strength.EstimatedEntropyBits:F0} bits entropy)";
+        StegoEntropyHud.UpdatePassword(StegoPasswordBox.Password, strength);
     }
 
     private async void BrowseSaveAs_Click(object sender, RoutedEventArgs e)
@@ -113,7 +145,154 @@ public sealed partial class StegoView : Page
         }
 
         await _vm.EmbedStegoAsync();
+
+        string outPath = _vm.StegoOutputPath;
+        if (File.Exists(outPath))
+        {
+            _lastGeneratedStegoPath = outPath;
+            ShowComparisonResults(outPath);
+        }
     }
+
+    private void ShowComparisonResults(string stegoPath)
+    {
+        StegoResultCard.Visibility = Visibility.Visible;
+        bool isPng = _vm.StegoCarrierInfo?.CarrierType == CarrierType.PngImage;
+
+        if (isPng && File.Exists(_vm.StegoCarrierPath))
+        {
+            CompareOriginalImage.Source = new BitmapImage(new Uri(_vm.StegoCarrierPath));
+            CompareOriginalImage.Visibility = Visibility.Visible;
+            CompareOriginalAudioIcon.Visibility = Visibility.Collapsed;
+
+            CompareStegoImage.Source = new BitmapImage(new Uri(stegoPath));
+            CompareStegoImage.Visibility = Visibility.Visible;
+            CompareStegoAudioIcon.Visibility = Visibility.Collapsed;
+        }
+        else
+        {
+            CompareOriginalImage.Visibility = Visibility.Collapsed;
+            CompareOriginalAudioIcon.Visibility = Visibility.Visible;
+
+            CompareStegoImage.Visibility = Visibility.Collapsed;
+            CompareStegoAudioIcon.Visibility = Visibility.Visible;
+        }
+
+        var origFi = new FileInfo(_vm.StegoCarrierPath);
+        var stegoFi = new FileInfo(stegoPath);
+        CompareOriginalSpecsText.Text = $"{origFi.Name} ({MainViewModel.FormatBytes(origFi.Length)}) • Original";
+        CompareStegoSpecsText.Text = $"{stegoFi.Name} ({MainViewModel.FormatBytes(stegoFi.Length)}) • Concealed";
+    }
+
+    private void OpenConcealedFile_Click(object sender, RoutedEventArgs e)
+    {
+        if (!string.IsNullOrEmpty(_lastGeneratedStegoPath) && File.Exists(_lastGeneratedStegoPath))
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = _lastGeneratedStegoPath,
+                UseShellExecute = true
+            });
+        }
+    }
+
+    private void ShowInFolder_Click(object sender, RoutedEventArgs e)
+    {
+        if (!string.IsNullOrEmpty(_lastGeneratedStegoPath) && File.Exists(_lastGeneratedStegoPath))
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "explorer.exe",
+                Arguments = $"/select,\"{_lastGeneratedStegoPath}\"",
+                UseShellExecute = true
+            });
+        }
+    }
+
+    private void SwitchToExtract_Click(object sender, RoutedEventArgs e)
+    {
+        if (!string.IsNullOrEmpty(_lastGeneratedStegoPath))
+        {
+            ExtractCarrierPathBox.Text = _lastGeneratedStegoPath;
+            _vm.StegoExtractionCarrierPath = _lastGeneratedStegoPath;
+            StegoTabView.SelectedIndex = 1;
+        }
+    }
+
+    #region Drag & Drop Event Handlers
+    private void CarrierDrop_DragOver(object sender, DragEventArgs e)
+    {
+        if (e.DataView.Contains(StandardDataFormats.StorageItems))
+        {
+            e.AcceptedOperation = DataPackageOperation.Copy;
+            e.DragUIOverride.Caption = "Set as Carrier Media";
+            e.DragUIOverride.IsCaptionVisible = true;
+        }
+    }
+
+    private void CarrierDrop_DragLeave(object sender, DragEventArgs e)
+    {
+    }
+
+    private async void CarrierDrop_Drop(object sender, DragEventArgs e)
+    {
+        if (e.DataView.Contains(StandardDataFormats.StorageItems))
+        {
+            var items = await e.DataView.GetStorageItemsAsync();
+            if (items.Count > 0 && items[0] is Windows.Storage.StorageFile file)
+            {
+                string ext = Path.GetExtension(file.Path).ToLowerInvariant();
+                if (ext == ".png" || ext == ".wav")
+                {
+                    await ProcessCarrierSelectionAsync(file.Path);
+                }
+                else
+                {
+                    _vm.ShowStatus("Invalid carrier format. Please select a .png image or .wav audio file.", InfoBarSeverity.Warning);
+                }
+            }
+        }
+    }
+
+    private void PayloadDrop_DragOver(object sender, DragEventArgs e)
+    {
+        if (e.DataView.Contains(StandardDataFormats.StorageItems))
+        {
+            e.AcceptedOperation = DataPackageOperation.Copy;
+            e.DragUIOverride.Caption = "Set as Secret Payload";
+            e.DragUIOverride.IsCaptionVisible = true;
+        }
+    }
+
+    private void PayloadDrop_DragLeave(object sender, DragEventArgs e)
+    {
+    }
+
+    private async void PayloadDrop_Drop(object sender, DragEventArgs e)
+    {
+        if (e.DataView.Contains(StandardDataFormats.StorageItems))
+        {
+            var items = await e.DataView.GetStorageItemsAsync();
+            if (items.Count > 0 && items[0] is Windows.Storage.StorageFile file)
+            {
+                ProcessPayloadSelection(file.Path);
+            }
+        }
+    }
+
+    private async void ExtractCarrierDrop_Drop(object sender, DragEventArgs e)
+    {
+        if (e.DataView.Contains(StandardDataFormats.StorageItems))
+        {
+            var items = await e.DataView.GetStorageItemsAsync();
+            if (items.Count > 0 && items[0] is Windows.Storage.StorageFile file)
+            {
+                ExtractCarrierPathBox.Text = file.Path;
+                _vm.StegoExtractionCarrierPath = file.Path;
+            }
+        }
+    }
+    #endregion
 
     private async void BrowseExtractCarrier_Click(object sender, RoutedEventArgs e)
     {
@@ -138,11 +317,16 @@ public sealed partial class StegoView : Page
     private async void ExtractButton_Click(object sender, RoutedEventArgs e)
     {
         _vm.StegoExtractionPassword = ExtractPasswordBox.Password;
-
         if (string.IsNullOrEmpty(_vm.StegoExtractionCarrierPath) || string.IsNullOrEmpty(_vm.StegoExtractionPassword))
         {
-            _vm.ShowStatus("Concealed carrier and decryption password are required.", InfoBarSeverity.Warning);
+            _vm.ShowStatus("Carrier and extraction password are required.", InfoBarSeverity.Warning);
             return;
+        }
+
+        if (string.IsNullOrEmpty(_vm.StegoExtractionOutDir))
+        {
+            _vm.StegoExtractionOutDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            ExtractOutDirBox.Text = _vm.StegoExtractionOutDir;
         }
 
         await _vm.ExtractStegoAsync();
