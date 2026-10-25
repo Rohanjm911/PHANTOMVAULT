@@ -35,7 +35,7 @@ public static class FilePickerHelper
         return file?.Path;
     }
 
-    public static async Task<string?> PickSaveFileAsync(string defaultFileName, string extension, string fileTypeDescription)
+    public static async Task<string?> PickSaveFileAsync(string defaultFileName, string extension, string fileTypeDescription = "Target File")
     {
         var picker = new FileSavePicker();
         if (MainWindowHandle != IntPtr.Zero)

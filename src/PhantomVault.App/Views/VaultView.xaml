@@ -8,13 +8,13 @@
     xmlns:models="using:PhantomVault.Core.Models"
     mc:Ignorable="d">
 
-    <Grid Padding="24" RowSpacing="20">
+    <Grid Padding="28" RowSpacing="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- TOP BAR / HEADER -->
+        <!-- TOP BAR: BREADCRUMBS & VAULT SELECTOR -->
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -22,9 +22,18 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Vertical" Spacing="4">
-                <TextBlock Text="Vault Storage &amp; Files" FontSize="26" FontWeight="Bold" />
-                <TextBlock Text="Trust Nothing. Reveal Nothing. Encrypted at rest with AES-256-GCM." 
-                           Foreground="{StaticResource SubtleHeaderBrush}" FontSize="13" />
+                <!-- CONTEXTUAL BREADCRUMBS -->
+                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <TextBlock Text="PHANTOMVAULT" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
+                    <TextBlock Text="/" FontSize="12" Foreground="{StaticResource MutedTextBrush}" />
+                    <TextBlock x:Name="BreadcrumbVaultNameText" Text="PersonalVault" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource PrimaryAccentBrush}" />
+                    <TextBlock Text="/" FontSize="12" Foreground="{StaticResource MutedTextBrush}" />
+                    <TextBlock Text="Encrypted Workspace" FontSize="12" Foreground="{StaticResource MutedTextBrush}" />
+                </StackPanel>
+
+                <TextBlock Text="Vault Workspace" FontSize="26" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" />
+                <TextBlock Text="Authenticated, chunked local file storage. Ciphertext and metadata are cryptographically sealed at rest." 
+                           Foreground="{StaticResource SecondaryTextBrush}" FontSize="13" />
             </StackPanel>
 
             <!-- VAULT SELECTOR & ACTIONS -->
@@ -33,27 +42,29 @@
                           DisplayMemberPath="Name"
                           SelectionChanged="VaultsComboBox_SelectionChanged" />
                 
-                <Button Content="New Vault" Style="{StaticResource AccentButtonStyle}" Click="NewVaultButton_Click" />
+                <Button Content="New Vault" Style="{StaticResource PrimaryButtonStyle}" Click="NewVaultButton_Click" />
             </StackPanel>
         </Grid>
 
         <!-- MAIN CONTENT AREA -->
         <Grid Grid.Row="1">
             <!-- LOCKED STATE -->
-            <Grid x:Name="LockedPanel" Visibility="Visible" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="440">
-                <Border Style="{StaticResource SecurityCardStyle}" Padding="32">
+            <Grid x:Name="LockedPanel" Visibility="Visible" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="460">
+                <Border Style="{StaticResource SecurityCardStyle}" Padding="36">
                     <StackPanel Spacing="18" HorizontalAlignment="Stretch">
-                        <FontIcon Glyph="&#xE72E;" FontSize="48" Foreground="{StaticResource BrandPurpleBrush}" HorizontalAlignment="Center" />
+                        <Border Background="{StaticResource SecondaryBackgroundBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="32" Width="64" Height="64" HorizontalAlignment="Center">
+                            <FontIcon Glyph="&#xE72E;" FontSize="28" Foreground="{StaticResource PrimaryAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
                         
-                        <TextBlock Text="Vault Locked" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" />
-                        <TextBlock Text="Keys have been zeroized in memory. Enter your master password to derive the key and unlock storage." 
-                                   Foreground="{StaticResource SubtleHeaderBrush}" TextWrapping="Wrap" TextAlignment="Center" FontSize="13" />
+                        <TextBlock Text="Vault Locked" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" Foreground="{StaticResource PrimaryTextBrush}" />
+                        <TextBlock Text="Cryptographic keys are currently purged from memory. Enter your master password to derive the key via Argon2id and unseal storage." 
+                                   Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap" TextAlignment="Center" FontSize="13" />
 
-                        <PasswordBox x:Name="UnlockPasswordBox" PlaceholderText="Master Password" KeyDown="UnlockPasswordBox_KeyDown" />
+                        <PasswordBox x:Name="UnlockPasswordBox" PlaceholderText="Enter Master Password" KeyDown="UnlockPasswordBox_KeyDown" HorizontalAlignment="Stretch" />
                         
-                        <Button Content="Unlock Vault" Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Stretch" Click="UnlockButton_Click" />
+                        <Button Content="Unlock Vault" Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Stretch" Click="UnlockButton_Click" />
 
-                        <TextBlock x:Name="UnlockErrorText" Foreground="{StaticResource BrandDangerBrush}" FontSize="12" HorizontalAlignment="Center" Visibility="Collapsed" />
+                        <TextBlock x:Name="UnlockErrorText" Foreground="{StaticResource ErrorBrush}" FontSize="12" HorizontalAlignment="Center" Visibility="Collapsed" />
                     </StackPanel>
                 </Border>
             </Grid>
@@ -66,7 +77,7 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <!-- STATS CARDS -->
+                <!-- STATS STRIP -->
                 <Grid Grid.Row="0" ColumnSpacing="16" Margin="0,0,0,16">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -78,38 +89,38 @@
                     <!-- Card 1: Files -->
                     <Border Grid.Column="0" Style="{StaticResource SecurityCardStyle}">
                         <StackPanel Spacing="4">
-                            <TextBlock Text="STORED FILES" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource SubtleHeaderBrush}" />
-                            <TextBlock x:Name="FileCountText" Text="0" FontSize="22" FontWeight="Bold" />
+                            <TextBlock Text="STORED FILES" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
+                            <TextBlock x:Name="FileCountText" Text="0" FontSize="22" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" />
                         </StackPanel>
                     </Border>
 
                     <!-- Card 2: Ciphertext Size -->
                     <Border Grid.Column="1" Style="{StaticResource SecurityCardStyle}">
                         <StackPanel Spacing="4">
-                            <TextBlock Text="ENCRYPTED ON DISK" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource SubtleHeaderBrush}" />
-                            <TextBlock x:Name="CiphertextSizeText" Text="0 KB" FontSize="22" FontWeight="Bold" />
+                            <TextBlock Text="ENCRYPTED ON DISK" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
+                            <TextBlock x:Name="CiphertextSizeText" Text="0 KB" FontSize="22" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" />
                         </StackPanel>
                     </Border>
 
                     <!-- Card 3: Cryptographic Spec -->
                     <Border Grid.Column="2" Style="{StaticResource SecurityCardStyle}">
                         <StackPanel Spacing="4">
-                            <TextBlock Text="CIPHER PRIMITIVE" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource SubtleHeaderBrush}" />
-                            <TextBlock Text="AES-256-GCM" FontSize="18" FontWeight="Bold" Foreground="{StaticResource BrandCyanBrush}" />
+                            <TextBlock Text="CIPHER PRIMITIVE" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
+                            <TextBlock Text="AES-256-GCM" FontSize="18" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" />
                         </StackPanel>
                     </Border>
 
                     <!-- Card 4: KDF -->
                     <Border Grid.Column="3" Style="{StaticResource SecurityCardStyle}">
                         <StackPanel Spacing="4">
-                            <TextBlock Text="DERIVATION KDF" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource SubtleHeaderBrush}" />
-                            <TextBlock Text="Argon2id (64MB)" FontSize="18" FontWeight="Bold" Foreground="{StaticResource BrandPurpleBrush}" />
+                            <TextBlock Text="DERIVATION KDF" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
+                            <TextBlock Text="Argon2id (64MB)" FontSize="18" FontWeight="Bold" Foreground="{StaticResource SecondaryAccentBrush}" />
                         </StackPanel>
                     </Border>
                 </Grid>
 
                 <!-- TOOLBAR -->
-                <Grid Grid.Row="1" Margin="0,0,0,12">
+                <Grid Grid.Row="1" Margin="0,0,0,14">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
@@ -117,64 +128,79 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Orientation="Horizontal" Spacing="10">
-                        <Button Content="Import File..." Style="{StaticResource AccentButtonStyle}" Click="ImportButton_Click" />
-                        <Button Content="Lock Vault" Click="LockButton_Click" />
+                        <Button Content="Import File..." Style="{StaticResource PrimaryButtonStyle}" Click="ImportButton_Click" />
+                        <Button Content="Lock Vault" Style="{StaticResource SecondaryButtonStyle}" Click="LockButton_Click" />
                     </StackPanel>
 
-                    <TextBox x:Name="SearchBox" Grid.Column="1" PlaceholderText="Search stored files..." Margin="16,0,16,0" TextChanged="SearchBox_TextChanged" />
+                    <TextBox x:Name="SearchBox" Grid.Column="1" PlaceholderText="Search stored files by name..." Margin="16,0,16,0" TextChanged="SearchBox_TextChanged" />
 
-                    <Button Grid.Column="2" Content="Verify All Integrities" Click="VerifyAllButton_Click" />
+                    <Button Grid.Column="2" Content="Verify All Integrities" Style="{StaticResource SecondaryButtonStyle}" Click="VerifyAllButton_Click" />
                 </Grid>
 
-                <!-- FILES LIST -->
-                <Border Grid.Row="2" Style="{StaticResource SecurityCardStyle}" Padding="0">
-                    <ListView x:Name="FilesListView" SelectionMode="Single">
-                        <ListView.Header>
-                            <Grid Padding="16,10" Background="#161922" BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="0,0,0,1">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="3*" />
-                                    <ColumnDefinition Width="1.5*" />
-                                    <ColumnDefinition Width="2*" />
-                                    <ColumnDefinition Width="2*" />
-                                    <ColumnDefinition Width="2*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="Name" FontWeight="SemiBold" Foreground="{StaticResource SubtleHeaderBrush}" />
-                                <TextBlock Grid.Column="1" Text="Size" FontWeight="SemiBold" Foreground="{StaticResource SubtleHeaderBrush}" />
-                                <TextBlock Grid.Column="2" Text="SHA-256 Digest" FontWeight="SemiBold" Foreground="{StaticResource SubtleHeaderBrush}" />
-                                <TextBlock Grid.Column="3" Text="Added Date" FontWeight="SemiBold" Foreground="{StaticResource SubtleHeaderBrush}" />
-                                <TextBlock Grid.Column="4" Text="Actions" FontWeight="SemiBold" Foreground="{StaticResource SubtleHeaderBrush}" HorizontalAlignment="Right" />
-                            </Grid>
-                        </ListView.Header>
-
-                        <ListView.ItemTemplate>
-                            <DataTemplate x:DataType="models:VaultEntry">
-                                <Grid Padding="16,10">
+                <!-- FILES LIST & EMPTY STATE -->
+                <Grid Grid.Row="2">
+                    <!-- LIST VIEW -->
+                    <Border x:Name="FilesListBorder" Style="{StaticResource SecurityCardStyle}" Padding="0" Visibility="Visible">
+                        <ListView x:Name="FilesListView" SelectionMode="Single">
+                            <ListView.Header>
+                                <Grid Padding="16,10" Background="{StaticResource SecondaryBackgroundBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="3*" />
+                                        <ColumnDefinition Width="3.5*" />
                                         <ColumnDefinition Width="1.5*" />
+                                        <ColumnDefinition Width="3*" />
                                         <ColumnDefinition Width="2*" />
-                                        <ColumnDefinition Width="2*" />
-                                        <ColumnDefinition Width="2*" />
+                                        <ColumnDefinition Width="2.5*" />
                                     </Grid.ColumnDefinitions>
-
-                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
-                                        <FontIcon Glyph="&#xE8A5;" FontSize="16" Foreground="{StaticResource BrandPurpleBrush}" />
-                                        <TextBlock Text="{x:Bind Name}" FontWeight="Medium" TextTrimming="CharacterEllipsis" />
-                                    </StackPanel>
-
-                                    <TextBlock Grid.Column="1" Text="{x:Bind PlaintextSizeBytes}" VerticalAlignment="Center" />
-                                    <TextBlock Grid.Column="2" Text="{x:Bind Sha256Hash}" FontSize="11" Foreground="{StaticResource SubtleHeaderBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
-                                    <TextBlock Grid.Column="3" Text="{x:Bind CreatedAtUtc}" Foreground="{StaticResource SubtleHeaderBrush}" VerticalAlignment="Center" />
-
-                                    <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-                                        <Button Content="Export" Click="ExportEntryButton_Click" Tag="{x:Bind}" />
-                                        <Button Content="Delete" Click="DeleteEntryButton_Click" Tag="{x:Bind}" Foreground="{StaticResource BrandDangerBrush}" />
-                                    </StackPanel>
+                                    <TextBlock Grid.Column="0" Text="Name" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
+                                    <TextBlock Grid.Column="1" Text="Size" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
+                                    <TextBlock Grid.Column="2" Text="SHA-256 Digest" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
+                                    <TextBlock Grid.Column="3" Text="Added Date" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
+                                    <TextBlock Grid.Column="4" Text="Actions" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" HorizontalAlignment="Right" />
                                 </Grid>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                </Border>
+                            </ListView.Header>
+
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="models:VaultEntry">
+                                    <Grid Padding="16,10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="3.5*" />
+                                            <ColumnDefinition Width="1.5*" />
+                                            <ColumnDefinition Width="3*" />
+                                            <ColumnDefinition Width="2*" />
+                                            <ColumnDefinition Width="2.5*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <FontIcon Glyph="&#xE8A5;" FontSize="16" Foreground="{StaticResource PrimaryAccentBrush}" VerticalAlignment="Center" />
+                                            <TextBlock Text="{x:Bind Name}" FontWeight="Medium" Foreground="{StaticResource PrimaryTextBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                        </StackPanel>
+
+                                        <TextBlock Grid.Column="1" Text="{x:Bind PlaintextSizeBytes}" VerticalAlignment="Center" Foreground="{StaticResource SecondaryTextBrush}" />
+                                        <TextBlock Grid.Column="2" Text="{x:Bind Sha256Hash}" FontSize="11" FontFamily="{StaticResource MonospaceFontFamily}" Foreground="{StaticResource MutedTextBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="3" Text="{x:Bind CreatedAtUtc}" Foreground="{StaticResource MutedTextBrush}" VerticalAlignment="Center" />
+
+                                        <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                            <Button Content="Export" Style="{StaticResource SecondaryButtonStyle}" Padding="10,4" FontSize="11" Click="ExportEntryButton_Click" Tag="{x:Bind}" />
+                                            <Button Content="Rename" Style="{StaticResource SecondaryButtonStyle}" Padding="10,4" FontSize="11" Click="RenameEntryButton_Click" Tag="{x:Bind}" />
+                                            <Button Content="Delete" Style="{StaticResource DestructiveButtonStyle}" Padding="10,4" FontSize="11" Click="DeleteEntryButton_Click" Tag="{x:Bind}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Border>
+
+                    <!-- EMPTY VAULT STATE -->
+                    <Border x:Name="EmptyVaultWorkspaceBorder" Style="{StaticResource SecurityCardStyle}" Padding="40" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="500" Visibility="Collapsed">
+                        <StackPanel Spacing="14" HorizontalAlignment="Center">
+                            <FontIcon Glyph="&#xE8B7;" FontSize="44" Foreground="{StaticResource PrimaryAccentBrush}" HorizontalAlignment="Center" />
+                            <TextBlock Text="This vault is empty." FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Foreground="{StaticResource PrimaryTextBrush}" />
+                            <TextBlock Text="Import files to begin building your private workspace. All items are chunked and encrypted with AES-256-GCM." 
+                                       Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap" TextAlignment="Center" FontSize="13" />
+                            <Button Content="Import Files" Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Center" Padding="20,10" Click="ImportButton_Click" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
             </Grid>
         </Grid>
     </Grid>

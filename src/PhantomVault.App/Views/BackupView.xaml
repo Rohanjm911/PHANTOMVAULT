@@ -7,93 +7,108 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Padding="24" RowSpacing="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <ScrollViewer Padding="28" VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="24" MaxWidth="820" HorizontalAlignment="Left">
 
-        <!-- HEADER -->
-        <StackPanel Grid.Row="0" Spacing="4">
-            <TextBlock Text="Encrypted Backup &amp; Disaster Recovery" FontSize="26" FontWeight="Bold" />
-            <TextBlock Text="Package complete vaults into authenticated, encrypted archives (.pvbackup) with cryptographic manifest verification." 
-                       Foreground="{StaticResource SubtleHeaderBrush}" FontSize="13" />
-        </StackPanel>
-
-        <!-- CONTENT -->
-        <ScrollViewer Grid.Row="1">
-            <StackPanel Spacing="20" MaxWidth="720" HorizontalAlignment="Left">
-                <!-- SECTION 1: CREATE BACKUP -->
-                <Border Style="{StaticResource SecurityCardStyle}">
-                    <StackPanel Spacing="14">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <FontIcon Glyph="&#xE753;" FontSize="18" Foreground="{StaticResource BrandPurpleBrush}" />
-                            <TextBlock Text="CREATE ENCRYPTED BACKUP" FontSize="14" FontWeight="Bold" />
-                        </StackPanel>
-
-                        <TextBlock Text="Export an authenticated snapshot of your active vault. The backup remains fully encrypted at rest with your master key." 
-                                   Foreground="{StaticResource SubtleHeaderBrush}" FontSize="13" TextWrapping="Wrap" />
-
-                        <Button Content="Create Encrypted Backup (.pvbackup)..." Style="{StaticResource AccentButtonStyle}" Click="CreateBackupButton_Click" />
-                    </StackPanel>
-                </Border>
-
-                <!-- SECTION 2: VALIDATE & RESTORE -->
-                <Border Style="{StaticResource SecurityCardStyle}">
-                    <StackPanel Spacing="14">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <FontIcon Glyph="&#xE777;" FontSize="18" Foreground="{StaticResource BrandCyanBrush}" />
-                            <TextBlock Text="INSPECT &amp; RESTORE BACKUP" FontSize="14" FontWeight="Bold" />
-                        </StackPanel>
-
-                        <TextBlock Text="Verify archive authenticity and restore vault content into your local storage." 
-                                   Foreground="{StaticResource SubtleHeaderBrush}" FontSize="13" TextWrapping="Wrap" />
-
-                        <Grid ColumnSpacing="10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBox x:Name="ArchiveFilePathBox" PlaceholderText="Select a .pvbackup archive to inspect..." IsReadOnly="True" />
-                            <Button Grid.Column="1" Content="Browse Archive..." Click="BrowseArchiveButton_Click" />
-                        </Grid>
-
-                        <!-- MANIFEST REPORT -->
-                        <Border x:Name="ManifestCard" Visibility="Collapsed" Background="#161922" Padding="14" CornerRadius="6">
-                            <StackPanel Spacing="10">
-                                <TextBlock Text="ARCHIVE AUTHENTICITY VERIFIED" FontWeight="Bold" Foreground="{StaticResource BrandSuccessBrush}" />
-                                
-                                <Grid RowSpacing="6" ColumnSpacing="12">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Original Vault Name:" Foreground="{StaticResource SubtleHeaderBrush}" FontSize="12" />
-                                    <TextBlock Grid.Row="0" Grid.Column="1" x:Name="ManifestVaultNameText" FontWeight="SemiBold" FontSize="12" />
-
-                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Backup Timestamp:" Foreground="{StaticResource SubtleHeaderBrush}" FontSize="12" />
-                                    <TextBlock Grid.Row="1" Grid.Column="1" x:Name="ManifestTimestampText" FontSize="12" />
-
-                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Encrypted Files:" Foreground="{StaticResource SubtleHeaderBrush}" FontSize="12" />
-                                    <TextBlock Grid.Row="2" Grid.Column="1" x:Name="ManifestFileCountText" FontSize="12" />
-
-                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Header SHA-256:" Foreground="{StaticResource SubtleHeaderBrush}" FontSize="12" />
-                                    <TextBlock Grid.Row="3" Grid.Column="1" x:Name="ManifestHeaderHashText" FontSize="11" TextTrimming="CharacterEllipsis" />
-                                </Grid>
-
-                                <Button Content="Restore as New Vault..." Style="{StaticResource AccentButtonStyle}" Margin="0,8,0,0" Click="RestoreButton_Click" />
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
-                </Border>
+            <!-- HEADER -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="Recovery &amp; Encrypted Backups" FontSize="26" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" />
+                <TextBlock Text="Package complete vaults into authenticated, encrypted archives (.pvbackup) with cryptographic manifest verification." 
+                           Foreground="{StaticResource SecondaryTextBrush}" FontSize="13" />
             </StackPanel>
-        </ScrollViewer>
-    </Grid>
+
+            <!-- SECTION 1: CREATE BACKUP -->
+            <Border Style="{StaticResource SecurityCardStyle}">
+                <StackPanel Spacing="14">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE753;" FontSize="18" Foreground="{StaticResource PrimaryAccentBrush}" />
+                        <TextBlock Text="CREATE ENCRYPTED BACKUP" FontSize="14" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" />
+                    </StackPanel>
+
+                    <TextBlock Text="Exports an authenticated snapshot of your active vault. The backup package remains fully encrypted with your vault master key at rest." 
+                               Foreground="{StaticResource SecondaryTextBrush}" FontSize="13" TextWrapping="Wrap" />
+
+                    <Button Content="Create Encrypted Backup (.pvbackup)..." Style="{StaticResource PrimaryButtonStyle}" Click="CreateBackupButton_Click" />
+                </StackPanel>
+            </Border>
+
+            <!-- SECTION 2: INSPECT & RESTORE -->
+            <Border Style="{StaticResource SecurityCardStyle}">
+                <StackPanel Spacing="14">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE777;" FontSize="18" Foreground="{StaticResource SecondaryAccentBrush}" />
+                        <TextBlock Text="INSPECT &amp; RESTORE ARCHIVE" FontSize="14" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" />
+                    </StackPanel>
+
+                    <TextBlock Text="Select a .pvbackup archive to authenticate its internal SHA-256 catalog checksums and restore it into local storage." 
+                               Foreground="{StaticResource SecondaryTextBrush}" FontSize="13" TextWrapping="Wrap" />
+
+                    <Grid ColumnSpacing="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="ArchiveFilePathBox" PlaceholderText="Select a .pvbackup archive to inspect..." IsReadOnly="True" />
+                        <Button Grid.Column="1" Content="Browse Archive..." Style="{StaticResource SecondaryButtonStyle}" Click="BrowseArchiveButton_Click" />
+                    </Grid>
+
+                    <!-- MANIFEST REPORT -->
+                    <Border x:Name="ManifestCard" Visibility="Collapsed" Background="{StaticResource SecondaryBackgroundBrush}" Padding="16" CornerRadius="6">
+                        <StackPanel Spacing="12">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE73E;" FontSize="16" Foreground="{StaticResource SuccessBrush}" />
+                                <TextBlock Text="ARCHIVE AUTHENTICITY &amp; CHECKSUMS VERIFIED" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}" />
+                            </StackPanel>
+                            
+                            <Grid RowSpacing="6" ColumnSpacing="16">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Original Vault Name:" Foreground="{StaticResource SecondaryTextBrush}" FontSize="12" />
+                                <TextBlock Grid.Row="0" Grid.Column="1" x:Name="ManifestVaultNameText" FontWeight="SemiBold" FontSize="12" Foreground="{StaticResource PrimaryTextBrush}" />
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Backup Timestamp:" Foreground="{StaticResource SecondaryTextBrush}" FontSize="12" />
+                                <TextBlock Grid.Row="1" Grid.Column="1" x:Name="ManifestTimestampText" FontSize="12" Foreground="{StaticResource PrimaryTextBrush}" />
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Encrypted Files:" Foreground="{StaticResource SecondaryTextBrush}" FontSize="12" />
+                                <TextBlock Grid.Row="2" Grid.Column="1" x:Name="ManifestFileCountText" FontSize="12" Foreground="{StaticResource PrimaryTextBrush}" />
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Header SHA-256:" Foreground="{StaticResource SecondaryTextBrush}" FontSize="12" />
+                                <TextBlock Grid.Row="3" Grid.Column="1" x:Name="ManifestHeaderHashText" FontSize="11" FontFamily="{StaticResource MonospaceFontFamily}" Foreground="{StaticResource MutedTextBrush}" TextTrimming="CharacterEllipsis" />
+                            </Grid>
+
+                            <Button Content="Restore as New Vault..." Style="{StaticResource PrimaryButtonStyle}" Margin="0,8,0,0" Click="RestoreButton_Click" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- SECTION 3: RECOVERY RESPONSIBILITIES & GUIDELINES -->
+            <Border Background="{StaticResource SecondaryBackgroundBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="16">
+                <StackPanel Spacing="8">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE7BA;" FontSize="16" Foreground="{StaticResource WarningBrush}" />
+                        <TextBlock Text="Recovery Security Principles" FontWeight="Bold" FontSize="13" Foreground="{StaticResource PrimaryTextBrush}" />
+                    </StackPanel>
+                    
+                    <TextBlock Text="• True Zero-Knowledge: Your master key is required to decrypt both active vaults and backup archives." 
+                               Foreground="{StaticResource SecondaryTextBrush}" FontSize="12" />
+                    <TextBlock Text="• Independent Storage: Store .pvbackup files on independent offline media (such as write-protected USB drives or detached external storage)." 
+                               Foreground="{StaticResource SecondaryTextBrush}" FontSize="12" />
+                    <TextBlock Text="• Restoration Safety: Restoring creates a new distinct vault to prevent accidental overwriting of existing local data." 
+                               Foreground="{StaticResource SecondaryTextBrush}" FontSize="12" />
+                    <TextBlock Text="• Cloud Disclaimer: PHANTOMVAULT does not offer automatic cloud syncing to avoid remote metadata leakage." 
+                               Foreground="{StaticResource SecondaryTextBrush}" FontSize="12" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
 </Page>

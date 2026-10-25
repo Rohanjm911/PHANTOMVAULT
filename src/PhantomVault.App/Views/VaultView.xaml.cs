@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using PhantomVault.Core.Enums;
 using PhantomVault.Core.Models;
 using PhantomVault_App.Helpers;
 using PhantomVault_App.ViewModels;
@@ -35,10 +36,12 @@ public sealed partial class VaultView : Page
         if (_vm.SelectedVault != null)
         {
             VaultsComboBox.SelectedItem = _vm.SelectedVault;
+            BreadcrumbVaultNameText.Text = _vm.SelectedVault.Name;
             UpdateLockDisplay(_vm.IsUnlocked);
         }
         else
         {
+            BreadcrumbVaultNameText.Text = "No Vault Selected";
             UpdateLockDisplay(false);
         }
     }
@@ -51,55 +54,56 @@ public sealed partial class VaultView : Page
         if (isUnlocked && _vm.SelectedVault != null)
         {
             FileCountText.Text = _vm.SelectedVault.FileCount.ToString("N0");
-            CiphertextSizeText.Text = FormatBytes(_vm.SelectedVault.TotalCiphertextBytes);
+            CiphertextSizeText.Text = MainViewModel.FormatBytes(_vm.SelectedVault.TotalCiphertextBytes);
             FilesListView.ItemsSource = _vm.Entries;
+
+            bool isEmpty = _vm.Entries.Count == 0;
+            EmptyVaultWorkspaceBorder.Visibility = isEmpty ? Visibility.Visible : Visibility.Collapsed;
+            FilesListBorder.Visibility = isEmpty ? Visibility.Collapsed : Visibility.Visible;
         }
     }
 
     private void VaultsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (VaultsComboBox.SelectedItem is VaultDescriptor vault)
+        if (VaultsComboBox.SelectedItem is VaultDescriptor selected)
         {
-            _vm.SelectedVault = vault;
+            _vm.SelectedVault = selected;
+            BreadcrumbVaultNameText.Text = selected.Name;
             UpdateLockDisplay(_vm.IsUnlocked);
         }
     }
 
     private async void UnlockButton_Click(object sender, RoutedEventArgs e)
     {
-        await AttemptUnlockAsync();
-    }
-
-    private async void UnlockPasswordBox_KeyDown(object sender, KeyRoutedEventArgs e)
-    {
-        if (e.Key == Windows.System.VirtualKey.Enter)
-        {
-            await AttemptUnlockAsync();
-        }
-    }
-
-    private async Task AttemptUnlockAsync()
-    {
+        UnlockErrorText.Visibility = Visibility.Collapsed;
         string password = UnlockPasswordBox.Password;
+
         if (string.IsNullOrEmpty(password))
         {
-            UnlockErrorText.Text = "Please enter your master password.";
+            UnlockErrorText.Text = "Master password cannot be empty.";
             UnlockErrorText.Visibility = Visibility.Visible;
             return;
         }
 
-        UnlockErrorText.Visibility = Visibility.Collapsed;
         await _vm.UnlockCurrentVaultAsync(password);
+        UnlockPasswordBox.Password = string.Empty;
 
         if (_vm.IsUnlocked)
         {
-            UnlockPasswordBox.Password = string.Empty;
             UpdateLockDisplay(true);
         }
         else
         {
-            UnlockErrorText.Text = "Incorrect password or corrupted vault header.";
+            UnlockErrorText.Text = "Authentication failed. Incorrect master password.";
             UnlockErrorText.Visibility = Visibility.Visible;
+        }
+    }
+
+    private void UnlockPasswordBox_KeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        if (e.Key == Windows.System.VirtualKey.Enter)
+        {
+            UnlockButton_Click(sender, e);
         }
     }
 
@@ -111,11 +115,11 @@ public sealed partial class VaultView : Page
 
     private async void ImportButton_Click(object sender, RoutedEventArgs e)
     {
-        string? pickedPath = await FilePickerHelper.PickSingleFileAsync("*");
+        string? pickedPath = await FilePickerHelper.PickSingleFileAsync();
         if (!string.IsNullOrEmpty(pickedPath))
         {
             await _vm.ImportFileAsync(pickedPath);
-            UpdateLockDisplay(true);
+            UpdateLockDisplay(_vm.IsUnlocked);
         }
     }
 
@@ -124,10 +128,34 @@ public sealed partial class VaultView : Page
         if (sender is Button btn && btn.Tag is VaultEntry entry)
         {
             string ext = Path.GetExtension(entry.Name);
-            string? destPath = await FilePickerHelper.PickSaveFileAsync(entry.Name, string.IsNullOrEmpty(ext) ? ".*" : ext, "Exported File");
-            if (!string.IsNullOrEmpty(destPath))
+            string? destination = await FilePickerHelper.PickSaveFileAsync(entry.Name, ext);
+            if (!string.IsNullOrEmpty(destination))
             {
-                await _vm.ExportFileAsync((entry.Id, destPath));
+                await _vm.ExportFileAsync((entry.Id, destination));
+            }
+        }
+    }
+
+    private async void RenameEntryButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is VaultEntry entry)
+        {
+            var nameBox = new TextBox { Text = entry.Name, Header = "New File Name", Margin = new Thickness(0, 0, 0, 8) };
+            var dialog = new ContentDialog
+            {
+                Title = "Rename Stored File",
+                Content = nameBox,
+                PrimaryButtonText = "Rename",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = this.XamlRoot
+            };
+
+            var res = await dialog.ShowAsync();
+            if (res == ContentDialogResult.Primary && !string.IsNullOrWhiteSpace(nameBox.Text) && nameBox.Text != entry.Name)
+            {
+                await _vm.RenameEntryAsync((entry.Id, nameBox.Text.Trim()));
+                UpdateLockDisplay(_vm.IsUnlocked);
             }
         }
     }
@@ -138,19 +166,19 @@ public sealed partial class VaultView : Page
         {
             var dialog = new ContentDialog
             {
-                Title = "Permanently Delete File?",
-                Content = $"Are you sure you want to permanently destroy and remove '{entry.Name}' from this encrypted vault?",
+                Title = "Delete File from Encrypted Vault",
+                Content = $"Are you sure you want to permanently delete '{entry.Name}' from this encrypted vault? Ciphertext on disk will be unlinked and purged.",
                 PrimaryButtonText = "Delete Permanently",
                 CloseButtonText = "Cancel",
                 DefaultButton = ContentDialogButton.Close,
                 XamlRoot = this.XamlRoot
             };
 
-            var result = await dialog.ShowAsync();
-            if (result == ContentDialogResult.Primary)
+            var res = await dialog.ShowAsync();
+            if (res == ContentDialogResult.Primary)
             {
                 await _vm.DeleteFileAsync(entry.Id);
-                UpdateLockDisplay(true);
+                UpdateLockDisplay(_vm.IsUnlocked);
             }
         }
     }
@@ -163,64 +191,17 @@ public sealed partial class VaultView : Page
     private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
     {
         _vm.SearchQuery = SearchBox.Text;
-        _ = _vm.LoadEntriesAsync();
+        _ = _vm.LoadEntriesAsync().ContinueWith(_ =>
+        {
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                UpdateLockDisplay(_vm.IsUnlocked);
+            });
+        });
     }
 
-    private async void NewVaultButton_Click(object sender, RoutedEventArgs e)
+    private void NewVaultButton_Click(object sender, RoutedEventArgs e)
     {
-        var nameBox = new TextBox { PlaceholderText = "Vault Name (e.g. PersonalVault)", Margin = new Thickness(0, 0, 0, 8) };
-        var passBox = new PasswordBox { PlaceholderText = "Master Password (min 12 characters recommended)", Margin = new Thickness(0, 0, 0, 8) };
-        var confirmBox = new PasswordBox { PlaceholderText = "Confirm Master Password", Margin = new Thickness(0, 0, 0, 8) };
-        var strengthText = new TextBlock { Text = "Password Strength: Not Evaluated", FontSize = 12, Foreground = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["SubtleHeaderBrush"] };
-
-        passBox.PasswordChanged += (s, args) =>
-        {
-            var strength = _vm.EvaluatePassword(passBox.Password);
-            strengthText.Text = $"Password Strength: {strength.Label} ({strength.EstimatedEntropyBits:F1} bits entropy)";
-        };
-
-        var stack = new StackPanel
-        {
-            Spacing = 6,
-            Children = { nameBox, passBox, confirmBox, strengthText }
-        };
-
-        var dialog = new ContentDialog
-        {
-            Title = "Create New Encrypted Vault",
-            Content = stack,
-            PrimaryButtonText = "Create Vault",
-            CloseButtonText = "Cancel",
-            DefaultButton = ContentDialogButton.Primary,
-            XamlRoot = this.XamlRoot
-        };
-
-        var res = await dialog.ShowAsync();
-        if (res == ContentDialogResult.Primary)
-        {
-            if (string.IsNullOrWhiteSpace(nameBox.Text))
-            {
-                _vm.ShowStatus("Vault name cannot be empty.", InfoBarSeverity.Error);
-                return;
-            }
-
-            if (string.IsNullOrEmpty(passBox.Password) || passBox.Password != confirmBox.Password)
-            {
-                _vm.ShowStatus("Passwords do not match or are empty.", InfoBarSeverity.Error);
-                return;
-            }
-
-            string baseDir = PhantomVault.Storage.StoragePaths.DefaultVaultsDirectory;
-            await _vm.CreateNewVaultAsync((nameBox.Text, baseDir, passBox.Password, PhantomVault.Core.Enums.KdfAlgorithm.Argon2id));
-            RefreshVaultUi();
-        }
-    }
-
-    private static string FormatBytes(long bytes)
-    {
-        if (bytes < 1024) return $"{bytes} B";
-        if (bytes < 1024 * 1024) return $"{(bytes / 1024.0):F1} KB";
-        if (bytes < 1024 * 1024 * 1024) return $"{(bytes / (1024.0 * 1024.0)):F2} MB";
-        return $"{(bytes / (1024.0 * 1024.0 * 1024.0)):F2} GB";
+        _vm.RequestNavigate("Vaults");
     }
 }

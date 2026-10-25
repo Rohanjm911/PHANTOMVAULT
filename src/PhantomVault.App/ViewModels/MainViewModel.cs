@@ -100,7 +100,58 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _isDeadMansWarningVisible;
 
-    // Stego UI State
+    public event Action<string>? NavigationRequested;
+
+    [ObservableProperty]
+    private int _totalVaultsCount;
+
+    [ObservableProperty]
+    private int _lockedVaultsCount;
+
+    [ObservableProperty]
+    private int _unlockedVaultsCount;
+
+    [ObservableProperty]
+    private string _totalEncryptedStorageText = "0 KB";
+
+    [ObservableProperty]
+    private string _lastBackupDateText = "None Recorded";
+
+    [ObservableProperty]
+    private ObservableCollection<string> _securityNotices = new();
+
+    [ObservableProperty]
+    private ObservableCollection<ActivityLogRecord> _filteredActivityLogs = new();
+
+    [ObservableProperty]
+    private string _selectedLogCategory = "All";
+
+    [ObservableProperty]
+    private string _logSearchQuery = string.Empty;
+
+    // Emergency Access & Policy State
+    [ObservableProperty]
+    private bool _isAutoLockEnabled = true;
+
+    [ObservableProperty]
+    private int _inactivityTimeoutMinutes = 15;
+
+    [ObservableProperty]
+    private bool _isSessionLockEnabled = true;
+
+    [ObservableProperty]
+    private bool _isDeadMansEnabled = false;
+
+    [ObservableProperty]
+    private int _deadMansTimeoutMinutes = 60;
+
+    [ObservableProperty]
+    private int _warningCountdownSeconds = 30;
+
+    [ObservableProperty]
+    private string _emergencyPolicyStatusDescription = "Standard Protection Active";
+
+    // Stego UI State & Capacity Check
     [ObservableProperty]
     private StegoCarrierInfo? _stegoCarrierInfo;
 
@@ -115,6 +166,15 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty]
     private string _stegoPassword = string.Empty;
+
+    [ObservableProperty]
+    private bool _doesPayloadFit = true;
+
+    [ObservableProperty]
+    private string _capacityStatusMessage = "Carrier ready for payload selection.";
+
+    [ObservableProperty]
+    private long _payloadSizeBytes;
 
     [ObservableProperty]
     private string _stegoExtractionCarrierPath = string.Empty;
@@ -165,6 +225,7 @@ public partial class MainViewModel : ObservableObject
             }
 
             UpdateLockState();
+            RefreshDashboardStats();
         }
         catch (Exception ex)
         {
@@ -633,6 +694,8 @@ public partial class MainViewModel : ObservableObject
             {
                 ActivityLogs.Add(l);
             }
+            ApplyLogFilter();
+            RefreshDashboardStats();
         }
         catch { }
     }
@@ -644,12 +707,189 @@ public partial class MainViewModel : ObservableObject
         {
             await _logService.ClearLogsAsync();
             ActivityLogs.Clear();
+            FilteredActivityLogs.Clear();
+            RefreshDashboardStats();
             ShowStatus("Local activity history cleared.", InfoBarSeverity.Informational);
         }
         catch (Exception ex)
         {
             ShowStatus($"Failed to clear logs: {ex.Message}", InfoBarSeverity.Error);
         }
+    }
+
+    public void RefreshDashboardStats()
+    {
+        TotalVaultsCount = Vaults.Count;
+        LockedVaultsCount = Vaults.Count(v => v.State == VaultState.Locked);
+        UnlockedVaultsCount = Vaults.Count(v => v.State == VaultState.Unlocked);
+
+        long totalCipherBytes = Vaults.Sum(v => v.TotalCiphertextBytes);
+        TotalEncryptedStorageText = FormatBytes(totalCipherBytes);
+
+        var lastBackupLog = ActivityLogs.FirstOrDefault(l => l.EventType == ActivityEventType.BackupCreated);
+        LastBackupDateText = lastBackupLog != null ? lastBackupLog.TimestampUtc.ToLocalTime().ToString("g") : "None Recorded";
+
+        SecurityNotices.Clear();
+        if (Vaults.Count == 0)
+        {
+            SecurityNotices.Add("No encrypted vaults created. Initialize your first vault to begin.");
+        }
+        else if (UnlockedVaultsCount == 0)
+        {
+            SecurityNotices.Add("All vaults are currently locked and keys are zeroized in memory.");
+        }
+
+        if (lastBackupLog == null && Vaults.Count > 0)
+        {
+            SecurityNotices.Add("Notice: No backup archive (.pvbackup) has been exported for your vaults yet.");
+        }
+
+        if (IsDeadMansEnabled)
+        {
+            SecurityNotices.Add($"Dead-Man's Switch is active ({DeadMansTimeoutMinutes} min inactivity timeout).");
+        }
+    }
+
+    public static string FormatBytes(long bytes)
+    {
+        if (bytes < 1024) return $"{bytes} B";
+        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1} KB";
+        if (bytes < 1024 * 1024 * 1024) return $"{bytes / (1024.0 * 1024.0):F2} MB";
+        return $"{bytes / (1024.0 * 1024.0 * 1024.0):F2} GB";
+    }
+
+    public void ApplyLogFilter()
+    {
+        FilteredActivityLogs.Clear();
+        foreach (var log in ActivityLogs)
+        {
+            bool matchesCategory = SelectedLogCategory switch
+            {
+                "All" => true,
+                "Vault" => log.EventType is ActivityEventType.VaultCreated or ActivityEventType.VaultUnlocked or ActivityEventType.VaultLocked or ActivityEventType.PasswordChanged,
+                "File" => log.EventType is ActivityEventType.FileImported or ActivityEventType.FileExported or ActivityEventType.FileDeleted or ActivityEventType.FileRenamed,
+                "Backup" => log.EventType is ActivityEventType.BackupCreated or ActivityEventType.BackupRestored,
+                "Security" => log.EventType is ActivityEventType.IntegrityCheckPassed or ActivityEventType.IntegrityCheckFailed or ActivityEventType.SecuritySettingsChanged or ActivityEventType.EmergencyLockTriggered,
+                "Stego" => log.EventType is ActivityEventType.StegoPayloadEmbedded or ActivityEventType.StegoPayloadExtracted,
+                "Errors" => log.Severity is ActivitySeverity.Error or ActivitySeverity.SecurityAlert or ActivitySeverity.Warning,
+                _ => true
+            };
+
+            bool matchesSearch = string.IsNullOrWhiteSpace(LogSearchQuery) ||
+                log.Message.Contains(LogSearchQuery, StringComparison.OrdinalIgnoreCase) ||
+                log.VaultName.Contains(LogSearchQuery, StringComparison.OrdinalIgnoreCase) ||
+                log.EventType.ToString().Contains(LogSearchQuery, StringComparison.OrdinalIgnoreCase);
+
+            if (matchesCategory && matchesSearch)
+            {
+                FilteredActivityLogs.Add(log);
+            }
+        }
+    }
+
+    partial void OnSelectedLogCategoryChanged(string value) => ApplyLogFilter();
+    partial void OnLogSearchQueryChanged(string value) => ApplyLogFilter();
+
+    public void RequestNavigate(string targetPage)
+    {
+        NavigationRequested?.Invoke(targetPage);
+    }
+
+    public void UpdateStegoCapacityStatus()
+    {
+        if (StegoCarrierInfo == null)
+        {
+            CapacityStatusMessage = "Please select a PNG carrier image or WAV audio file first.";
+            DoesPayloadFit = false;
+            return;
+        }
+
+        if (string.IsNullOrEmpty(StegoPayloadPath) || !File.Exists(StegoPayloadPath))
+        {
+            CapacityStatusMessage = $"Carrier ready. Usable capacity: {FormatBytes(StegoCarrierInfo.UsableCapacityBytes)}.";
+            DoesPayloadFit = true;
+            return;
+        }
+
+        var fi = new FileInfo(StegoPayloadPath);
+        PayloadSizeBytes = fi.Length;
+        long requiredBytes = PayloadSizeBytes + 100;
+
+        if (requiredBytes <= StegoCarrierInfo.UsableCapacityBytes)
+        {
+            DoesPayloadFit = true;
+            CapacityStatusMessage = $"Payload fits! ({FormatBytes(PayloadSizeBytes)} of {FormatBytes(StegoCarrierInfo.UsableCapacityBytes)} usable).";
+        }
+        else
+        {
+            DoesPayloadFit = false;
+            CapacityStatusMessage = $"Payload is too large for this carrier. Required: {FormatBytes(requiredBytes)}, Available: {FormatBytes(StegoCarrierInfo.UsableCapacityBytes)}.";
+        }
+    }
+
+    [RelayCommand]
+    public async Task RenameEntryAsync((Guid entryId, string newName) args)
+    {
+        if (SelectedVault == null || !IsUnlocked) return;
+
+        try
+        {
+            await _fileManager.RenameEntryAsync(SelectedVault.Id, args.entryId, args.newName);
+            var entry = Entries.FirstOrDefault(e => e.Id == args.entryId);
+            if (entry != null)
+            {
+                entry.Name = args.newName;
+            }
+
+            await _logService.LogEventAsync(ActivityEventType.FileRenamed, ActivitySeverity.Info, SelectedVault.Name, $"Renamed file to: {args.newName}");
+            await RefreshActivityLogsAsync();
+            ShowStatus($"File renamed to '{args.newName}'.", InfoBarSeverity.Success);
+        }
+        catch (Exception ex)
+        {
+            ShowStatus($"Failed to rename file: {ex.Message}", InfoBarSeverity.Error);
+        }
+    }
+
+    [RelayCommand]
+    public void SaveEmergencyPolicy()
+    {
+        var policy = new EmergencyPolicy
+        {
+            AutoLockOnInactivity = IsAutoLockEnabled,
+            InactivityMinutes = InactivityTimeoutMinutes,
+            LockOnWorkstationLock = IsSessionLockEnabled,
+            DeadMansSwitchEnabled = IsDeadMansEnabled,
+            DeadMansSwitchTimeoutMinutes = DeadMansTimeoutMinutes,
+            WarningCountdownSeconds = WarningCountdownSeconds
+        };
+
+        _policyService.UpdatePolicy(policy);
+        EmergencyPolicyStatusDescription = IsDeadMansEnabled 
+            ? $"Dead-Man's Switch Active ({DeadMansTimeoutMinutes}m timeout, {WarningCountdownSeconds}s warning)"
+            : (IsAutoLockEnabled ? $"Auto-Lock Active ({InactivityTimeoutMinutes}m timeout)" : "Inactivity Protection Disabled");
+
+        _ = _logService.LogEventAsync(ActivityEventType.SecuritySettingsChanged, ActivitySeverity.Info, "GLOBAL", "Emergency & lock policies updated.");
+        _ = RefreshActivityLogsAsync();
+        ShowStatus("Emergency and security policies applied successfully.", InfoBarSeverity.Success);
+    }
+
+    [RelayCommand]
+    public void TestEmergencyCountdown()
+    {
+        _policyService.RegisterUserActivity();
+        DeadMansCountdownSeconds = 10;
+        IsDeadMansWarningVisible = true;
+        ShowStatus("Test Mode: 10-second inactivity warning triggered. Click 'Dismiss / Still Active' to cancel.", InfoBarSeverity.Informational);
+    }
+
+    [RelayCommand]
+    public void CancelEmergencyAction()
+    {
+        _policyService.RegisterUserActivity();
+        IsDeadMansWarningVisible = false;
+        DeadMansCountdownSeconds = 0;
+        ShowStatus("Pending emergency action safely cancelled.", InfoBarSeverity.Informational);
     }
 
     public PasswordStrengthResult EvaluatePassword(string password)

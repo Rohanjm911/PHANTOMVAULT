@@ -7,15 +7,15 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="#0E1117">
+    <Grid Background="{StaticResource PrimaryBackgroundBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- TOP BAR: BRANDING + QUICK EMERGENCY ACTIONS -->
-        <Border Grid.Row="0" Background="#161922" BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="0,0,0,1" Padding="16,10">
+        <!-- TOP BAR: BRANDING, STATUS BADGE & QUICK EMERGENCY LOCK -->
+        <Border Grid.Row="0" Background="{StaticResource SecondaryBackgroundBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="20,12">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -25,24 +25,30 @@
 
                 <!-- BRAND LOGO & TAGLINE -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                    <Border Background="{StaticResource BrandPurpleBrush}" CornerRadius="8" Width="36" Height="36">
-                        <FontIcon Glyph="&#xE72E;" Foreground="White" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <Border Background="{StaticResource ElevatedSurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Width="36" Height="36">
+                        <FontIcon Glyph="&#xE72E;" Foreground="{StaticResource PrimaryAccentBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <StackPanel Spacing="0" VerticalAlignment="Center">
-                        <TextBlock Text="PHANTOMVAULT" FontSize="16" FontWeight="Bold" Foreground="White" />
-                        <TextBlock Text="Trust Nothing. Reveal Nothing." FontSize="11" Foreground="{StaticResource BrandCyanBrush}" FontStyle="Italic" />
+                        <TextBlock Text="PHANTOMVAULT" FontSize="16" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" />
+                        <TextBlock Text="Trust Nothing. Reveal Nothing." FontSize="11" Foreground="{StaticResource PrimaryAccentBrush}" />
                     </StackPanel>
+                </StackPanel>
+
+                <!-- ACTIVE VAULT CONTEXT -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="Active Vault:" FontSize="12" Foreground="{StaticResource SecondaryTextBrush}" />
+                    <TextBlock x:Name="HeaderActiveVaultText" Text="None Selected" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" />
                 </StackPanel>
 
                 <!-- GLOBAL STATUS BADGE & EMERGENCY LOCK -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
                     <!-- VAULT STATUS PILL -->
-                    <Border x:Name="VaultStatusPill" Background="#374151" CornerRadius="12" Padding="10,4" VerticalAlignment="Center">
-                        <TextBlock x:Name="VaultStatusText" Text="LOCKED" FontSize="11" FontWeight="Bold" Foreground="#9CA3AF" />
+                    <Border x:Name="VaultStatusPill" Background="{StaticResource ElevatedSurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="12,4" VerticalAlignment="Center">
+                        <TextBlock x:Name="VaultStatusText" Text="LOCKED" FontSize="11" FontWeight="Bold" Foreground="{StaticResource MutedTextBrush}" />
                     </Border>
 
                     <!-- QUICK EMERGENCY LOCK BUTTON -->
-                    <Button Content="EMERGENCY LOCK" Style="{StaticResource DangerButtonStyle}" Click="EmergencyLockAll_Click" />
+                    <Button Content="EMERGENCY LOCK" Style="{StaticResource DestructiveButtonStyle}" Click="EmergencyLockAll_Click" />
                 </StackPanel>
             </Grid>
         </Border>
@@ -50,49 +56,65 @@
         <!-- NOTIFICATIONS & DEAD-MAN'S SWITCH WARNING BANNER -->
         <StackPanel Grid.Row="1">
             <!-- DEAD-MAN'S SWITCH COUNTDOWN BANNER -->
-            <Border x:Name="DeadMansBanner" Background="{StaticResource BrandDangerBrush}" Padding="16,8" Visibility="Collapsed">
+            <Border x:Name="DeadMansBanner" Background="{StaticResource ErrorBrush}" Padding="16,10" Visibility="Collapsed">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                        <FontIcon Glyph="&#xE7BA;" Foreground="White" FontSize="18" />
-                        <TextBlock x:Name="DeadMansCountdownText" Text="INACTIVITY WARNING: Vaults locking in 30 seconds!" FontWeight="Bold" Foreground="White" />
+                        <FontIcon Glyph="&#xE7BA;" Foreground="#0B0D12" FontSize="18" />
+                        <TextBlock x:Name="DeadMansCountdownText" Text="INACTIVITY WARNING: All vaults locking in 30 seconds!" FontWeight="Bold" Foreground="#0B0D12" />
                     </StackPanel>
-                    <Button Grid.Column="1" Content="Dismiss / Still Active" Background="White" Foreground="Black" FontWeight="Bold" Click="DismissDeadMans_Click" />
+                    <Button Grid.Column="1" Content="Dismiss / Still Active" Background="#0B0D12" Foreground="{StaticResource PrimaryTextBrush}" FontWeight="Bold" Click="DismissDeadMans_Click" />
                 </Grid>
             </Border>
 
             <!-- APP INFOBAR -->
-            <InfoBar x:Name="AppInfoBar" IsOpen="False" IsClosable="True" Margin="16,8,16,0" />
+            <InfoBar x:Name="AppInfoBar" IsOpen="False" IsClosable="True" Margin="20,10,20,0" />
         </StackPanel>
 
-        <!-- MAIN NAVIGATION VIEW -->
+        <!-- MAIN NAVIGATION VIEW WITH SHELL LAYOUT -->
         <NavigationView x:Name="NavView" Grid.Row="2" 
                         PaneDisplayMode="Left" 
                         IsBackButtonVisible="Collapsed" 
                         IsSettingsVisible="False"
                         SelectionChanged="NavView_SelectionChanged">
             <NavigationView.MenuItems>
-                <NavigationViewItem Content="Vault Files" Tag="Vault" Icon="Folder" />
+                <NavigationViewItem Content="Dashboard" Tag="Dashboard" Icon="Home" />
+                <NavigationViewItem Content="My Vaults" Tag="Vaults" Icon="Folder" />
+                <NavigationViewItem Content="Vault Workspace" Tag="Vault" Icon="OpenFile" />
                 <NavigationViewItem Content="Steganography" Tag="Stego" Icon="Pictures" />
-                <NavigationViewItem Content="Backup &amp; Recovery" Tag="Backup" Icon="Save" />
+                <NavigationViewItem Content="Recovery &amp; Backups" Tag="Backup" Icon="Save" />
                 <NavigationViewItem Content="Security Center" Tag="Security" Icon="ProtectedDocument" />
-                <NavigationViewItem Content="Audit Log" Tag="Logs" Icon="List" />
-                <NavigationViewItem Content="Settings &amp; Policies" Tag="Settings" Icon="Setting" />
+                <NavigationViewItem Content="Emergency Access" Tag="Emergency" Icon="Shield" />
+                <NavigationViewItem Content="Activity Log" Tag="Logs" Icon="List" />
+                <NavigationViewItem Content="Settings" Tag="Settings" Icon="Setting" />
             </NavigationView.MenuItems>
 
-            <Frame x:Name="ContentFrame" />
+            <!-- SIDEBAR FOOTER: VERSION & OFFLINE INDICATOR -->
+            <NavigationView.PaneFooter>
+                <Border Padding="16,12" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="PHANTOMVAULT v1.0.0 LTS" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <Ellipse Width="6" Height="6" Fill="{StaticResource SuccessBrush}" VerticalAlignment="Center" />
+                            <TextBlock Text="Local-Only • Offline" FontSize="11" Foreground="{StaticResource SuccessBrush}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </NavigationView.PaneFooter>
+
+            <Frame x:Name="ContentFrame" Background="{StaticResource PrimaryBackgroundBrush}" />
         </NavigationView>
 
         <!-- BUSY PROGRESS OVERLAY -->
-        <Grid x:Name="BusyOverlay" Grid.Row="0" Grid.RowSpan="3" Background="#AA0E1117" Visibility="Collapsed">
-            <Border Background="#1E222D" BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="1" CornerRadius="12" Padding="28" HorizontalAlignment="Center" VerticalAlignment="Center" Width="360">
-                <StackPanel Spacing="14" HorizontalAlignment="Center">
-                    <ProgressRing IsActive="True" Width="48" Height="48" Foreground="{StaticResource BrandPurpleBrush}" HorizontalAlignment="Center" />
-                    <TextBlock x:Name="BusyText" Text="Performing cryptographic operation..." FontWeight="SemiBold" TextAlignment="Center" />
-                    <ProgressBar x:Name="BusyProgressBar" Minimum="0" Maximum="1" Value="0" HorizontalAlignment="Stretch" Foreground="{StaticResource BrandPurpleBrush}" />
+        <Grid x:Name="BusyOverlay" Grid.Row="0" Grid.RowSpan="3" Background="#D80B0D12" Visibility="Collapsed">
+            <Border Style="{StaticResource SecurityCardStyle}" Padding="32" HorizontalAlignment="Center" VerticalAlignment="Center" Width="400">
+                <StackPanel Spacing="16" HorizontalAlignment="Center">
+                    <ProgressRing IsActive="True" Width="44" Height="44" Foreground="{StaticResource PrimaryAccentBrush}" HorizontalAlignment="Center" />
+                    <TextBlock x:Name="BusyText" Text="Performing cryptographic operation..." FontWeight="SemiBold" TextAlignment="Center" Foreground="{StaticResource PrimaryTextBrush}" />
+                    <ProgressBar x:Name="BusyProgressBar" Minimum="0" Maximum="1" Value="0" HorizontalAlignment="Stretch" Foreground="{StaticResource PrimaryAccentBrush}" />
                 </StackPanel>
             </Border>
         </Grid>

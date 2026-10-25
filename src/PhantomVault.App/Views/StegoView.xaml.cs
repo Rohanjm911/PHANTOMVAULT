@@ -36,7 +36,15 @@ public sealed partial class StegoView : Page
                     ? $"{_vm.StegoCarrierInfo.Width} x {_vm.StegoCarrierInfo.Height} ({_vm.StegoCarrierInfo.Channels} ch)" 
                     : $"{_vm.StegoCarrierInfo.TotalCarrierSizeBytes / 2:N0} samples ({_vm.StegoCarrierInfo.Channels} ch)";
 
-                CarrierCapacityText.Text = FormatBytes(_vm.StegoCarrierInfo.UsableCapacityBytes);
+                CarrierCapacityText.Text = MainViewModel.FormatBytes(_vm.StegoCarrierInfo.UsableCapacityBytes);
+
+                // Auto-suggest default output path
+                string ext = Path.GetExtension(path);
+                string outPath = Path.Combine(Path.GetDirectoryName(path)!, $"{Path.GetFileNameWithoutExtension(path)}_concealed{ext}");
+                OutputPathBox.Text = outPath;
+                _vm.StegoOutputPath = outPath;
+
+                UpdateCapacityUi();
             }
         }
     }
@@ -48,35 +56,63 @@ public sealed partial class StegoView : Page
         {
             PayloadPathBox.Text = path;
             _vm.StegoPayloadPath = path;
+
+            var fi = new FileInfo(path);
+            PayloadDetailsText.Text = $"File: {fi.Name} • Size: {MainViewModel.FormatBytes(fi.Length)} ({fi.Length:N0} bytes)";
+            PayloadDetailsText.Visibility = Visibility.Visible;
+
+            UpdateCapacityUi();
         }
+    }
+
+    private void UpdateCapacityUi()
+    {
+        _vm.UpdateStegoCapacityStatus();
+        CapacityCheckMessageText.Text = _vm.CapacityStatusMessage;
+        CapacityCheckMessageText.Foreground = _vm.DoesPayloadFit
+            ? (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["SuccessBrush"]
+            : (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["ErrorBrush"];
     }
 
     private void StegoPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
     {
         _vm.StegoPassword = StegoPasswordBox.Password;
         var strength = _vm.EvaluatePassword(StegoPasswordBox.Password);
-        StegoEntropyText.Text = $"Password Strength: {strength.Label} ({strength.EstimatedEntropyBits:F1} bits entropy)";
+        StegoEntropyText.Text = $"Password Strength: {strength.Label} (~{strength.EstimatedEntropyBits:F0} bits entropy)";
+    }
+
+    private async void BrowseSaveAs_Click(object sender, RoutedEventArgs e)
+    {
+        string ext = !string.IsNullOrEmpty(_vm.StegoCarrierPath) ? Path.GetExtension(_vm.StegoCarrierPath) : ".png";
+        string defaultName = !string.IsNullOrEmpty(_vm.StegoCarrierPath) 
+            ? $"{Path.GetFileNameWithoutExtension(_vm.StegoCarrierPath)}_concealed" 
+            : "concealed_payload";
+
+        string? outPath = await FilePickerHelper.PickSaveFileAsync(defaultName, ext);
+        if (!string.IsNullOrEmpty(outPath))
+        {
+            OutputPathBox.Text = outPath;
+            _vm.StegoOutputPath = outPath;
+        }
     }
 
     private async void EmbedButton_Click(object sender, RoutedEventArgs e)
     {
-        if (string.IsNullOrEmpty(CarrierPathBox.Text) || string.IsNullOrEmpty(PayloadPathBox.Text) || string.IsNullOrEmpty(StegoPasswordBox.Password))
+        _vm.StegoOutputPath = OutputPathBox.Text;
+
+        if (string.IsNullOrEmpty(_vm.StegoCarrierPath) || string.IsNullOrEmpty(_vm.StegoPayloadPath) || string.IsNullOrEmpty(_vm.StegoPassword))
         {
             _vm.ShowStatus("Please specify carrier, payload, and concealment password.", InfoBarSeverity.Warning);
             return;
         }
 
-        string ext = Path.GetExtension(CarrierPathBox.Text);
-        string? outPath = await FilePickerHelper.PickSaveFileAsync(
-            $"{Path.GetFileNameWithoutExtension(CarrierPathBox.Text)}_concealed{ext}", 
-            ext, 
-            "Concealed Carrier");
-
-        if (!string.IsNullOrEmpty(outPath))
+        if (!_vm.DoesPayloadFit)
         {
-            _vm.StegoOutputPath = outPath;
-            await _vm.EmbedStegoAsync();
+            _vm.ShowStatus("Cannot embed: secret payload exceeds available carrier capacity.", InfoBarSeverity.Error);
+            return;
         }
+
+        await _vm.EmbedStegoAsync();
     }
 
     private async void BrowseExtractCarrier_Click(object sender, RoutedEventArgs e)
@@ -102,25 +138,13 @@ public sealed partial class StegoView : Page
     private async void ExtractButton_Click(object sender, RoutedEventArgs e)
     {
         _vm.StegoExtractionPassword = ExtractPasswordBox.Password;
+
         if (string.IsNullOrEmpty(_vm.StegoExtractionCarrierPath) || string.IsNullOrEmpty(_vm.StegoExtractionPassword))
         {
             _vm.ShowStatus("Concealed carrier and decryption password are required.", InfoBarSeverity.Warning);
             return;
         }
 
-        if (string.IsNullOrEmpty(_vm.StegoExtractionOutDir))
-        {
-            _vm.StegoExtractionOutDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
-        }
-
         await _vm.ExtractStegoAsync();
-    }
-
-    private static string FormatBytes(long bytes)
-    {
-        if (bytes < 1024) return $"{bytes} B";
-        if (bytes < 1024 * 1024) return $"{(bytes / 1024.0):F1} KB";
-        if (bytes < 1024 * 1024 * 1024) return $"{(bytes / (1024.0 * 1024.0)):F2} MB";
-        return $"{(bytes / (1024.0 * 1024.0 * 1024.0)):F2} GB";
     }
 }

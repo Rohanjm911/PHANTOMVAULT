@@ -17,6 +17,7 @@ public sealed partial class SecurityCenterView : Page
         Loaded += (s, e) =>
         {
             LastIntegrityCheckText.Text = $"Status: {_vm.LastIntegrityCheckResult}";
+            LastBackupStatusText.Text = _vm.LastBackupDateText;
         };
     }
 

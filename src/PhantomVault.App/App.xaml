@@ -11,42 +11,105 @@
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
             </ResourceDictionary.MergedDictionaries>
 
-            <!-- Brand Color Tokens -->
-            <SolidColorBrush x:Key="BrandPurpleBrush" Color="#8B5CF6" />
-            <SolidColorBrush x:Key="BrandPurpleHoverBrush" Color="#7C3AED" />
-            <SolidColorBrush x:Key="BrandCyanBrush" Color="#06B6D4" />
-            <SolidColorBrush x:Key="BrandDangerBrush" Color="#EF4444" />
-            <SolidColorBrush x:Key="BrandSuccessBrush" Color="#10B981" />
-            <SolidColorBrush x:Key="BrandWarningBrush" Color="#F59E0B" />
+            <!-- PHANTOMVAULT OFFICIAL DESIGN TOKENS -->
+            <!-- Backgrounds and Surfaces -->
+            <SolidColorBrush x:Key="PrimaryBackgroundBrush" Color="#0B0D12" />
+            <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="#11151D" />
+            <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="#0E1118" />
+            <SolidColorBrush x:Key="ElevatedSurfaceBrush" Color="#171C26" />
             
-            <SolidColorBrush x:Key="CardBackgroundBrush" Color="#1E222D" />
-            <SolidColorBrush x:Key="CardBorderBrush" Color="#2E3547" />
-            <SolidColorBrush x:Key="SubtleHeaderBrush" Color="#94A3B8" />
+            <!-- Accents -->
+            <SolidColorBrush x:Key="PrimaryAccentBrush" Color="#39D0C8" />
+            <SolidColorBrush x:Key="SecondaryAccentBrush" Color="#7C83FF" />
+            
+            <!-- Typography Colors -->
+            <SolidColorBrush x:Key="PrimaryTextBrush" Color="#F3F5F9" />
+            <SolidColorBrush x:Key="SecondaryTextBrush" Color="#A1A9B8" />
+            <SolidColorBrush x:Key="MutedTextBrush" Color="#697386" />
+            
+            <!-- Functional Status Colors -->
+            <SolidColorBrush x:Key="SuccessBrush" Color="#36C98F" />
+            <SolidColorBrush x:Key="WarningBrush" Color="#F2B84B" />
+            <SolidColorBrush x:Key="ErrorBrush" Color="#F06A75" />
+            
+            <!-- Borders and Dividers -->
+            <SolidColorBrush x:Key="BorderBrush" Color="#252C38" />
 
-            <!-- Custom Card Border Style -->
+            <!-- Typography Families -->
+            <FontFamily x:Key="DefaultFontFamily">Segoe UI Variable, Segoe UI, sans-serif</FontFamily>
+            <FontFamily x:Key="MonospaceFontFamily">Cascadia Code, Consolas, Courier New, monospace</FontFamily>
+
+            <!-- REUSABLE COMPONENT STYLES -->
+            <!-- Security Card / Elevated Surface Style -->
             <Style x:Key="SecurityCardStyle" TargetType="Border">
-                <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}" />
-                <Setter Property="BorderBrush" Value="{StaticResource CardBorderBrush}" />
+                <Setter Property="Background" Value="{StaticResource ElevatedSurfaceBrush}" />
+                <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
                 <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="CornerRadius" Value="10" />
+                <Setter Property="CornerRadius" Value="8" />
                 <Setter Property="Padding" Value="18" />
             </Style>
 
-            <Style x:Key="AccentButtonStyle" TargetType="Button">
-                <Setter Property="Background" Value="{StaticResource BrandPurpleBrush}" />
-                <Setter Property="Foreground" Value="White" />
+            <!-- Flat Card Style for inner groupings -->
+            <Style x:Key="SubCardStyle" TargetType="Border">
+                <Setter Property="Background" Value="{StaticResource SecondaryBackgroundBrush}" />
+                <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="CornerRadius" Value="6" />
-                <Setter Property="Padding" Value="14,8" />
-                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="Padding" Value="14" />
             </Style>
 
-            <Style x:Key="DangerButtonStyle" TargetType="Button">
-                <Setter Property="Background" Value="{StaticResource BrandDangerBrush}" />
-                <Setter Property="Foreground" Value="White" />
+            <!-- Primary Action Button (Teal Accent, Dark Text) -->
+            <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="{StaticResource PrimaryAccentBrush}" />
+                <Setter Property="Foreground" Value="#0B0D12" />
+                <Setter Property="CornerRadius" Value="6" />
+                <Setter Property="Padding" Value="16,8" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="BorderThickness" Value="0" />
+            </Style>
+
+            <!-- Secondary Action Button (Elevated Surface, Subtle Border) -->
+            <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="{StaticResource ElevatedSurfaceBrush}" />
+                <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
+                <Setter Property="CornerRadius" Value="6" />
+                <Setter Property="Padding" Value="14,8" />
+                <Setter Property="FontWeight" Value="Normal" />
+            </Style>
+
+            <!-- Indigo Accent Button -->
+            <Style x:Key="IndigoButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="{StaticResource SecondaryAccentBrush}" />
+                <Setter Property="Foreground" Value="#0B0D12" />
+                <Setter Property="CornerRadius" Value="6" />
+                <Setter Property="Padding" Value="16,8" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="BorderThickness" Value="0" />
+            </Style>
+
+            <!-- Destructive Action Button (Error Red) -->
+            <Style x:Key="DestructiveButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="{StaticResource ErrorBrush}" />
+                <Setter Property="Foreground" Value="#0B0D12" />
                 <Setter Property="CornerRadius" Value="6" />
                 <Setter Property="Padding" Value="14,8" />
                 <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="BorderThickness" Value="0" />
             </Style>
+
+            <!-- Backward compatibility aliases -->
+            <StaticResource x:Key="BrandPurpleBrush" ResourceKey="SecondaryAccentBrush" />
+            <StaticResource x:Key="BrandCyanBrush" ResourceKey="PrimaryAccentBrush" />
+            <StaticResource x:Key="BrandDangerBrush" ResourceKey="ErrorBrush" />
+            <StaticResource x:Key="BrandSuccessBrush" ResourceKey="SuccessBrush" />
+            <StaticResource x:Key="BrandWarningBrush" ResourceKey="WarningBrush" />
+            <StaticResource x:Key="CardBackgroundBrush" ResourceKey="ElevatedSurfaceBrush" />
+            <StaticResource x:Key="CardBorderBrush" ResourceKey="BorderBrush" />
+            <StaticResource x:Key="SubtleHeaderBrush" ResourceKey="SecondaryTextBrush" />
+            <StaticResource x:Key="AccentButtonStyle" ResourceKey="PrimaryButtonStyle" />
+            <StaticResource x:Key="DangerButtonStyle" ResourceKey="DestructiveButtonStyle" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

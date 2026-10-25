@@ -8,7 +8,7 @@
     xmlns:models="using:PhantomVault.Core.Models"
     mc:Ignorable="d">
 
-    <Grid Padding="24" RowSpacing="20">
+    <Grid Padding="28" RowSpacing="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -17,40 +17,58 @@
 
         <!-- HEADER -->
         <StackPanel Grid.Row="0" Spacing="4">
-            <TextBlock Text="Local Activity Audit Trail" FontSize="26" FontWeight="Bold" />
-            <TextBlock Text="Sanitized record of local cryptographic and vault events. Passwords, keys, and confidential file contents are strictly excluded." 
-                       Foreground="{StaticResource SubtleHeaderBrush}" FontSize="13" />
+            <TextBlock Text="Local Activity Audit Trail" FontSize="26" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" />
+            <TextBlock Text="Sanitized record of local cryptographic and vault events. Passwords, master keys, and file contents are strictly excluded." 
+                       Foreground="{StaticResource SecondaryTextBrush}" FontSize="13" />
         </StackPanel>
 
-        <!-- TOOLBAR -->
-        <Grid Grid.Row="1">
+        <!-- TOOLBAR WITH FILTERS AND SEARCH -->
+        <Grid Grid.Row="1" ColumnSpacing="12">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <StackPanel Orientation="Horizontal" Spacing="10">
-                <Button Content="Refresh Logs" Click="RefreshButton_Click" />
-            </StackPanel>
+            <!-- CATEGORY FILTER COMBO -->
+            <ComboBox x:Name="FilterCategoryComboBox" Width="180" SelectionChanged="FilterCategoryComboBox_SelectionChanged">
+                <ComboBoxItem Content="All Categories" Tag="All" IsSelected="True" />
+                <ComboBoxItem Content="Vault Events" Tag="Vault" />
+                <ComboBoxItem Content="File Operations" Tag="File" />
+                <ComboBoxItem Content="Backup Operations" Tag="Backup" />
+                <ComboBoxItem Content="Security &amp; Policy" Tag="Security" />
+                <ComboBoxItem Content="Steganography" Tag="Stego" />
+                <ComboBoxItem Content="Errors &amp; Alerts" Tag="Errors" />
+            </ComboBox>
 
-            <Button Grid.Column="1" Content="Clear Audit History" Foreground="{StaticResource BrandDangerBrush}" Click="ClearLogsButton_Click" />
+            <!-- SEARCH TEXT BOX -->
+            <TextBox x:Name="SearchLogBox" Grid.Column="1" PlaceholderText="Search audit trail by keyword, vault name, or event type..." TextChanged="SearchLogBox_TextChanged" />
+
+            <!-- REFRESH BUTTON -->
+            <Button Grid.Column="2" Content="Refresh" Style="{StaticResource SecondaryButtonStyle}" Click="RefreshButton_Click" />
+
+            <!-- CLEAR LOGS WITH CONFIRMATION -->
+            <Button Grid.Column="3" Content="Clear Audit History" Style="{StaticResource DestructiveButtonStyle}" Click="ClearLogsButton_Click" />
         </Grid>
 
         <!-- LOG ENTRIES LIST -->
         <Border Grid.Row="2" Style="{StaticResource SecurityCardStyle}" Padding="0">
             <ListView x:Name="LogsListView">
                 <ListView.Header>
-                    <Grid Padding="16,10" Background="#161922" BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="0,0,0,1">
+                    <Grid Padding="16,10" Background="{StaticResource SecondaryBackgroundBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*" />
-                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="2.2*" />
+                            <ColumnDefinition Width="1.8*" />
                             <ColumnDefinition Width="1.5*" />
+                            <ColumnDefinition Width="1.2*" />
                             <ColumnDefinition Width="4*" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="Timestamp (UTC)" FontWeight="SemiBold" Foreground="{StaticResource SubtleHeaderBrush}" />
-                        <TextBlock Grid.Column="1" Text="Event Type" FontWeight="SemiBold" Foreground="{StaticResource SubtleHeaderBrush}" />
-                        <TextBlock Grid.Column="2" Text="Vault" FontWeight="SemiBold" Foreground="{StaticResource SubtleHeaderBrush}" />
-                        <TextBlock Grid.Column="3" Text="Sanitized Message" FontWeight="SemiBold" Foreground="{StaticResource SubtleHeaderBrush}" />
+                        <TextBlock Grid.Column="0" Text="Timestamp (UTC)" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
+                        <TextBlock Grid.Column="1" Text="Event Type" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
+                        <TextBlock Grid.Column="2" Text="Vault Name" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
+                        <TextBlock Grid.Column="3" Text="Severity" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
+                        <TextBlock Grid.Column="4" Text="Sanitized Message" FontWeight="SemiBold" Foreground="{StaticResource SecondaryTextBrush}" />
                     </Grid>
                 </ListView.Header>
 
@@ -58,16 +76,18 @@
                     <DataTemplate x:DataType="models:ActivityLogRecord">
                         <Grid Padding="16,10">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2*" />
-                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="2.2*" />
+                                <ColumnDefinition Width="1.8*" />
                                 <ColumnDefinition Width="1.5*" />
+                                <ColumnDefinition Width="1.2*" />
                                 <ColumnDefinition Width="4*" />
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Column="0" Text="{x:Bind TimestampUtc}" FontSize="12" Foreground="{StaticResource SubtleHeaderBrush}" VerticalAlignment="Center" />
-                            <TextBlock Grid.Column="1" Text="{x:Bind EventType}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center" />
-                            <TextBlock Grid.Column="2" Text="{x:Bind VaultName}" FontSize="12" VerticalAlignment="Center" />
-                            <TextBlock Grid.Column="3" Text="{x:Bind Message}" FontSize="12" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="0" Text="{x:Bind TimestampUtc}" FontSize="11" FontFamily="{StaticResource MonospaceFontFamily}" Foreground="{StaticResource MutedTextBrush}" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="{x:Bind EventType}" FontWeight="SemiBold" FontSize="12" Foreground="{StaticResource PrimaryTextBrush}" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="2" Text="{x:Bind VaultName}" FontSize="12" Foreground="{StaticResource SecondaryTextBrush}" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="3" Text="{x:Bind Severity}" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource PrimaryAccentBrush}" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="4" Text="{x:Bind Message}" FontSize="12" Foreground="{StaticResource PrimaryTextBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
