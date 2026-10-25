@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="PhantomVault_App.Views.StegoView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Padding="24" RowSpacing="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- HEADER -->
+        <StackPanel Grid.Row="0" Spacing="4">
+            <TextBlock Text="Steganography Studio" FontSize="26" FontWeight="Bold" />
+            <TextBlock Text="Conceal encrypted payloads inside PNG images and 16-bit PCM WAV audio carriers." 
+                       Foreground="{StaticResource SubtleHeaderBrush}" FontSize="13" />
+        </StackPanel>
+
+        <!-- TABS: CONCEAL (EMBED) / EXTRACT -->
+        <TabView Grid.Row="1" CanReorderTabs="False">
+            <TabViewItem Header="Conceal File (Embed)" IsClosable="False">
+                <ScrollViewer Padding="0,16,0,0">
+                    <StackPanel Spacing="16" MaxWidth="720" HorizontalAlignment="Left">
+                        <!-- CARRIER SELECTION -->
+                        <Border Style="{StaticResource SecurityCardStyle}">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="1. SELECT CARRIER MEDIA" FontSize="12" FontWeight="Bold" Foreground="{StaticResource BrandPurpleBrush}" />
+                                <Grid ColumnSpacing="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="CarrierPathBox" PlaceholderText="Select a .png image or .wav audio file..." IsReadOnly="True" />
+                                    <Button Grid.Column="1" Content="Browse Carrier..." Click="BrowseCarrierButton_Click" />
+                                </Grid>
+
+                                <!-- CARRIER CAPACITY REPORT -->
+                                <Grid x:Name="CapacityReportGrid" Visibility="Collapsed" Background="#161922" Padding="12" CornerRadius="6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="CARRIER TYPE" FontSize="10" Foreground="{StaticResource SubtleHeaderBrush}" />
+                                        <TextBlock x:Name="CarrierTypeText" Text="PNG Image" FontWeight="SemiBold" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="DIMENSIONS / SAMPLES" FontSize="10" Foreground="{StaticResource SubtleHeaderBrush}" />
+                                        <TextBlock x:Name="CarrierDimsText" Text="1920 x 1080" FontWeight="SemiBold" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="USABLE PAYLOAD CAPACITY" FontSize="10" Foreground="{StaticResource SubtleHeaderBrush}" />
+                                        <TextBlock x:Name="CarrierCapacityText" Text="777.6 KB" FontWeight="Bold" Foreground="{StaticResource BrandSuccessBrush}" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- PAYLOAD SELECTION -->
+                        <Border Style="{StaticResource SecurityCardStyle}">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="2. SELECT SECRET PAYLOAD" FontSize="12" FontWeight="Bold" Foreground="{StaticResource BrandPurpleBrush}" />
+                                <Grid ColumnSpacing="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="PayloadPathBox" PlaceholderText="Select file to conceal..." IsReadOnly="True" />
+                                    <Button Grid.Column="1" Content="Browse Payload..." Click="BrowsePayloadButton_Click" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- ENCRYPTION PASSPHRASE -->
+                        <Border Style="{StaticResource SecurityCardStyle}">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="3. CONCEALMENT ENCRYPTION PASSWORD" FontSize="12" FontWeight="Bold" Foreground="{StaticResource BrandPurpleBrush}" />
+                                <PasswordBox x:Name="StegoPasswordBox" PlaceholderText="Enter password to encrypt payload (AES-256-GCM)" PasswordChanged="StegoPasswordBox_PasswordChanged" />
+                                <TextBlock x:Name="StegoEntropyText" Text="Password Strength: Not Evaluated" FontSize="12" Foreground="{StaticResource SubtleHeaderBrush}" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- EMBED ACTION -->
+                        <Button Content="Embed and Save Concealed Carrier" Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Left" Padding="20,10" Click="EmbedButton_Click" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabViewItem>
+
+            <TabViewItem Header="Extract &amp; Verify" IsClosable="False">
+                <ScrollViewer Padding="0,16,0,0">
+                    <StackPanel Spacing="16" MaxWidth="720" HorizontalAlignment="Left">
+                        <Border Style="{StaticResource SecurityCardStyle}">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="1. SELECT CONCEALED CARRIER" FontSize="12" FontWeight="Bold" Foreground="{StaticResource BrandPurpleBrush}" />
+                                <Grid ColumnSpacing="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="ExtractCarrierPathBox" PlaceholderText="Select carrier containing hidden payload..." IsReadOnly="True" />
+                                    <Button Grid.Column="1" Content="Browse Carrier..." Click="BrowseExtractCarrier_Click" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource SecurityCardStyle}">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="2. DECRYPTION PASSWORD" FontSize="12" FontWeight="Bold" Foreground="{StaticResource BrandPurpleBrush}" />
+                                <PasswordBox x:Name="ExtractPasswordBox" PlaceholderText="Enter password used during concealment" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource SecurityCardStyle}">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="3. DESTINATION DIRECTORY" FontSize="12" FontWeight="Bold" Foreground="{StaticResource BrandPurpleBrush}" />
+                                <Grid ColumnSpacing="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="ExtractOutDirBox" PlaceholderText="Select folder to save extracted file..." IsReadOnly="True" />
+                                    <Button Grid.Column="1" Content="Browse Folder..." Click="BrowseExtractOutDir_Click" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Button Content="Extract &amp; Verify Hidden Payload" Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Left" Padding="20,10" Click="ExtractButton_Click" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabViewItem>
+        </TabView>
+    </Grid>
+</Page>

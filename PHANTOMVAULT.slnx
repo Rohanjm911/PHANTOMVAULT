@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/PhantomVault.App/PhantomVault.App.csproj" />
+    <Project Path="src/PhantomVault.Core/PhantomVault.Core.csproj" />
+    <Project Path="src/PhantomVault.Infrastructure/PhantomVault.Infrastructure.csproj" />
+    <Project Path="src/PhantomVault.Security/PhantomVault.Security.csproj" />
+    <Project Path="src/PhantomVault.Steganography/PhantomVault.Steganography.csproj" />
+    <Project Path="src/PhantomVault.Storage/PhantomVault.Storage.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/PhantomVault.Core.Tests/PhantomVault.Core.Tests.csproj" />
+    <Project Path="tests/PhantomVault.Integration.Tests/PhantomVault.Integration.Tests.csproj" />
+    <Project Path="tests/PhantomVault.Security.Tests/PhantomVault.Security.Tests.csproj" />
+    <Project Path="tests/PhantomVault.Steganography.Tests/PhantomVault.Steganography.Tests.csproj" />
+    <Project Path="tests/PhantomVault.Storage.Tests/PhantomVault.Storage.Tests.csproj" />
+  </Folder>
+</Solution>

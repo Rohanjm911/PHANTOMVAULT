@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="PhantomVault_App.Views.ActivityLogView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:PhantomVault.Core.Models"
+    mc:Ignorable="d">
+
+    <Grid Padding="24" RowSpacing="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- HEADER -->
+        <StackPanel Grid.Row="0" Spacing="4">
+            <TextBlock Text="Local Activity Audit Trail" FontSize="26" FontWeight="Bold" />
+            <TextBlock Text="Sanitized record of local cryptographic and vault events. Passwords, keys, and confidential file contents are strictly excluded." 
+                       Foreground="{StaticResource SubtleHeaderBrush}" FontSize="13" />
+        </StackPanel>
+
+        <!-- TOOLBAR -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <Button Content="Refresh Logs" Click="RefreshButton_Click" />
+            </StackPanel>
+
+            <Button Grid.Column="1" Content="Clear Audit History" Foreground="{StaticResource BrandDangerBrush}" Click="ClearLogsButton_Click" />
+        </Grid>
+
+        <!-- LOG ENTRIES LIST -->
+        <Border Grid.Row="2" Style="{StaticResource SecurityCardStyle}" Padding="0">
+            <ListView x:Name="LogsListView">
+                <ListView.Header>
+                    <Grid Padding="16,10" Background="#161922" BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="0,0,0,1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="1.5*" />
+                            <ColumnDefinition Width="4*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Timestamp (UTC)" FontWeight="SemiBold" Foreground="{StaticResource SubtleHeaderBrush}" />
+                        <TextBlock Grid.Column="1" Text="Event Type" FontWeight="SemiBold" Foreground="{StaticResource SubtleHeaderBrush}" />
+                        <TextBlock Grid.Column="2" Text="Vault" FontWeight="SemiBold" Foreground="{StaticResource SubtleHeaderBrush}" />
+                        <TextBlock Grid.Column="3" Text="Sanitized Message" FontWeight="SemiBold" Foreground="{StaticResource SubtleHeaderBrush}" />
+                    </Grid>
+                </ListView.Header>
+
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:ActivityLogRecord">
+                        <Grid Padding="16,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="1.5*" />
+                                <ColumnDefinition Width="4*" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0" Text="{x:Bind TimestampUtc}" FontSize="12" Foreground="{StaticResource SubtleHeaderBrush}" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="{x:Bind EventType}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="2" Text="{x:Bind VaultName}" FontSize="12" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="3" Text="{x:Bind Message}" FontSize="12" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Border>
+    </Grid>
+</Page>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="PhantomVault_App.Views.SecurityCenterView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Padding="24" RowSpacing="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- HEADER -->
+        <StackPanel Grid.Row="0" Spacing="4">
+            <TextBlock Text="Security &amp; Cryptography Center" FontSize="26" FontWeight="Bold" />
+            <TextBlock Text="Real-time audit of local cryptographic guarantees, key hierarchy, and emergency policies." 
+                       Foreground="{StaticResource SubtleHeaderBrush}" FontSize="13" />
+        </StackPanel>
+
+        <!-- CONTENT -->
+        <ScrollViewer Grid.Row="1">
+            <StackPanel Spacing="16" MaxWidth="760" HorizontalAlignment="Left">
+                <!-- POSTURE BANNER -->
+                <Border Background="#161B26" BorderBrush="{StaticResource BrandPurpleBrush}" BorderThickness="1" CornerRadius="10" Padding="20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <FontIcon Glyph="&#xE72E;" FontSize="36" Foreground="{StaticResource BrandPurpleBrush}" VerticalAlignment="Center" Margin="0,0,16,0" />
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Text="CRYPTOGRAPHIC PROTECTION STATUS" FontSize="11" FontWeight="Bold" Foreground="{StaticResource SubtleHeaderBrush}" />
+                            <TextBlock Text="MAXIMUM SECURITY — LOCAL ENCLAVE ACTIVE" FontSize="18" FontWeight="Bold" Foreground="{StaticResource BrandSuccessBrush}" />
+                            <TextBlock Text="AES-256-GCM authenticated cipher with Argon2id memory-hard key derivation." FontSize="12" Foreground="{StaticResource SubtleHeaderBrush}" />
+                        </StackPanel>
+
+                        <Border Grid.Column="2" Background="{StaticResource BrandPurpleBrush}" CornerRadius="12" Padding="12,4" VerticalAlignment="Center">
+                            <TextBlock Text="PROTECTED" FontWeight="Bold" FontSize="12" Foreground="White" />
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- CRYPTO SPECS GRID -->
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- CARD: ALGORITHMS -->
+                    <Border Grid.Column="0" Style="{StaticResource SecurityCardStyle}">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="ALGORITHMIC SPECIFICATIONS" FontSize="12" FontWeight="Bold" Foreground="{StaticResource BrandCyanBrush}" />
+                            
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="Symmetric Encryption" FontSize="11" Foreground="{StaticResource SubtleHeaderBrush}" />
+                                <TextBlock Text="AES-256-GCM (NIST SP 800-38D)" FontWeight="SemiBold" FontSize="13" />
+
+                                <TextBlock Text="Key Derivation (KDF)" FontSize="11" Foreground="{StaticResource SubtleHeaderBrush}" Margin="0,6,0,0" />
+                                <TextBlock Text="Argon2id (RFC 9106, 64 MB, 4 Iterations)" FontWeight="SemiBold" FontSize="13" />
+
+                                <TextBlock Text="Chunk Authenticated Framing" FontSize="11" Foreground="{StaticResource SubtleHeaderBrush}" Margin="0,6,0,0" />
+                                <TextBlock Text="64 KiB Chunks with AAD UUID Binding" FontWeight="SemiBold" FontSize="13" />
+
+                                <TextBlock Text="RNG Entropy Provider" FontSize="11" Foreground="{StaticResource SubtleHeaderBrush}" Margin="0,6,0,0" />
+                                <TextBlock Text="System.Security.Cryptography.RandomNumberGenerator" FontWeight="SemiBold" FontSize="13" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- CARD: POLICIES & MEMORY -->
+                    <Border Grid.Column="1" Style="{StaticResource SecurityCardStyle}">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="MEMORY &amp; SESSION DEFENSES" FontSize="12" FontWeight="Bold" Foreground="{StaticResource BrandPurpleBrush}" />
+
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="Key Zeroization" FontSize="11" Foreground="{StaticResource SubtleHeaderBrush}" />
+                                <TextBlock Text="CryptographicOperations.ZeroMemory on lock" FontWeight="SemiBold" FontSize="13" />
+
+                                <TextBlock Text="Workstation Lock Listener" FontSize="11" Foreground="{StaticResource SubtleHeaderBrush}" Margin="0,6,0,0" />
+                                <TextBlock Text="Automatic lock on Win+L session switch" FontWeight="SemiBold" FontSize="13" />
+
+                                <TextBlock Text="Inactivity Auto-Lock" FontSize="11" Foreground="{StaticResource SubtleHeaderBrush}" Margin="0,6,0,0" />
+                                <TextBlock Text="Configured (15 Minutes Default)" FontWeight="SemiBold" FontSize="13" />
+
+                                <TextBlock Text="Dead-Man's Switch Safeguard" FontSize="11" Foreground="{StaticResource SubtleHeaderBrush}" Margin="0,6,0,0" />
+                                <TextBlock Text="Audible/visual countdown before auto-lock" FontWeight="SemiBold" FontSize="13" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- STORAGE INTEGRITY AUDIT -->
+                <Border Style="{StaticResource SecurityCardStyle}">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="VAULT DATA INTEGRITY AUDIT" FontSize="12" FontWeight="Bold" Foreground="{StaticResource BrandPurpleBrush}" />
+                        <TextBlock Text="Execute a deep cryptographic audit across all stored file chunks on disk to verify zero bit-rot, corruption, or tampering." 
+                                   Foreground="{StaticResource SubtleHeaderBrush}" FontSize="13" TextWrapping="Wrap" />
+
+                        <TextBlock x:Name="LastIntegrityCheckText" Text="Status: Ready for audit." FontWeight="Medium" Foreground="{StaticResource BrandSuccessBrush}" />
+
+                        <Button Content="Execute Full Cryptographic Verification" Style="{StaticResource AccentButtonStyle}" Click="VerifyButton_Click" />
+                    </StackPanel>
+                </Border>
+
+                <!-- EMERGENCY ACTION -->
+                <Border BorderBrush="{StaticResource BrandDangerBrush}" BorderThickness="1" Background="#261214" CornerRadius="10" Padding="18">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="EMERGENCY ACTION: IMMEDIATE LOCKDOWN" FontWeight="Bold" Foreground="{StaticResource BrandDangerBrush}" />
+                        <TextBlock Text="Immediately purge all active cryptographic keys from volatile process memory and lock all open vaults across the application." 
+                                   Foreground="{StaticResource SubtleHeaderBrush}" FontSize="13" />
+
+                        <Button Content="TRIGGER EMERGENCY LOCK ALL" Style="{StaticResource DangerButtonStyle}" Click="EmergencyLockButton_Click" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

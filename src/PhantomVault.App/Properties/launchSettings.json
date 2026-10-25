@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "PhantomVault.App (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "PhantomVault.App (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
