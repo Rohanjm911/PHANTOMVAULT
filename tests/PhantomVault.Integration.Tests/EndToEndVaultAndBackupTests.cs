@@ -34,7 +34,7 @@ public class EndToEndVaultAndBackupTests : IDisposable
         _crypto = new AesGcmCryptoProvider();
         _kdf = new KeyDerivationService();
         _keyWrapper = new KeyWrappingService(_crypto);
-        _vaultRepo = new VaultRepository(_crypto, _kdf, _keyWrapper);
+        _vaultRepo = new VaultRepository(_crypto, _kdf, _keyWrapper, Path.Combine(_testBaseDir, "test_registry.json"));
         _fileManager = new VaultFileManager(_vaultRepo, _crypto);
         _backupService = new BackupService(_vaultRepo);
         _logService = new ActivityLogService(Path.Combine(_testBaseDir, "test_activity.db"));

@@ -28,7 +28,7 @@ public class VaultRepositoryAndFileManagerTests : IDisposable
         _crypto = new AesGcmCryptoProvider();
         _kdf = new KeyDerivationService();
         _keyWrapper = new KeyWrappingService(_crypto);
-        _vaultRepo = new VaultRepository(_crypto, _kdf, _keyWrapper);
+        _vaultRepo = new VaultRepository(_crypto, _kdf, _keyWrapper, Path.Combine(_testBaseDir, "test_registry.json"));
         _fileManager = new VaultFileManager(_vaultRepo, _crypto);
     }
 

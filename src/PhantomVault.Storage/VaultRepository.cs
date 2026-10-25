@@ -24,15 +24,18 @@ public sealed class VaultRepository : IVaultRepository
     private readonly ConcurrentDictionary<Guid, SecureBuffer> _unlockedVaultKeys = new();
     private readonly List<VaultDescriptor> _vaultRegistry = new();
     private readonly object _registryLock = new();
+    private readonly string _registryPath;
 
     public VaultRepository(
         ICryptographyService crypto, 
         IKeyDerivationService kdf, 
-        IKeyWrappingService keyWrapper)
+        IKeyWrappingService keyWrapper,
+        string? registryPath = null)
     {
         _crypto = crypto ?? throw new ArgumentNullException(nameof(crypto));
         _kdf = kdf ?? throw new ArgumentNullException(nameof(kdf));
         _keyWrapper = keyWrapper ?? throw new ArgumentNullException(nameof(keyWrapper));
+        _registryPath = registryPath ?? StoragePaths.VaultRegistryPath;
         LoadRegistry();
     }
 
@@ -518,7 +521,7 @@ public sealed class VaultRepository : IVaultRepository
         {
             try
             {
-                string regPath = StoragePaths.VaultRegistryPath;
+                string regPath = _registryPath;
                 if (File.Exists(regPath))
                 {
                     string json = File.ReadAllText(regPath);
@@ -547,7 +550,7 @@ public sealed class VaultRepository : IVaultRepository
         {
             try
             {
-                string regPath = StoragePaths.VaultRegistryPath;
+                string regPath = _registryPath;
                 string json = JsonSerializer.Serialize(_vaultRegistry, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(regPath, json);
             }
