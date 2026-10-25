@@ -20,6 +20,39 @@ PHANTOMVAULT is a high-security, privacy-first native Windows desktop applicatio
 
 ---
 
+## User Interface & Design System
+
+PHANTOMVAULT delivers a minimalist, technical, high-contrast dark desktop interface inspired by advanced cybersecurity tooling. It avoids gradients, glassmorphism, glowing borders, or frivolous animations in favor of precision, technical credibility, and rapid keyboard navigation.
+
+### Official Design Tokens
+- **Primary Background**: `#0B0D12` (Deep Obsidian)
+- **Secondary Background**: `#11151D` (Dark Surface)
+- **Sidebar**: `#0E1118` (Enclave Slate)
+- **Elevated Surface**: `#171C26` (Card Container)
+- **Primary Accent**: `#39D0C8` (Cyber Teal)
+- **Secondary Accent**: `#7C83FF` (Periwinkle Indigo)
+- **Primary Text**: `#F3F5F9` (Pure Contrast)
+- **Secondary Text**: `#A1A9B8` (Subdued Slate)
+- **Muted Text**: `#697386` (Technical Labels)
+- **Success / Valid**: `#36C98F` (Emerald Shield)
+- **Warning**: `#F2B84B` (Amber Notice)
+- **Error / Lockdown**: `#F06A75` (Crimson Alert)
+- **Borders & Dividers**: `#252C38` (Precision 1px Outlines)
+
+### Primary Workspace Views
+1. **First-Run Experience**: Zero-telemetry welcome wizard introducing local storage guarantees, password responsibilities, and master key initialization.
+2. **Dashboard (`DashboardView`)**: Live overview of total, locked, and unlocked vaults, ciphertext on disk, last backup date, quick actions, security posture status, and real security notices.
+3. **My Vaults (`VaultsView`)**: Multi-vault compartmentalization management with independent master keys, status pills, creation wizard with entropy rating, and unlock modal.
+4. **Vault Workspace (`VaultView`)**: Focused file manager with breadcrumbs (`PHANTOMVAULT > [Vault] > Encrypted Files`), search filter, storage stats, and inline import, export, rename, and permanent deletion controls.
+5. **Steganography Studio (`StegoView`)**: Guided 6-step file concealment workflow into PNG scanlines or WAV PCM samples with real-time capacity validation, password entropy meters, and an extraction & integrity verification studio.
+6. **Recovery & Backups (`BackupView`)**: Compressed `.pvbackup` packaging with cryptographic manifest verification, archive inspection, and restore-to-new-vault workflows.
+7. **Security Center (`SecurityCenterView`)**: Live audit dashboard detailing algorithmic specifications (AES-256-GCM, Argon2id, 64 KiB framing), memory zeroization, storage data integrity audits, and instant emergency lockdown triggers.
+8. **Emergency Access (`EmergencyAccessView`)**: Configurable session defense controls, inactivity timeouts, workstation lock listener (Win + L), and dead-man's switch countdown with test mode.
+9. **Activity Log (`ActivityLogView`)**: Local audit trail with category filtering (Vault, File, Backup, Security, Errors), live search, and privacy-preserving log clearing.
+10. **Settings (`SettingsView`)**: General directories, zero-telemetry declarations, backup reminders, and technical security limitations disclosure.
+
+---
+
 ## Architecture Overview
 
 ```
