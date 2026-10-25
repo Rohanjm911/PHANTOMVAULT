@@ -30,18 +30,25 @@ public sealed partial class MainPage : Page
 
     private async void MainPage_Loaded(object sender, RoutedEventArgs e)
     {
-        await _vm.InitializeAsync();
-
-        // Default navigation to DashboardView
-        NavView.SelectedItem = NavView.MenuItems[0];
-        ContentFrame.Navigate(typeof(DashboardView));
-
-        UpdateStatusBadge();
-
-        // If no vaults exist, prompt First-Run Setup Wizard
-        if (_vm.Vaults.Count == 0)
+        try
         {
-            await ShowFirstRunWizardAsync();
+            await _vm.InitializeAsync();
+
+            // Default navigation to DashboardView
+            NavView.SelectedItem = NavView.MenuItems[0];
+            ContentFrame.Navigate(typeof(DashboardView));
+
+            UpdateStatusBadge();
+
+            // If no vaults exist, prompt First-Run Setup Wizard
+            if (_vm.Vaults.Count == 0 && this.XamlRoot != null)
+            {
+                await ShowFirstRunWizardAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.IO.File.WriteAllText("mainpage_crash.log", ex.ToString());
         }
     }
 

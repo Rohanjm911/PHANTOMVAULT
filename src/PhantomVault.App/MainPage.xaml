@@ -87,7 +87,7 @@
                 <NavigationViewItem Content="Steganography" Tag="Stego" Icon="Pictures" />
                 <NavigationViewItem Content="Recovery &amp; Backups" Tag="Backup" Icon="Save" />
                 <NavigationViewItem Content="Security Center" Tag="Security" Icon="ProtectedDocument" />
-                <NavigationViewItem Content="Emergency Access" Tag="Emergency" Icon="Shield" />
+                <NavigationViewItem Content="Emergency Access" Tag="Emergency" Icon="Permissions" />
                 <NavigationViewItem Content="Activity Log" Tag="Logs" Icon="List" />
                 <NavigationViewItem Content="Settings" Tag="Settings" Icon="Setting" />
             </NavigationView.MenuItems>
